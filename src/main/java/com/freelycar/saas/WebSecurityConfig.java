@@ -33,6 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
+        /*
         http.authorizeRequests()
                 //注册请求开放
                 .antMatchers("/register/**").permitAll()
@@ -59,5 +60,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //设置注销成功后跳转页面，默认是跳转到登录页面
 //                .logoutSuccessUrl("")
                 .permitAll();
+        */
+
+        //开发用：开放所有请求权限（不需要登录即可调用）
+        http.authorizeRequests().anyRequest().permitAll();
     }
 }

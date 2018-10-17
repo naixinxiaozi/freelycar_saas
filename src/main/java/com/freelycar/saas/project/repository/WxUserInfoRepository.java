@@ -16,5 +16,5 @@ public interface WxUserInfoRepository extends JpaRepository<WxUserInfo, String> 
 
     WxUserInfo findWxUserInfoByPhone(String phone);
 
-    List<WxUserInfo> findAllByDelStatusOrderByAddTimeDesc(Integer delStatus);
+    List<WxUserInfo> findAllByDelStatusOrderByCreateTimeDesc(Integer delStatus);
 }

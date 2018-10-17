@@ -27,10 +27,10 @@ public class WxUserInfo implements Serializable {
     @NotNull
     private String id;
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
-    private Timestamp addTime = new Timestamp(System.currentTimeMillis());
+    private Timestamp createTime = new Timestamp(System.currentTimeMillis());
     @Column
     private Date birthday;
-    @Column
+    @Column(length = 10)
     private String gender;
     @Column
     private String headImgUrl;
@@ -38,7 +38,7 @@ public class WxUserInfo implements Serializable {
     private String nickName;
     @Column
     private String openId;
-    @Column
+    @Column(length = 20)
     private String phone;
     @Column(nullable = false, columnDefinition = "bit default 0")
     private Integer delStatus = 0;
@@ -50,6 +50,7 @@ public class WxUserInfo implements Serializable {
     public String toString() {
         return "WxUserInfo{" +
                 "id='" + id + '\'' +
+                ", createTime=" + createTime +
                 ", birthday=" + birthday +
                 ", gender='" + gender + '\'' +
                 ", headImgUrl='" + headImgUrl + '\'' +
@@ -124,11 +125,11 @@ public class WxUserInfo implements Serializable {
         this.delStatus = delStatus;
     }
 
-    public Timestamp getAddTime() {
-        return addTime;
+    public Timestamp getCreateTime() {
+        return createTime;
     }
 
-    public void setAddTime(Timestamp addTime) {
-        this.addTime = addTime;
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
     }
 }

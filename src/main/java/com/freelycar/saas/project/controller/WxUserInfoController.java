@@ -49,7 +49,7 @@ public class WxUserInfoController {
     public Map<String,Object> findAllUsefulInfo() {
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("status","success");
-        resultMap.put("content",wxUserInfoRepository.findAllByDelStatusOrderByAddTimeDesc(0));
+        resultMap.put("content",wxUserInfoRepository.findAllByDelStatusOrderByCreateTimeDesc(0));
         return resultMap;
     }
 }
