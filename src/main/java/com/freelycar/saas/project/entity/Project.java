@@ -66,6 +66,10 @@ public class Project implements Serializable {
     @Column(nullable = false)
     private Boolean saleStatus;
 
+    @Column
+    private String storeId;
+
+
     @Override
     public String toString() {
         return "Project{" +
@@ -169,6 +173,14 @@ public class Project implements Serializable {
 
     public void setSaleStatus(Boolean saleStatus) {
         this.saleStatus = saleStatus;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
     public Project() {

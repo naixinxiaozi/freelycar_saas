@@ -54,6 +54,9 @@ public class CardService implements Serializable {
     @Column(nullable = false)
     private Boolean bookOnline;
 
+    @Column
+    private String storeId;
+
     public CardService() {
     }
 
@@ -151,5 +154,13 @@ public class CardService implements Serializable {
 
     public void setBookOnline(Boolean bookOnline) {
         this.bookOnline = bookOnline;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 }

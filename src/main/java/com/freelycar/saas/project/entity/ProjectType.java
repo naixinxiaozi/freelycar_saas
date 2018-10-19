@@ -39,6 +39,9 @@ public class ProjectType implements Serializable {
     @Column
     private String name;
 
+    @Column
+    private String storeId;
+
     @Override
     public String toString() {
         return "ProjectType{" +
@@ -88,6 +91,14 @@ public class ProjectType implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 
     public ProjectType() {
