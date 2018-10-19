@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 @DynamicInsert
 @DynamicUpdate
 public class CardService implements Serializable {
-    private static final long serialVersionUID = 5L;
+    private static final long serialVersionUID = 8L;
 
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
