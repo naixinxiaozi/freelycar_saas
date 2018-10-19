@@ -11,15 +11,15 @@ import java.sql.Timestamp;
 
 /**
  * @author tangwei - Toby
- * @date 2018/10/18
+ * @date 2018/10/19
  * @email toby911115@gmail.com
  */
 @Entity
 @Table
 @DynamicInsert
 @DynamicUpdate
-public class Project implements Serializable {
-    private static final long serialVersionUID = 7L;
+public class CardService implements Serializable {
+    private static final long serialVersionUID = 5L;
 
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
@@ -39,47 +39,37 @@ public class Project implements Serializable {
     @Column
     private String name;
 
-    @Column(nullable = false)
+    @Column
     private Float price;
 
+    @Column
+    private Float actualPrice;
+
+    @Column
+    private Integer type;
+
+    @Column
+    private Integer validTime;
+
     @Column(nullable = false)
-    private Float pricePerUnit;
+    private Boolean bookOnline;
 
-    /**
-     * 参考工时
-     */
-    @Column
-    private Integer referWorkTime;
-
-    @Column
-    private String projectTypeId;
-
-    /**
-     * 使用次数
-     */
-    @Column
-    private Integer useTimes;
-
-    /**
-     * 智能柜上架标记
-     */
-    @Column(nullable = false)
-    private Boolean saleStatus;
+    public CardService() {
+    }
 
     @Override
     public String toString() {
-        return "Project{" +
+        return "CardService{" +
                 "id='" + id + '\'' +
                 ", delStatus=" + delStatus +
                 ", createTime=" + createTime +
                 ", comment='" + comment + '\'' +
                 ", name='" + name + '\'' +
                 ", price=" + price +
-                ", pricePerUnit=" + pricePerUnit +
-                ", referWorkTime=" + referWorkTime +
-                ", projectTypeId='" + projectTypeId + '\'' +
-                ", useTimes=" + useTimes +
-                ", saleStatus=" + saleStatus +
+                ", actualPrice=" + actualPrice +
+                ", type=" + type +
+                ", validTime=" + validTime +
+                ", bookOnline=" + bookOnline +
                 '}';
     }
 
@@ -131,46 +121,35 @@ public class Project implements Serializable {
         this.price = price;
     }
 
-    public Float getPricePerUnit() {
-        return pricePerUnit;
+    public Float getActualPrice() {
+        return actualPrice;
     }
 
-    public void setPricePerUnit(Float pricePerUnit) {
-        this.pricePerUnit = pricePerUnit;
+    public void setActualPrice(Float actualPrice) {
+        this.actualPrice = actualPrice;
     }
 
-    public Integer getReferWorkTime() {
-        return referWorkTime;
+    public Integer getType() {
+        return type;
     }
 
-    public void setReferWorkTime(Integer referWorkTime) {
-        this.referWorkTime = referWorkTime;
+    public void setType(Integer type) {
+        this.type = type;
     }
 
-    public String getProjectTypeId() {
-        return projectTypeId;
+    public Integer getValidTime() {
+        return validTime;
     }
 
-    public void setProjectTypeId(String projectTypeId) {
-        this.projectTypeId = projectTypeId;
+    public void setValidTime(Integer validTime) {
+        this.validTime = validTime;
     }
 
-    public Integer getUseTimes() {
-        return useTimes;
+    public Boolean getBookOnline() {
+        return bookOnline;
     }
 
-    public void setUseTimes(Integer useTimes) {
-        this.useTimes = useTimes;
-    }
-
-    public Boolean getSaleStatus() {
-        return saleStatus;
-    }
-
-    public void setSaleStatus(Boolean saleStatus) {
-        this.saleStatus = saleStatus;
-    }
-
-    public Project() {
+    public void setBookOnline(Boolean bookOnline) {
+        this.bookOnline = bookOnline;
     }
 }

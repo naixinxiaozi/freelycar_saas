@@ -27,8 +27,8 @@ public class Staff implements Serializable {
     @NotNull
     private String id;
 
-    @Column(length = 1,nullable = false, columnDefinition = "int default 0")
-    private Integer delStatus;
+    @Column(nullable = false)
+    private Boolean delStatus;
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());
@@ -54,8 +54,8 @@ public class Staff implements Serializable {
     @Column
     private String position;
 
-    @Column(nullable = false, columnDefinition = "int default 0")
-    private Integer isArk;
+    @Column(nullable = false)
+    private Boolean isArk;
 
     @Column
     private String account;
@@ -74,11 +74,11 @@ public class Staff implements Serializable {
         this.id = id;
     }
 
-    public Integer getDelStatus() {
+    public Boolean getDelStatus() {
         return delStatus;
     }
 
-    public void setDelStatus(Integer delStatus) {
+    public void setDelStatus(Boolean delStatus) {
         this.delStatus = delStatus;
     }
 
@@ -146,12 +146,12 @@ public class Staff implements Serializable {
         this.position = position;
     }
 
-    public Integer getIsArk() {
+    public Boolean getArk() {
         return isArk;
     }
 
-    public void setIsArk(Integer isArk) {
-        this.isArk = isArk;
+    public void setArk(Boolean ark) {
+        isArk = ark;
     }
 
     public String getAccount() {

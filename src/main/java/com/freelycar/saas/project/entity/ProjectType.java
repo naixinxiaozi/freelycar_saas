@@ -27,8 +27,8 @@ public class ProjectType implements Serializable {
     @NotNull
     private String id;
 
-    @Column(length = 1,nullable = false, columnDefinition = "int default 0")
-    private Integer delStatus;
+    @Column(nullable = false)
+    private Boolean delStatus;
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());
@@ -58,11 +58,11 @@ public class ProjectType implements Serializable {
         this.id = id;
     }
 
-    public Integer getDelStatus() {
+    public Boolean getDelStatus() {
         return delStatus;
     }
 
-    public void setDelStatus(Integer delStatus) {
+    public void setDelStatus(Boolean delStatus) {
         this.delStatus = delStatus;
     }
 

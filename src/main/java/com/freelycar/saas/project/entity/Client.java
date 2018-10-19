@@ -28,8 +28,8 @@ public class Client implements Serializable {
     @NotNull
     private String id;
 
-    @Column(length = 1,nullable = false, columnDefinition = "int default 0")
-    private Integer delStatus;
+    @Column(nullable = false)
+    private Boolean delStatus;
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());
@@ -52,8 +52,8 @@ public class Client implements Serializable {
     @Column
     private String idNumber;
 
-    @Column(length = 1, nullable = false, columnDefinition = "int default 0")
-    private Integer isMember;
+    @Column(nullable = false)
+    private Boolean isMember;
 
     @Column
     private Timestamp lastVisit;
@@ -64,8 +64,8 @@ public class Client implements Serializable {
     @Column
     private String phone;
 
-    @Column(length = 1, nullable = false, columnDefinition = "int default 0")
-    private Integer points;
+    @Column(nullable = false)
+    private Boolean points;
 
     @Column
     private String recommendName;
@@ -93,11 +93,11 @@ public class Client implements Serializable {
         this.id = id;
     }
 
-    public Integer getDelStatus() {
+    public Boolean getDelStatus() {
         return delStatus;
     }
 
-    public void setDelStatus(Integer delStatus) {
+    public void setDelStatus(Boolean delStatus) {
         this.delStatus = delStatus;
     }
 
@@ -157,12 +157,12 @@ public class Client implements Serializable {
         this.idNumber = idNumber;
     }
 
-    public Integer getIsMember() {
+    public Boolean getMember() {
         return isMember;
     }
 
-    public void setIsMember(Integer isMember) {
-        this.isMember = isMember;
+    public void setMember(Boolean member) {
+        isMember = member;
     }
 
     public Timestamp getLastVisit() {
@@ -189,11 +189,11 @@ public class Client implements Serializable {
         this.phone = phone;
     }
 
-    public Integer getPoints() {
+    public Boolean getPoints() {
         return points;
     }
 
-    public void setPoints(Integer points) {
+    public void setPoints(Boolean points) {
         this.points = points;
     }
 

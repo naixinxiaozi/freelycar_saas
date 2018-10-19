@@ -40,8 +40,8 @@ public class WxUserInfo implements Serializable {
     private String openId;
     @Column(length = 20)
     private String phone;
-    @Column(length = 1,nullable = false, columnDefinition = "int default 0")
-    private Integer delStatus = 0;
+    @Column(nullable = false)
+    private Boolean delStatus;
 
     public WxUserInfo() {
     }
@@ -67,6 +67,14 @@ public class WxUserInfo implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
     }
 
     public Date getBirthday() {
@@ -117,19 +125,11 @@ public class WxUserInfo implements Serializable {
         this.phone = phone;
     }
 
-    public Integer getDelStatus() {
+    public Boolean getDelStatus() {
         return delStatus;
     }
 
-    public void setDelStatus(Integer delStatus) {
+    public void setDelStatus(Boolean delStatus) {
         this.delStatus = delStatus;
-    }
-
-    public Timestamp getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Timestamp createTime) {
-        this.createTime = createTime;
     }
 }

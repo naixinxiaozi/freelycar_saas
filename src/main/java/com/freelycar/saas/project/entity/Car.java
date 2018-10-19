@@ -27,8 +27,8 @@ public class Car implements Serializable {
     @NotNull
     private String id;
 
-    @Column(length = 1,nullable = false, columnDefinition = "int default 0")
-    private Integer delStatus;
+    @Column(nullable = false)
+    private Boolean delStatus;
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());
@@ -69,11 +69,11 @@ public class Car implements Serializable {
     @Column
     private String licensePlate;
 
-    @Column(length = 1,nullable = false,columnDefinition = "int default 0")
-    private Integer newCar;
+    @Column(nullable = false)
+    private Boolean newCar;
 
-    @Column(length = 1,nullable = false,columnDefinition = "int default 0")
-    private Integer defaultCar;
+    @Column(nullable = false)
+    private Boolean defaultCar;
 
     @Column
     private String clientId;
@@ -87,11 +87,11 @@ public class Car implements Serializable {
     @Column
     private Timestamp defaultDate;
 
-    @Column(length = 1,nullable = false,columnDefinition = "int default 0")
-    private Integer needInspectionRemind;
+    @Column(nullable = false)
+    private Boolean needInspectionRemind;
 
-    @Column(length = 1,nullable = false,columnDefinition = "int default 0")
-    private Integer needInsuranceRemind;
+    @Column(nullable = false)
+    private Boolean needInsuranceRemind;
 
     @Column
     private String carMark;
@@ -134,11 +134,11 @@ public class Car implements Serializable {
         this.id = id;
     }
 
-    public Integer getDelStatus() {
+    public Boolean getDelStatus() {
         return delStatus;
     }
 
-    public void setDelStatus(Integer delStatus) {
+    public void setDelStatus(Boolean delStatus) {
         this.delStatus = delStatus;
     }
 
@@ -246,19 +246,19 @@ public class Car implements Serializable {
         this.licensePlate = licensePlate;
     }
 
-    public Integer getNewCar() {
+    public Boolean getNewCar() {
         return newCar;
     }
 
-    public void setNewCar(Integer newCar) {
+    public void setNewCar(Boolean newCar) {
         this.newCar = newCar;
     }
 
-    public Integer getDefaultCar() {
+    public Boolean getDefaultCar() {
         return defaultCar;
     }
 
-    public void setDefaultCar(Integer defaultCar) {
+    public void setDefaultCar(Boolean defaultCar) {
         this.defaultCar = defaultCar;
     }
 
@@ -294,19 +294,19 @@ public class Car implements Serializable {
         this.defaultDate = defaultDate;
     }
 
-    public Integer getNeedInspectionRemind() {
+    public Boolean getNeedInspectionRemind() {
         return needInspectionRemind;
     }
 
-    public void setNeedInspectionRemind(Integer needInspectionRemind) {
+    public void setNeedInspectionRemind(Boolean needInspectionRemind) {
         this.needInspectionRemind = needInspectionRemind;
     }
 
-    public Integer getNeedInsuranceRemind() {
+    public Boolean getNeedInsuranceRemind() {
         return needInsuranceRemind;
     }
 
-    public void setNeedInsuranceRemind(Integer needInsuranceRemind) {
+    public void setNeedInsuranceRemind(Boolean needInsuranceRemind) {
         this.needInsuranceRemind = needInsuranceRemind;
     }
 
