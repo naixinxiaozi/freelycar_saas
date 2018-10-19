@@ -27,7 +27,7 @@ public class Car implements Serializable {
     @NotNull
     private String id;
 
-    @Column(nullable = false, columnDefinition = "bit default 0")
+    @Column(length = 1,nullable = false, columnDefinition = "int default 0")
     private Integer delStatus;
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
@@ -69,10 +69,10 @@ public class Car implements Serializable {
     @Column
     private String licensePlate;
 
-    @Column(length = 1,nullable = false,columnDefinition = "bit default 0")
+    @Column(length = 1,nullable = false,columnDefinition = "int default 0")
     private Integer newCar;
 
-    @Column(length = 1,nullable = false,columnDefinition = "bit default 0")
+    @Column(length = 1,nullable = false,columnDefinition = "int default 0")
     private Integer defaultCar;
 
     @Column
@@ -87,10 +87,10 @@ public class Car implements Serializable {
     @Column
     private Timestamp defaultDate;
 
-    @Column(length = 1,nullable = false,columnDefinition = "bit default 0")
+    @Column(length = 1,nullable = false,columnDefinition = "int default 0")
     private Integer needInspectionRemind;
 
-    @Column(length = 1,nullable = false,columnDefinition = "bit default 0")
+    @Column(length = 1,nullable = false,columnDefinition = "int default 0")
     private Integer needInsuranceRemind;
 
     @Column

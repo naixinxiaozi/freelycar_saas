@@ -28,7 +28,7 @@ public class Store implements Serializable {
     @NotNull
     private String id;
 
-    @Column(nullable = false, columnDefinition = "bit default 0")
+    @Column(length = 1,nullable = false, columnDefinition = "int default 0")
     private Integer delStatus;
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")

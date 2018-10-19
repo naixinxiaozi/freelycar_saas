@@ -40,7 +40,7 @@ public class WxUserInfo implements Serializable {
     private String openId;
     @Column(length = 20)
     private String phone;
-    @Column(nullable = false, columnDefinition = "bit default 0")
+    @Column(length = 1,nullable = false, columnDefinition = "int default 0")
     private Integer delStatus = 0;
 
     public WxUserInfo() {

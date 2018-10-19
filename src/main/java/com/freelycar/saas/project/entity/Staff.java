@@ -27,7 +27,7 @@ public class Staff implements Serializable {
     @NotNull
     private String id;
 
-    @Column(nullable = false, columnDefinition = "bit default 0")
+    @Column(length = 1,nullable = false, columnDefinition = "int default 0")
     private Integer delStatus;
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
@@ -54,7 +54,7 @@ public class Staff implements Serializable {
     @Column
     private String position;
 
-    @Column(nullable = false, columnDefinition = "bit default 0")
+    @Column(nullable = false, columnDefinition = "int default 0")
     private Integer isArk;
 
     @Column
