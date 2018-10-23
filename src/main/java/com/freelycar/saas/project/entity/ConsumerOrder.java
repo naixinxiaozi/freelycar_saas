@@ -1,6 +1,5 @@
 package com.freelycar.saas.project.entity;
 
-import com.sun.tools.corba.se.idl.constExpr.Times;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
