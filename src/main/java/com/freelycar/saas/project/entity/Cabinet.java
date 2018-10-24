@@ -10,8 +10,6 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
- * 优惠券实物表（客户购买的信息）
- *
  * @author tangwei - Toby
  * @date 2018/10/23
  * @email toby911115@gmail.com
@@ -20,8 +18,8 @@ import java.sql.Timestamp;
 @Table
 @DynamicInsert
 @DynamicUpdate
-public class Coupon implements Serializable {
-    private static final long serialVersionUID = 15L;
+public class Cabinet implements Serializable {
+    private static final long serialVersionUID = 17L;
 
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
@@ -36,34 +34,38 @@ public class Coupon implements Serializable {
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());
 
     @Column
-    private String storeId;
+    private String sn;
 
     @Column
-    private String couponServiceId;
+    private String location;
 
     @Column
-    private String clientId;
+    private Integer specification;
 
     @Column
     private String name;
 
     @Column
-    private Timestamp deadline;
+    private Integer serviceCount;
 
-    public Coupon() {
+    @Column
+    private String storeId;
+
+    public Cabinet() {
     }
 
     @Override
     public String toString() {
-        return "Coupon{" +
+        return "Cabinet{" +
                 "id='" + id + '\'' +
                 ", delStatus=" + delStatus +
                 ", createTime=" + createTime +
-                ", storeId='" + storeId + '\'' +
-                ", couponServiceId='" + couponServiceId + '\'' +
-                ", clientId='" + clientId + '\'' +
+                ", sn='" + sn + '\'' +
+                ", location='" + location + '\'' +
+                ", specification=" + specification +
                 ", name='" + name + '\'' +
-                ", deadline=" + deadline +
+                ", serviceCount=" + serviceCount +
+                ", storeId='" + storeId + '\'' +
                 '}';
     }
 
@@ -91,28 +93,28 @@ public class Coupon implements Serializable {
         this.createTime = createTime;
     }
 
-    public String getStoreId() {
-        return storeId;
+    public String getSn() {
+        return sn;
     }
 
-    public void setStoreId(String storeId) {
-        this.storeId = storeId;
+    public void setSn(String sn) {
+        this.sn = sn;
     }
 
-    public String getCouponServiceId() {
-        return couponServiceId;
+    public String getLocation() {
+        return location;
     }
 
-    public void setCouponServiceId(String couponServiceId) {
-        this.couponServiceId = couponServiceId;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public String getClientId() {
-        return clientId;
+    public Integer getSpecification() {
+        return specification;
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
+    public void setSpecification(Integer specification) {
+        this.specification = specification;
     }
 
     public String getName() {
@@ -123,11 +125,19 @@ public class Coupon implements Serializable {
         this.name = name;
     }
 
-    public Timestamp getDeadline() {
-        return deadline;
+    public Integer getServiceCount() {
+        return serviceCount;
     }
 
-    public void setDeadline(Timestamp deadline) {
-        this.deadline = deadline;
+    public void setServiceCount(Integer serviceCount) {
+        this.serviceCount = serviceCount;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
     }
 }

@@ -10,8 +10,6 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
- * 优惠券实物表（客户购买的信息）
- *
  * @author tangwei - Toby
  * @date 2018/10/23
  * @email toby911115@gmail.com
@@ -20,8 +18,8 @@ import java.sql.Timestamp;
 @Table
 @DynamicInsert
 @DynamicUpdate
-public class Coupon implements Serializable {
-    private static final long serialVersionUID = 15L;
+public class CabinetStateInfo implements Serializable {
+    private static final long serialVersionUID = 17L;
 
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
@@ -36,34 +34,38 @@ public class Coupon implements Serializable {
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());
 
     @Column
-    private String storeId;
+    private String cabinetId;
 
     @Column
-    private String couponServiceId;
+    private String orderId;
 
     @Column
-    private String clientId;
+    private String cabinetSn;
 
     @Column
-    private String name;
+    private String gridSn;
 
     @Column
-    private Timestamp deadline;
+    private Integer state;
 
-    public Coupon() {
+    @Column
+    private String licensePlate;
+
+    public CabinetStateInfo() {
     }
 
     @Override
     public String toString() {
-        return "Coupon{" +
+        return "CabinetStateInfo{" +
                 "id='" + id + '\'' +
                 ", delStatus=" + delStatus +
                 ", createTime=" + createTime +
-                ", storeId='" + storeId + '\'' +
-                ", couponServiceId='" + couponServiceId + '\'' +
-                ", clientId='" + clientId + '\'' +
-                ", name='" + name + '\'' +
-                ", deadline=" + deadline +
+                ", cabinetId='" + cabinetId + '\'' +
+                ", orderId='" + orderId + '\'' +
+                ", cabinetSn='" + cabinetSn + '\'' +
+                ", gridSn='" + gridSn + '\'' +
+                ", state=" + state +
+                ", licensePlate='" + licensePlate + '\'' +
                 '}';
     }
 
@@ -91,43 +93,51 @@ public class Coupon implements Serializable {
         this.createTime = createTime;
     }
 
-    public String getStoreId() {
-        return storeId;
+    public String getCabinetId() {
+        return cabinetId;
     }
 
-    public void setStoreId(String storeId) {
-        this.storeId = storeId;
+    public void setCabinetId(String cabinetId) {
+        this.cabinetId = cabinetId;
     }
 
-    public String getCouponServiceId() {
-        return couponServiceId;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setCouponServiceId(String couponServiceId) {
-        this.couponServiceId = couponServiceId;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
-    public String getClientId() {
-        return clientId;
+    public String getCabinetSn() {
+        return cabinetSn;
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
+    public void setCabinetSn(String cabinetSn) {
+        this.cabinetSn = cabinetSn;
     }
 
-    public String getName() {
-        return name;
+    public String getGridSn() {
+        return gridSn;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setGridSn(String gridSn) {
+        this.gridSn = gridSn;
     }
 
-    public Timestamp getDeadline() {
-        return deadline;
+    public Integer getState() {
+        return state;
     }
 
-    public void setDeadline(Timestamp deadline) {
-        this.deadline = deadline;
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
     }
 }

@@ -20,7 +20,7 @@ import java.sql.Timestamp;
 @DynamicInsert
 @DynamicUpdate
 public class ConsumerProjectInfo implements Serializable {
-    private static final long serialVersionUID = 12L;
+    private static final long serialVersionUID = 16L;
 
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
