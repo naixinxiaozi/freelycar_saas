@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author tangwei - Toby
  * @date 2018/11/28
@@ -22,6 +24,10 @@ public class StoreService {
     public PaginationRJO findAll(Integer pageNumber) {
         Page<Store> storePage = storeRepository.findAll(PageableTools.basicPage(pageNumber));
         return PaginationRJO.of(storePage);
+    }
+
+    public List<Store> findByName(String name) {
+        return storeRepository.findStoreByNameOrderByCreateTimeAsc(name);
     }
 
 }
