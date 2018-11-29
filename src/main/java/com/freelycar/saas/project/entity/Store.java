@@ -35,6 +35,9 @@ public class Store implements Serializable {
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());
 
     @Column
+    private String name;
+
+    @Column
     private String address;
 
     @Column
@@ -50,9 +53,31 @@ public class Store implements Serializable {
     private Double longitude;
 
     @Column
+    private String linkman;
+
+    @Column
     private String phone;
 
+    @Column
+    private String remark;
+
     public Store() {
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getLinkman() {
+        return linkman;
+    }
+
+    public void setLinkman(String linkman) {
+        this.linkman = linkman;
     }
 
     public String getId() {
@@ -127,18 +152,29 @@ public class Store implements Serializable {
         this.phone = phone;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "Store{" +
                 "id='" + id + '\'' +
                 ", delStatus=" + delStatus +
                 ", createTime=" + createTime +
+                ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", openingTime=" + openingTime +
                 ", closingTime=" + closingTime +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
+                ", linkman='" + linkman + '\'' +
                 ", phone='" + phone + '\'' +
+                ", remark='" + remark + '\'' +
                 '}';
     }
 }

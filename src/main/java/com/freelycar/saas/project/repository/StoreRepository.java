@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @email toby911115@gmail.com
  */
 public interface StoreRepository extends JpaRepository<Store,String> {
+
 }

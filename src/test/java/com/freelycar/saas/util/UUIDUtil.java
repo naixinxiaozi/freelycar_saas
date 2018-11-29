@@ -1,4 +1,4 @@
-package util;
+package com.freelycar.saas.util;
 
 import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.id.UUIDHexGenerator;

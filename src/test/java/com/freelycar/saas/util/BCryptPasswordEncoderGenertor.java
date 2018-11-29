@@ -1,4 +1,4 @@
-package util;
+package com.freelycar.saas.util;
 
 import com.freelycar.saas.permission.entity.SysUser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
