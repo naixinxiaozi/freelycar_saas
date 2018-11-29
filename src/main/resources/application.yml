@@ -1,7 +1,7 @@
 project:
   name: freelycar_saas
 server:
-  port: 80
+  port: 8080
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
