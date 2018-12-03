@@ -22,50 +22,99 @@ import java.sql.Timestamp;
 public class Client implements Serializable {
     private static final long serialVersionUID = 4L;
 
+    /**
+     * 主键ID
+     */
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
     @NotNull
     private String id;
 
+    /**
+     * 删除标记位（0：有效；1：无效）
+     */
     @Column(nullable = false)
     private Boolean delStatus;
 
+    /**
+     * 创建时间
+     */
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());
 
+    /**
+     * 年龄
+     */
     @Column(length = 3)
     private Integer age;
 
+    /**
+     * 生日
+     */
     @Column
     private Date birthday;
 
+    /**
+     * 消费总额
+     */
     @Column
     private Double consumeAmount;
 
+    /**
+     * 消费次数
+     */
     @Column
     private Integer consumeTimes;
 
+    /**
+     * 性别
+     */
     @Column
     private String gender;
 
+    /**
+     * 身份证号
+     */
     @Column
     private String idNumber;
 
+    /**
+     * 行驶证号
+     */
+    @Column
+    private String driverLicense;
+
+    /**
+     * 是否会员（0：不是会员；1：是会员）
+     */
     @Column(nullable = false)
     private Boolean isMember;
 
+    /**
+     * 最后登录时间
+     */
     @Column
     private Timestamp lastVisit;
 
+    /**
+     * 姓名
+     */
     @Column
     private String name;
 
+    /**
+     * 手机号码
+     */
     @Column
     private String phone;
 
+    /**
+     *
+     */
     @Column(nullable = false)
     private Boolean points;
+
 
     @Column
     private String recommendName;
@@ -73,12 +122,21 @@ public class Client implements Serializable {
     @Column(length = 3, nullable = false, columnDefinition = "int default 0")
     private Integer state;
 
+    /**
+     * 真实姓名（智能柜用）
+     */
     @Column
     private String trueName;
 
+    /**
+     * 昵称（从微信获取来）
+     */
     @Column
     private String nickName;
 
+    /**
+     * 所属门店
+     */
     @Column
     private String storeId;
 

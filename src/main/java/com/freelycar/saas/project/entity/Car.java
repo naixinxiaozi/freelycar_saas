@@ -21,21 +21,36 @@ import java.sql.Timestamp;
 public class Car implements Serializable {
     private static final long serialVersionUID = 5L;
 
+    /**
+     * 主键
+     */
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
     @NotNull
     private String id;
 
+    /**
+     * 有效标记位
+     */
     @Column(nullable = false)
     private Boolean delStatus;
 
+    /**
+     * 创建时间
+     */
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());
 
+    /**
+     * 车辆商标（精确到某一系列，比如：马自达6）
+     */
     @Column
     private String carBrand;
 
+    /**
+     * 车辆
+     */
     @Column
     private String carType;
 
