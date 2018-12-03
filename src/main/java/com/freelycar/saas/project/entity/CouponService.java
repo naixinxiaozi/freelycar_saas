@@ -55,6 +55,9 @@ public class CouponService implements Serializable {
     @Column
     private Integer validTime;
 
+    @Column
+    private Double price;
+
     public CouponService() {
     }
 
@@ -71,6 +74,7 @@ public class CouponService implements Serializable {
                 ", name='" + name + '\'' +
                 ", type=" + type +
                 ", validTime=" + validTime +
+                ", price=" + price +
                 '}';
     }
 
@@ -153,5 +157,12 @@ public class CouponService implements Serializable {
     public void setValidTime(Integer validTime) {
         this.validTime = validTime;
     }
+
+    public Double getPrice() { return price; }
+
+    public void setPrice(Double price) { this.price = price; }
+
+
+
 }
 
