@@ -40,7 +40,7 @@ public class ConsumerOrder implements Serializable {
      * 车辆信息对应主键ID
      */
     @Column
-    private String cardId;
+    private String carId;
 
     /**
      * 车辆品牌
@@ -165,6 +165,18 @@ public class ConsumerOrder implements Serializable {
     @Column
     private String pickCarStaffId;
 
+    /**
+     * 订单类型（1.服务开单；2.智能柜开单；3.办卡/续卡/抵用券）
+     */
+    @Column
+    private Integer orderType;
+
+    /**
+     * 会员卡、抵用券办理业务的ID
+     */
+    @Column
+    private String cardId;
+
 
     @Override
     public String toString() {
@@ -173,7 +185,7 @@ public class ConsumerOrder implements Serializable {
                 ", delStatus=" + delStatus +
                 ", createTime=" + createTime +
                 ", storeId='" + storeId + '\'' +
-                ", cardId='" + cardId + '\'' +
+                ", carId='" + carId + '\'' +
                 ", carBrand='" + carBrand + '\'' +
                 ", carType='" + carType + '\'' +
                 ", licensePlate='" + licensePlate + '\'' +
@@ -194,6 +206,8 @@ public class ConsumerOrder implements Serializable {
                 ", payMethod='" + payMethod + '\'' +
                 ", payState=" + payState +
                 ", pickCarStaffId='" + pickCarStaffId + '\'' +
+                ", orderType=" + orderType +
+                ", cardId='" + cardId + '\'' +
                 '}';
     }
 
@@ -398,5 +412,21 @@ public class ConsumerOrder implements Serializable {
     }
 
     public ConsumerOrder() {
+    }
+
+    public Integer getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(Integer orderType) {
+        this.orderType = orderType;
+    }
+
+    public String getCarId() {
+        return carId;
+    }
+
+    public void setCarId(String carId) {
+        this.carId = carId;
     }
 }
