@@ -112,6 +112,18 @@ public class ConsumerProjectInfo implements Serializable {
     @Column
     private Float referWorkTime;
 
+    /**
+     * 服务人员ID
+     */
+    @Column
+    private String staffId;
+
+    /**
+     * 服务人员姓名
+     */
+    @Column
+    private String staffName;
+
     public ConsumerProjectInfo() {
     }
 
@@ -134,6 +146,8 @@ public class ConsumerProjectInfo implements Serializable {
                 ", Price=" + Price +
                 ", pricePerUnit=" + pricePerUnit +
                 ", referWorkTime=" + referWorkTime +
+                ", staffId='" + staffId + '\'' +
+                ", staffName='" + staffName + '\'' +
                 '}';
     }
 
@@ -263,5 +277,21 @@ public class ConsumerProjectInfo implements Serializable {
 
     public void setReferWorkTime(Float referWorkTime) {
         this.referWorkTime = referWorkTime;
+    }
+
+    public String getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(String staffId) {
+        this.staffId = staffId;
+    }
+
+    public String getStaffName() {
+        return staffName;
+    }
+
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
     }
 }
