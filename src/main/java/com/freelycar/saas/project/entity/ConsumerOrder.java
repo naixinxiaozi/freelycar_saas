@@ -61,7 +61,6 @@ public class ConsumerOrder implements Serializable {
     private String licensePlate;
 
 
-
     /**
      * 用户信息对应主键ID
      */
@@ -132,29 +131,53 @@ public class ConsumerOrder implements Serializable {
     /**
      * 订单总价
      */
-    @Column(nullable = false,columnDefinition = "double default 0")
+    @Column(nullable = false, columnDefinition = "double default 0")
     private Double totalPrice;
 
     /**
-     * 现在价格
-     */
-    @Column
-    private Double presentPrice;
-
-    /**
-     * 实付价格
+     * 实付价格=第一实付价格+第二实付价格
      */
     @Column
     private Double actualPrice;
 
     /**
-     * 支付方式
+     * 第一支付方式
      */
     @Column
-    private String payMethod;
+    private String firstPayMethod;
 
     /**
-     * 支付状态
+     * 第一实付价格
+     */
+    @Column
+    private Double firstActualPrice;
+
+    /**
+     * 第一支付使用的卡/券ID
+     */
+    @Column
+    private String firstCardOrCouponId;
+
+    /**
+     * 第二支付方式
+     */
+    @Column
+    private String secondPayMethod;
+
+    /**
+     * 第二实付价格
+     */
+    @Column
+    private Double secondActualPrice;
+
+    /**
+     * 第二支付使用的卡/券ID
+     */
+    @Column
+    private String sencondCardOrCouponId;
+
+    /**
+     * 支付状态（0：未结算；1：已结算）
      */
     @Column
     private Integer payState;
@@ -175,40 +198,19 @@ public class ConsumerOrder implements Serializable {
      * 会员卡、抵用券办理业务的ID
      */
     @Column
-    private String cardId;
+    private String cardOrCouponId;
+
+    /**
+     * 故障描述
+     */
+    @Column
+    private String faultDescription;
 
 
-    @Override
-    public String toString() {
-        return "ConsumerOrder{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", storeId='" + storeId + '\'' +
-                ", carId='" + carId + '\'' +
-                ", carBrand='" + carBrand + '\'' +
-                ", carType='" + carType + '\'' +
-                ", licensePlate='" + licensePlate + '\'' +
-                ", clientId='" + clientId + '\'' +
-                ", clientName='" + clientName + '\'' +
-                ", gender='" + gender + '\'' +
-                ", phone='" + phone + '\'' +
-                ", deliverTime=" + deliverTime +
-                ", finishTime=" + finishTime +
-                ", pickTime=" + pickTime +
-                ", lastMiles=" + lastMiles +
-                ", miles=" + miles +
-                ", parkingLocation='" + parkingLocation + '\'' +
-                ", state=" + state +
-                ", totalPrice=" + totalPrice +
-                ", presentPrice=" + presentPrice +
-                ", actualPrice=" + actualPrice +
-                ", payMethod='" + payMethod + '\'' +
-                ", payState=" + payState +
-                ", pickCarStaffId='" + pickCarStaffId + '\'' +
-                ", orderType=" + orderType +
-                ", cardId='" + cardId + '\'' +
-                '}';
+    /**
+     * 构造函数
+     */
+    public ConsumerOrder() {
     }
 
     public String getId() {
@@ -241,14 +243,6 @@ public class ConsumerOrder implements Serializable {
 
     public void setStoreId(String storeId) {
         this.storeId = storeId;
-    }
-
-    public String getCardId() {
-        return cardId;
-    }
-
-    public void setCardId(String cardId) {
-        this.cardId = cardId;
     }
 
     public String getCarBrand() {
@@ -371,28 +365,12 @@ public class ConsumerOrder implements Serializable {
         this.totalPrice = totalPrice;
     }
 
-    public Double getPresentPrice() {
-        return presentPrice;
-    }
-
-    public void setPresentPrice(Double presentPrice) {
-        this.presentPrice = presentPrice;
-    }
-
     public Double getActualPrice() {
         return actualPrice;
     }
 
     public void setActualPrice(Double actualPrice) {
         this.actualPrice = actualPrice;
-    }
-
-    public String getPayMethod() {
-        return payMethod;
-    }
-
-    public void setPayMethod(String payMethod) {
-        this.payMethod = payMethod;
     }
 
     public Integer getPayState() {
@@ -411,9 +389,6 @@ public class ConsumerOrder implements Serializable {
         this.pickCarStaffId = pickCarStaffId;
     }
 
-    public ConsumerOrder() {
-    }
-
     public Integer getOrderType() {
         return orderType;
     }
@@ -428,5 +403,140 @@ public class ConsumerOrder implements Serializable {
 
     public void setCarId(String carId) {
         this.carId = carId;
+    }
+
+    public String getFirstPayMethod() {
+        return firstPayMethod;
+    }
+
+    public void setFirstPayMethod(String firstPayMethod) {
+        this.firstPayMethod = firstPayMethod;
+    }
+
+    public Double getFirstActualPrice() {
+        return firstActualPrice;
+    }
+
+    public void setFirstActualPrice(Double firstActualPrice) {
+        this.firstActualPrice = firstActualPrice;
+    }
+
+    public String getSecondPayMethod() {
+        return secondPayMethod;
+    }
+
+    public void setSecondPayMethod(String secondPayMethod) {
+        this.secondPayMethod = secondPayMethod;
+    }
+
+    public Double getSecondActualPrice() {
+        return secondActualPrice;
+    }
+
+    public void setSecondActualPrice(Double secondActualPrice) {
+        this.secondActualPrice = secondActualPrice;
+    }
+
+    public String getFirstCardOrCouponId() {
+        return firstCardOrCouponId;
+    }
+
+    public void setFirstCardOrCouponId(String firstCardOrCouponId) {
+        this.firstCardOrCouponId = firstCardOrCouponId;
+    }
+
+    public String getSencondCardOrCouponId() {
+        return sencondCardOrCouponId;
+    }
+
+    public void setSencondCardOrCouponId(String sencondCardOrCouponId) {
+        this.sencondCardOrCouponId = sencondCardOrCouponId;
+    }
+
+    public String getCardOrCouponId() {
+        return cardOrCouponId;
+    }
+
+    public void setCardOrCouponId(String cardOrCouponId) {
+        this.cardOrCouponId = cardOrCouponId;
+    }
+
+    public String getFaultDescription() {
+        return faultDescription;
+    }
+
+    public void setFaultDescription(String faultDescription) {
+        this.faultDescription = faultDescription;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append(",\"carId\":\"")
+                .append(carId).append('\"');
+        sb.append(",\"carBrand\":\"")
+                .append(carBrand).append('\"');
+        sb.append(",\"carType\":\"")
+                .append(carType).append('\"');
+        sb.append(",\"licensePlate\":\"")
+                .append(licensePlate).append('\"');
+        sb.append(",\"clientId\":\"")
+                .append(clientId).append('\"');
+        sb.append(",\"clientName\":\"")
+                .append(clientName).append('\"');
+        sb.append(",\"gender\":\"")
+                .append(gender).append('\"');
+        sb.append(",\"phone\":\"")
+                .append(phone).append('\"');
+        sb.append(",\"deliverTime\":\"")
+                .append(deliverTime).append('\"');
+        sb.append(",\"finishTime\":\"")
+                .append(finishTime).append('\"');
+        sb.append(",\"pickTime\":\"")
+                .append(pickTime).append('\"');
+        sb.append(",\"lastMiles\":")
+                .append(lastMiles);
+        sb.append(",\"miles\":")
+                .append(miles);
+        sb.append(",\"parkingLocation\":\"")
+                .append(parkingLocation).append('\"');
+        sb.append(",\"state\":")
+                .append(state);
+        sb.append(",\"totalPrice\":")
+                .append(totalPrice);
+        sb.append(",\"actualPrice\":")
+                .append(actualPrice);
+        sb.append(",\"firstPayMethod\":\"")
+                .append(firstPayMethod).append('\"');
+        sb.append(",\"firstActualPrice\":")
+                .append(firstActualPrice);
+        sb.append(",\"firstCardOrCouponId\":\"")
+                .append(firstCardOrCouponId).append('\"');
+        sb.append(",\"secondPayMethod\":\"")
+                .append(secondPayMethod).append('\"');
+        sb.append(",\"secondActualPrice\":")
+                .append(secondActualPrice);
+        sb.append(",\"sencondCardOrCouponId\":\"")
+                .append(sencondCardOrCouponId).append('\"');
+        sb.append(",\"payState\":")
+                .append(payState);
+        sb.append(",\"pickCarStaffId\":\"")
+                .append(pickCarStaffId).append('\"');
+        sb.append(",\"orderType\":")
+                .append(orderType);
+        sb.append(",\"cardOrCouponId\":\"")
+                .append(cardOrCouponId).append('\"');
+        sb.append(",\"faultDescription\":\"")
+                .append(faultDescription).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 }
