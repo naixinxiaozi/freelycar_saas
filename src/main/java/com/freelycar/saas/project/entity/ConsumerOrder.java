@@ -174,7 +174,7 @@ public class ConsumerOrder implements Serializable {
      * 第二支付使用的卡/券ID
      */
     @Column
-    private String sencondCardOrCouponId;
+    private String secondCardOrCouponId;
 
     /**
      * 支付状态（0：未结算；1：已结算）
@@ -195,7 +195,7 @@ public class ConsumerOrder implements Serializable {
     private Integer orderType;
 
     /**
-     * 会员卡、抵用券办理业务的ID
+     * 办理的会员卡、抵用券业务的ID（卡ID或者券ID）
      */
     @Column
     private String cardOrCouponId;
@@ -445,12 +445,12 @@ public class ConsumerOrder implements Serializable {
         this.firstCardOrCouponId = firstCardOrCouponId;
     }
 
-    public String getSencondCardOrCouponId() {
-        return sencondCardOrCouponId;
+    public String getSecondCardOrCouponId() {
+        return secondCardOrCouponId;
     }
 
-    public void setSencondCardOrCouponId(String sencondCardOrCouponId) {
-        this.sencondCardOrCouponId = sencondCardOrCouponId;
+    public void setSecondCardOrCouponId(String secondCardOrCouponId) {
+        this.secondCardOrCouponId = secondCardOrCouponId;
     }
 
     public String getCardOrCouponId() {
@@ -524,8 +524,8 @@ public class ConsumerOrder implements Serializable {
                 .append(secondPayMethod).append('\"');
         sb.append(",\"secondActualPrice\":")
                 .append(secondActualPrice);
-        sb.append(",\"sencondCardOrCouponId\":\"")
-                .append(sencondCardOrCouponId).append('\"');
+        sb.append(",\"secondCardOrCouponId\":\"")
+                .append(secondCardOrCouponId).append('\"');
         sb.append(",\"payState\":")
                 .append(payState);
         sb.append(",\"pickCarStaffId\":\"")
