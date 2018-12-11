@@ -27,8 +27,8 @@ public class ProjectType implements Serializable {
     @NotNull
     private String id;
 
-    @Column(nullable = false)
-    private Boolean delStatus;
+    @Column(nullable = false,columnDefinition = "bit default 0")
+    private Boolean delStatus = false;
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());
@@ -44,13 +44,21 @@ public class ProjectType implements Serializable {
 
     @Override
     public String toString() {
-        return "ProjectType{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", comment='" + comment + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"comment\":\"")
+                .append(comment).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 
     public String getId() {

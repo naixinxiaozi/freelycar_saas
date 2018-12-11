@@ -46,6 +46,6 @@ logging:
     root: warn
     org:
       springframework:
-        web: info
+        web: debug
         security: info
-      hibernate: error
+      hibernate: info

@@ -85,7 +85,7 @@ public class ResultJsonObject {
     }
 
     public static ResultJsonObject getDefaultResult(Object data) {
-        return getDefaultResult(data, "保存成功");
+        return getDefaultResult(data, ResultCode.SUCCESS.message());
     }
 
     public static ResultJsonObject getDefaultResult(Object data, String message) {
@@ -105,7 +105,7 @@ public class ResultJsonObject {
     }
 
     public static ResultJsonObject getErrorResult(Object data) {
-        return getErrorResult(data, "保存出错");
+        return getErrorResult(data, ResultCode.UNKNOWN_ERROR.message());
     }
 
     public static ResultJsonObject getNamedResult(HashMap map) {

@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 public class StoreService {
     @Autowired
-    StoreRepository storeRepository;
+    private StoreRepository storeRepository;
 
 
     public PaginationRJO findAll(Integer pageNumber) {

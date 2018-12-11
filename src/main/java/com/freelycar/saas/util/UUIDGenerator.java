@@ -11,7 +11,7 @@ import java.util.UUID;
  * 2018/9/21
  */
 @Component
-public class UUIDGenerator extends UUIDHexGenerator implements IdentifierGenerator {
+public class UUIDGenerator extends org.hibernate.id.UUIDGenerator {
 
     public UUIDGenerator() {
     }

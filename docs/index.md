@@ -4,3 +4,6 @@
 ——[Wiki 客户关系管理](https://zh.wikipedia.org/wiki/客户关系管理 "客户关系管理")
 
 小易爱车CRM-SaaS平台是针对原小易爱车CRM管理系统重新梳理业务、重新架构、重新开发的CRM系统。
+
+1. 原型图
+ - 客户web端.rp（）
