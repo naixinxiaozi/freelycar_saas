@@ -1,6 +1,8 @@
 package com.freelycar.saas.project.repository;
 
 import com.freelycar.saas.project.entity.ProjectType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -20,5 +22,6 @@ public interface ProjectTypeRepository extends JpaRepository<ProjectType, String
     @Query(value = "select * from project_type where store_id = :storeId and del_status = 0 and name = :name",nativeQuery = true)
     List<ProjectType> checkRepeatName(String name,String storeId);
 
+    Page<ProjectType> findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(boolean delStatus, String storeId, Pageable pageable);
 
 }

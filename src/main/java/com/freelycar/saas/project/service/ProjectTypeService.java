@@ -1,9 +1,10 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.project.entity.ProjectType;
 import com.freelycar.saas.project.repository.ProjectTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,5 +53,28 @@ public class ProjectTypeService {
             projectTypeList = projectTypeRepository.checkRepeatName(projectType.getName(), projectType.getStoreId());
         }
         return projectTypeList.size() != 0;
+    }
+
+    /**
+     * 获取项目类型详情
+     *
+     * @param id
+     * @return
+     */
+    public ResultJsonObject getDetail(String id) {
+        return ResultJsonObject.getDefaultResult(projectTypeRepository.findById(id));
+    }
+
+    /**
+     * 查询项目类型列表
+     *
+     * @param storeId
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
+    public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize) {
+        Page<ProjectType> projectTypePage = projectTypeRepository.findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(DelStatus.EFFECTIVE.isValue(), storeId, PageableTools.basicPage(currentPage, pageSize, new SortDto("asc", "createTime")));
+        return PaginationRJO.of(projectTypePage);
     }
 }
