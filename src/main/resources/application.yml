@@ -46,7 +46,7 @@ spring:
 logging:
   path: ${project.name}-log
   level:
-    root: warn
+    root: debug
     org:
       springframework:
         web: debug
