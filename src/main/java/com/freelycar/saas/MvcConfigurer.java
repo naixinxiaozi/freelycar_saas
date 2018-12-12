@@ -1,15 +1,12 @@
 package com.freelycar.saas;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * @author tangwei
@@ -20,7 +17,7 @@ import org.springframework.web.servlet.config.annotation.*;
 @EnableTransactionManagement
 @EnableAutoConfiguration
 @ComponentScan(basePackages = {
-        "cn.net.pwai.mps.**.controller", "cn.net.pwai.mps.**.repository"
+        "com.freelycar.saas.**.controller", "com.freelycar.saas.**.repository"
 })
 public class MvcConfigurer implements WebMvcConfigurer {
     @Override
