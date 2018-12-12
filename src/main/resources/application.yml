@@ -40,6 +40,9 @@ spring:
   output:
     ansi:
       enabled: always
+  devtools:
+    restart:
+      additional-paths: src/main/java
 logging:
   path: ${project.name}-log
   level:

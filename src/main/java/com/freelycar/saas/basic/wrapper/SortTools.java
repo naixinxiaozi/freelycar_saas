@@ -29,6 +29,10 @@ public class SortTools {
                 result = result.and(new Sort(Sort.Direction.fromString(dto.getOrderType()), dto.getOrderField()));
             }
         }
+
+        if (dtos.length == 0) {
+            result = basicSort();
+        }
         return result;
     }
 }

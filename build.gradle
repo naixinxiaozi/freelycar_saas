@@ -3,6 +3,9 @@ buildscript {
         springBootVersion = '2.1.0.RELEASE'
     }
     repositories {
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/groups/public/'
+        }
         mavenCentral()
     }
     dependencies {
@@ -21,9 +24,11 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
+    maven {
+        url 'http://maven.aliyun.com/nexus/content/groups/public/'
+    }
     mavenCentral()
 }
-
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
@@ -37,6 +42,9 @@ dependencies {
     compile group: 'com.alibaba', name: 'druid', version: '1.1.10'
     compile group: 'com.alibaba', name: 'fastjson', version: '1.2.49'
 
+    compile('org.springframework.boot:spring-boot-devtools')
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
 }
+

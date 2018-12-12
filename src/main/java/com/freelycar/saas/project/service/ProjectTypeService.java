@@ -1,8 +1,13 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.*;
+import com.freelycar.saas.basic.wrapper.DelStatus;
+import com.freelycar.saas.basic.wrapper.PageableTools;
+import com.freelycar.saas.basic.wrapper.PaginationRJO;
+import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.ProjectType;
 import com.freelycar.saas.project.repository.ProjectTypeRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -16,6 +21,8 @@ import java.util.List;
  */
 @Service
 public class ProjectTypeService {
+    private static Logger logger = LoggerFactory.getLogger(ProjectTypeService.class);
+
     @Autowired
     private ProjectTypeRepository projectTypeRepository;
 
@@ -74,7 +81,8 @@ public class ProjectTypeService {
      * @return
      */
     public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize) {
-        Page<ProjectType> projectTypePage = projectTypeRepository.findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(DelStatus.EFFECTIVE.isValue(), storeId, PageableTools.basicPage(currentPage, pageSize, new SortDto("asc", "createTime")));
+        logger.debug("storeId:" + storeId);
+        Page<ProjectType> projectTypePage = projectTypeRepository.findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(DelStatus.EFFECTIVE.isValue(), storeId, PageableTools.basicPage(currentPage, pageSize));
         return PaginationRJO.of(projectTypePage);
     }
 }
