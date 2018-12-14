@@ -7,10 +7,7 @@ import com.freelycar.saas.project.service.ProjectTypeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author tangwei - Toby
@@ -31,7 +28,7 @@ public class ProjectTypeController {
      * @param projectType
      * @return
      */
-    @RequestMapping(value = "/modify", method = RequestMethod.POST)
+    @PostMapping(value = "/modify")
     @LoggerManage(description = "调用方法：项目类型新增/修改")
     public ResultJsonObject saveOrUpdate(ProjectType projectType) {
         if (null == projectType) {
@@ -48,7 +45,7 @@ public class ProjectTypeController {
      * @param id
      * @return
      */
-    @RequestMapping(value = "/detail", method = RequestMethod.GET)
+    @GetMapping(value = "/detail")
     @LoggerManage(description = "调用方法：获取项目类型详情")
     public ResultJsonObject detail(@RequestParam String id) {
         if (null == id) {
@@ -59,7 +56,7 @@ public class ProjectTypeController {
         return projectTypeService.getDetail(id);
     }
 
-    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @GetMapping(value = "/list")
     @LoggerManage(description = "调用方法：获取项目类型列表")
     public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage, @RequestParam(required = false) Integer pageSize) {
         return ResultJsonObject.getDefaultResult(projectTypeService.list(storeId, currentPage, pageSize));

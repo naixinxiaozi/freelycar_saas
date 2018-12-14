@@ -6,12 +6,15 @@ import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.ProjectType;
 import com.freelycar.saas.project.repository.ProjectTypeRepository;
+import com.freelycar.saas.util.UpdateTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -39,7 +42,15 @@ public class ProjectTypeService {
                 return ResultJsonObject.getErrorResult(null, "已包含类型名称为：“" + projectType.getName() + "”的数据，不能重复添加。");
             }
             //执行保存/修改
-            return ResultJsonObject.getDefaultResult(projectTypeRepository.saveAndFlush(projectType));
+            String id = projectType.getId();
+            if (StringUtils.isEmpty(id)) {
+                projectType.setDelStatus(DelStatus.EFFECTIVE.isValue());
+                projectType.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            } else {
+                ProjectType source = projectTypeRepository.findById(id).get();
+                UpdateTool.copyNullProperties(source, projectType);
+            }
+            return ResultJsonObject.getDefaultResult(projectTypeRepository.save(projectType));
         } catch (Exception e) {
             return ResultJsonObject.getErrorResult(null);
         }

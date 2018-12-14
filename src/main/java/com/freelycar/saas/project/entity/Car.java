@@ -34,13 +34,13 @@ public class Car implements Serializable {
      * 有效标记位
      */
     @Column(nullable = false, columnDefinition = "bit default 0")
-    private Boolean delStatus = false;
+    private Boolean delStatus;
 
     /**
      * 创建时间
      */
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
-    private Timestamp createTime = new Timestamp(System.currentTimeMillis());
+    private Timestamp createTime;
 
     /**
      * 车辆商标（精确到某一系列，比如：马自达6）

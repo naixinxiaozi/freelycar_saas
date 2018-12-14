@@ -35,13 +35,13 @@ public class Client implements Serializable {
      * 删除标记位（0：有效；1：无效）
      */
     @Column(nullable = false, columnDefinition = "bit default 0")
-    private Boolean delStatus = false;
+    private Boolean delStatus;
 
     /**
      * 创建时间
      */
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
-    private Timestamp createTime = new Timestamp(System.currentTimeMillis());
+    private Timestamp createTime;
 
     /**
      * 年龄
