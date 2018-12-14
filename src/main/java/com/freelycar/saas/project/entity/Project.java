@@ -28,10 +28,10 @@ public class Project implements Serializable {
     private String id;
 
     @Column(nullable = false, columnDefinition = "bit default 0")
-    private Boolean delStatus = false;
+    private Boolean delStatus;
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
-    private Timestamp createTime = new Timestamp(System.currentTimeMillis());
+    private Timestamp createTime;
 
     @Column
     private String comment;
@@ -39,10 +39,10 @@ public class Project implements Serializable {
     @Column
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "float default 0.0")
     private Float price;
 
-    @Column
+    @Column(nullable = false, columnDefinition = "float default 0.0")
     private Float pricePerUnit;
 
     /**
@@ -72,19 +72,33 @@ public class Project implements Serializable {
 
     @Override
     public String toString() {
-        return "Project{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", comment='" + comment + '\'' +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", pricePerUnit=" + pricePerUnit +
-                ", referWorkTime=" + referWorkTime +
-                ", projectTypeId='" + projectTypeId + '\'' +
-                ", useTimes=" + useTimes +
-                ", saleStatus=" + saleStatus +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"comment\":\"")
+                .append(comment).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"price\":")
+                .append(price);
+        sb.append(",\"pricePerUnit\":")
+                .append(pricePerUnit);
+        sb.append(",\"referWorkTime\":")
+                .append(referWorkTime);
+        sb.append(",\"projectTypeId\":\"")
+                .append(projectTypeId).append('\"');
+        sb.append(",\"useTimes\":")
+                .append(useTimes);
+        sb.append(",\"saleStatus\":")
+                .append(saleStatus);
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 
     public String getId() {

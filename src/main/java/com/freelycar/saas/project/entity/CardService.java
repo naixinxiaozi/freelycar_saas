@@ -28,10 +28,10 @@ public class CardService implements Serializable {
     private String id;
 
     @Column(nullable = false, columnDefinition = "bit default 0")
-    private Boolean delStatus = false;
+    private Boolean delStatus;
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
-    private Timestamp createTime = new Timestamp(System.currentTimeMillis());
+    private Timestamp createTime;
 
     @Column
     private String comment;
@@ -51,7 +51,7 @@ public class CardService implements Serializable {
     @Column
     private Integer validTime;
 
-    @Column(nullable = false)
+    @Column(nullable = false,columnDefinition = "bit default 0")
     private Boolean bookOnline;
 
     @Column
