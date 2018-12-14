@@ -28,8 +28,8 @@ public class CouponProjectInfo implements Serializable {
     @NotNull
     private String id;
 
-    @Column(nullable = false)
-    private Boolean delStatus;
+    @Column(nullable = false, columnDefinition = "bit default 0")
+    private Boolean delStatus = false;
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());

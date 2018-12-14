@@ -34,8 +34,8 @@ public class Client implements Serializable {
     /**
      * 删除标记位（0：有效；1：无效）
      */
-    @Column(nullable = false)
-    private Boolean delStatus;
+    @Column(nullable = false, columnDefinition = "bit default 0")
+    private Boolean delStatus = false;
 
     /**
      * 创建时间

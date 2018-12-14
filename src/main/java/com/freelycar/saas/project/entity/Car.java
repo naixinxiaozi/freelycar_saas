@@ -33,8 +33,8 @@ public class Car implements Serializable {
     /**
      * 有效标记位
      */
-    @Column(nullable = false)
-    private Boolean delStatus;
+    @Column(nullable = false, columnDefinition = "bit default 0")
+    private Boolean delStatus = false;
 
     /**
      * 创建时间

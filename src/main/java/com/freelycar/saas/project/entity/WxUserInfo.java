@@ -40,8 +40,8 @@ public class WxUserInfo implements Serializable {
     private String openId;
     @Column(length = 20)
     private String phone;
-    @Column(nullable = false)
-    private Boolean delStatus;
+    @Column(nullable = false, columnDefinition = "bit default 0")
+    private Boolean delStatus = false;
 
     public WxUserInfo() {
     }
