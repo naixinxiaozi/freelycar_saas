@@ -42,7 +42,7 @@ public class Project implements Serializable {
     @Column(nullable = false)
     private Float price;
 
-    @Column(nullable = false)
+    @Column
     private Float pricePerUnit;
 
     /**
@@ -63,7 +63,7 @@ public class Project implements Serializable {
     /**
      * 智能柜上架标记
      */
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean saleStatus;
 
     @Column
