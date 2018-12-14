@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author tangwei - Toby
@@ -48,10 +49,18 @@ public class ProjectTypeService {
                 projectType.setDelStatus(DelStatus.EFFECTIVE.isValue());
                 projectType.setCreateTime(new Timestamp(System.currentTimeMillis()));
             } else {
-                ProjectType source = projectTypeRepository.findById(id).get();
+                Optional<ProjectType> optional = projectTypeRepository.findById(id);
+                //判断数据库中是否有该对象
+                if (!optional.isPresent()) {
+                    logger.error("修改失败，原因：" + ProjectType.class + "中不存在id为 " + id + " 的对象");
+                    return ResultJsonObject.getErrorResult(null);
+                }
+                ProjectType source = optional.get();
+                //将目标对象（projectType）中的null值，用源对象中的值替换
                 UpdateTool.copyNullProperties(source, projectType);
             }
-            return ResultJsonObject.getDefaultResult(projectTypeRepository.save(projectType));
+            //执行保存
+            return ResultJsonObject.getDefaultResult(projectTypeRepository.saveAndFlush(projectType));
         } catch (Exception e) {
             return ResultJsonObject.getErrorResult(null);
         }
