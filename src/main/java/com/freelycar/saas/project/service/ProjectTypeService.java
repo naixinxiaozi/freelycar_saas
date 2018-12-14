@@ -41,7 +41,8 @@ public class ProjectTypeService {
             if (this.checkRepeatName(projectType)) {
                 return ResultJsonObject.getErrorResult(null, "已包含类型名称为：“" + projectType.getName() + "”的数据，不能重复添加。");
             }
-            //执行保存/修改
+
+            //是否有ID，判断时新增还是修改
             String id = projectType.getId();
             if (StringUtils.isEmpty(id)) {
                 projectType.setDelStatus(DelStatus.EFFECTIVE.isValue());
