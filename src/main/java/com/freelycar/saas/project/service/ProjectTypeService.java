@@ -90,7 +90,14 @@ public class ProjectTypeService {
      * @return
      */
     public ResultJsonObject getDetail(String id) {
-        return ResultJsonObject.getDefaultResult(projectTypeRepository.findById(id));
+        Optional<ProjectType> optional = projectTypeRepository.findById(id);
+        //判断数据库中是否有该对象
+        if (!optional.isPresent()) {
+            logger.error(ProjectType.class + "中不存在id为 " + id + " 的对象");
+            return ResultJsonObject.getErrorResult(null);
+        }
+        ProjectType result = optional.get();
+        return ResultJsonObject.getDefaultResult(result);
     }
 
     /**
