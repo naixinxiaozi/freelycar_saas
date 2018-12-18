@@ -1,10 +1,5 @@
 package com.freelycar.saas;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -12,13 +7,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @author tangwei
  */
 
-@Configuration
+/*@Configuration
 @EnableWebMvc
 @EnableTransactionManagement
 @EnableAutoConfiguration
 @ComponentScan(basePackages = {
         "com.freelycar.saas.**.controller", "com.freelycar.saas.**.repository"
-})
+})*/
 public class MvcConfigurer implements WebMvcConfigurer {
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
