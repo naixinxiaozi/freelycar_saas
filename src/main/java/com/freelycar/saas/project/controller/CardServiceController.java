@@ -25,7 +25,7 @@ public class CardServiceController {
      */
     @PostMapping(value = "/modify")
     @LoggerManage(description = "调用方法：卡类新增/修改")
-    public ResultJsonObject saveOrUpdate(CardService cardService) {
+    public ResultJsonObject saveOrUpdate(@RequestBody CardService cardService) {
         if (null == cardService) {
             errorMsg = "接收到的参数：cardService为NULL";
             logger.error(errorMsg);
@@ -58,8 +58,8 @@ public class CardServiceController {
      */
     @GetMapping(value = "/list")
     @LoggerManage(description = "调用方法：获取卡类列表")
-    public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage ) {
-        return ResultJsonObject.getDefaultResult(cardServiceService.list(storeId, currentPage));
+    public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage , @RequestParam(required = false) Integer pageSize) {
+        return ResultJsonObject.getDefaultResult(cardServiceService.list(storeId, currentPage,pageSize));
     }
 
 }

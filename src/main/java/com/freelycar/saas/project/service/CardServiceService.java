@@ -95,11 +95,12 @@ public class CardServiceService {
      *
      * @param storeId
      * @param currentPage
+     * @param pageSize
      * @return
      */
-    public PaginationRJO list(String storeId, Integer currentPage) {
+    public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize) {
         logger.debug("storeId:" + storeId);
-        Page<CardService> cardServicePage = cardServiceRepository.findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(DelStatus.EFFECTIVE.isValue(), storeId, PageableTools.basicPage(currentPage));
+        Page<CardService> cardServicePage = cardServiceRepository.findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(DelStatus.EFFECTIVE.isValue(), storeId, PageableTools.basicPage(currentPage, pageSize));
         return PaginationRJO.of(cardServicePage);
     }
 

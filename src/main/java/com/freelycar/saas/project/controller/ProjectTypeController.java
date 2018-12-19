@@ -30,7 +30,7 @@ public class ProjectTypeController {
      */
     @PostMapping(value = "/modify")
     @LoggerManage(description = "调用方法：项目类型新增/修改")
-    public ResultJsonObject saveOrUpdate(ProjectType projectType) {
+    public ResultJsonObject saveOrUpdate(@RequestBody ProjectType projectType) {
         if (null == projectType) {
             errorMsg = "接收到的参数：projectType为NULL";
             logger.error(errorMsg);

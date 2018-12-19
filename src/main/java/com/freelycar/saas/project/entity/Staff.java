@@ -54,7 +54,7 @@ public class Staff implements Serializable {
     @Column
     private String position;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean isArk;
 
     @Column

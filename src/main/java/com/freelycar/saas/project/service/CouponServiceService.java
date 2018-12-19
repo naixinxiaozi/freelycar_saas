@@ -95,11 +95,12 @@ public class CouponServiceService {
      *
      * @param storeId
      * @param currentPage
+     * @param pageSize
      * @return
      */
-    public PaginationRJO list(String storeId, Integer currentPage) {
+    public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize) {
         logger.debug("storeId:" + storeId);
-        Page<CouponService> couponServicePage = couponServiceRepository.findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(DelStatus.EFFECTIVE.isValue(), storeId, PageableTools.basicPage(currentPage));
+        Page<CouponService> couponServicePage = couponServiceRepository.findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(DelStatus.EFFECTIVE.isValue(), storeId, PageableTools.basicPage(currentPage, pageSize));
         return PaginationRJO.of(couponServicePage);
     }
 }

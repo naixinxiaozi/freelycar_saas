@@ -25,7 +25,7 @@ public class CouponServiceController {
      */
     @PostMapping(value = "/modify")
     @LoggerManage(description = "调用方法：抵用券新增/修改")
-    public ResultJsonObject saveOrUpdate(CouponService couponService) {
+    public ResultJsonObject saveOrUpdate(@RequestBody CouponService couponService) {
         if (null == couponService) {
             errorMsg = "接收到的参数：cardService为NULL";
             logger.error(errorMsg);
@@ -59,8 +59,8 @@ public class CouponServiceController {
      */
     @GetMapping(value = "/list")
     @LoggerManage(description = "调用方法：获取抵用券列表")
-    public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage) {
-        return ResultJsonObject.getDefaultResult(couponServiceService.list(storeId, currentPage));
+    public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage, @RequestParam(required = false) Integer pageSize) {
+        return ResultJsonObject.getDefaultResult(couponServiceService.list(storeId, currentPage,pageSize));
     }
 
 }

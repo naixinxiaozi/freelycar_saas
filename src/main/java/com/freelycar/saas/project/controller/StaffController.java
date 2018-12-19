@@ -2,66 +2,65 @@ package com.freelycar.saas.project.controller;
 
 import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
-import com.freelycar.saas.project.entity.Project;
-import com.freelycar.saas.project.service.ProjectService;
+import com.freelycar.saas.project.entity.Staff;
+import com.freelycar.saas.project.service.StaffService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/project")
-public class ProjectController {
-    private static Logger logger = LoggerFactory.getLogger(ProjectController.class);
+@RequestMapping("/staff")
+public class StaffController {
+    private static Logger logger = LoggerFactory.getLogger(StaffController.class);
     @Autowired
-    ProjectService projectService;
+    StaffService staffService;
     private String errorMsg;
 
     /**
-     * 新增/修改项目
+     * 新增/修改员工
      *
-     * @param project
+     * @param staff
      * @return
      */
     @PostMapping(value = "/modify")
-    @LoggerManage(description = "调用方法：项目新增/修改")
-    public ResultJsonObject saveOrUpdate(@RequestBody Project project) {
-        if (null == project) {
-            errorMsg = "接收到的参数：project为NULL";
+    @LoggerManage(description = "调用方法：员工新增/修改")
+    public ResultJsonObject saveOrUpdate(@RequestBody Staff staff) {
+        if (null == staff) {
+            errorMsg = "接收到的参数：员工为NULL";
             logger.error(errorMsg);
             return ResultJsonObject.getErrorResult(null, errorMsg);
         }
-        return projectService.modify(project);
+        return staffService.modify(staff);
     }
 
     /**
-     * 获取项目类型对象
+     * 获取员工类型对象
      *
      * @param id
      * @return
      */
     @GetMapping(value = "/detail")
-    @LoggerManage(description = "调用方法：获取项目详情")
+    @LoggerManage(description = "调用方法：获取员工详情")
     public ResultJsonObject detail(@RequestParam String id) {
         if (null == id) {
             errorMsg = "接收到的参数：id为NULL";
             logger.error(errorMsg);
             return ResultJsonObject.getErrorResult(null, errorMsg);
         }
-        return projectService.getDetail(id);
+        return staffService.getDetail(id);
     }
 
     /**
-     * 获取项目列表
+     * 获取员工列表
      * @param storeId
      * @param currentPage
      * @param pageSize
      * @return
      */
     @GetMapping(value = "/list")
-    @LoggerManage(description = "调用方法：获取项目列表")
+    @LoggerManage(description = "调用方法：获取员工列表")
     public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage, @RequestParam(required = false) Integer pageSize) {
-        return ResultJsonObject.getDefaultResult(projectService.list(storeId, currentPage, pageSize));
+        return ResultJsonObject.getDefaultResult(staffService.list(storeId, currentPage, pageSize));
     }
-
 }
