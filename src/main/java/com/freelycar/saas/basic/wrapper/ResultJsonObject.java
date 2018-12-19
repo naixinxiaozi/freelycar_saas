@@ -16,7 +16,6 @@ public class ResultJsonObject {
     private int code;
     private String msg;
     private Object data;
-    private HashMap<String, String> errorData;
 
     public ResultJsonObject() {
     }
@@ -45,14 +44,6 @@ public class ResultJsonObject {
         this.data = data;
     }
 
-    public HashMap<String, String> getErrorData() {
-        return errorData;
-    }
-
-    public void setErrorData(HashMap<String, String> errorData) {
-        this.errorData = errorData;
-    }
-
     public ResultJsonObject addData(Object key, Object value) {
         if (this.data == null) {
             this.data = new HashMap();
@@ -77,7 +68,7 @@ public class ResultJsonObject {
                 errorMap.put(error.getField(), error.getDefaultMessage());
             }
 
-            rj.setErrorData(errorMap);
+            rj.setData(errorMap);
             rj.setCode(ResultCode.UNKNOWN_ERROR.code());
         }
 

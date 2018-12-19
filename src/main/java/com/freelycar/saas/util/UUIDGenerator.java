@@ -1,7 +1,5 @@
 package com.freelycar.saas.util;
 
-import org.hibernate.id.IdentifierGenerator;
-import org.hibernate.id.UUIDHexGenerator;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
