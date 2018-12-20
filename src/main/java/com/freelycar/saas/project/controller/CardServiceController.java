@@ -7,6 +7,7 @@ import com.freelycar.saas.project.service.CardServiceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -60,8 +61,16 @@ public class CardServiceController {
      */
     @GetMapping(value = "/list")
     @LoggerManage(description = "调用方法：获取卡类列表")
-    public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage, @RequestParam(required = false) Integer pageSize) {
-        return ResultJsonObject.getDefaultResult(cardServiceService.list(storeId, currentPage, pageSize));
+    public ResultJsonObject list(
+            @RequestParam String storeId,
+            @RequestParam Integer currentPage,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) String name
+    ) {
+        if (StringUtils.isEmpty(StringUtils.trimWhitespace(name))) {
+            name = "";
+        }
+        return ResultJsonObject.getDefaultResult(cardServiceService.list(storeId, currentPage, pageSize, name));
     }
 
     /**
