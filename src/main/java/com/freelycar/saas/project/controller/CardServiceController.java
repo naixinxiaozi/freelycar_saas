@@ -33,6 +33,7 @@ public class CardServiceController {
         }
         return cardServiceService.modify(cardService);
     }
+
     /**
      * 获取卡类对象
      *
@@ -52,14 +53,28 @@ public class CardServiceController {
 
     /**
      * 获取卡类列表
+     *
      * @param storeId
      * @param currentPage
      * @return
      */
     @GetMapping(value = "/list")
     @LoggerManage(description = "调用方法：获取卡类列表")
-    public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage , @RequestParam(required = false) Integer pageSize) {
-        return ResultJsonObject.getDefaultResult(cardServiceService.list(storeId, currentPage,pageSize));
+    public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage, @RequestParam(required = false) Integer pageSize) {
+        return ResultJsonObject.getDefaultResult(cardServiceService.list(storeId, currentPage, pageSize));
     }
+
+    /**
+     * 删除操作（软删除）
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/delete")
+    @LoggerManage(description = "调用方法：删除卡类信息")
+    public ResultJsonObject delete(@RequestParam String id) {
+        return cardServiceService.delete(id);
+    }
+
 
 }

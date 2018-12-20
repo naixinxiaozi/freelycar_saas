@@ -4,7 +4,9 @@ import com.freelycar.saas.project.entity.CardService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,11 +16,16 @@ import java.util.List;
  * @email toby911115@gmail.com
  */
 public interface CardServiceRepository extends JpaRepository<CardService, String> {
-    @Query(value = "select * from card_service where id != :id and store_id = :storeId and del_status = 0 and name = :name",nativeQuery = true)
+    @Query(value = "select * from card_service where id != :id and store_id = :storeId and del_status = 0 and name = :name", nativeQuery = true)
     List<CardService> checkRepeatName(String id, String name, String storeId);
 
-    @Query(value = "select * from card_service where store_id = :storeId and del_status = 0 and name = :name",nativeQuery = true)
-    List<CardService> checkRepeatName(String name,String storeId);
+    @Query(value = "select * from card_service where store_id = :storeId and del_status = 0 and name = :name", nativeQuery = true)
+    List<CardService> checkRepeatName(String name, String storeId);
 
     Page<CardService> findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(boolean delStatus, String storeId, Pageable pageable);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update card_service set del_status = 1 where id=:id", nativeQuery = true)
+    int delById(String id);
 }

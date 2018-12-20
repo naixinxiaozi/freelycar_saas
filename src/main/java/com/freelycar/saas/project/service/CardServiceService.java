@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -102,6 +103,22 @@ public class CardServiceService {
         logger.debug("storeId:" + storeId);
         Page<CardService> cardServicePage = cardServiceRepository.findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(DelStatus.EFFECTIVE.isValue(), storeId, PageableTools.basicPage(currentPage, pageSize));
         return PaginationRJO.of(cardServicePage);
+    }
+
+    /**
+     * 删除操作（软删除）
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    public ResultJsonObject delete(String id) {
+        try {
+            cardServiceRepository.delById(id);
+        } catch (Exception e) {
+            return ResultJsonObject.getErrorResult(id);
+        }
+        return ResultJsonObject.getDefaultResult(id);
     }
 
 
