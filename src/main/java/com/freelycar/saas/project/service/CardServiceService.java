@@ -19,6 +19,8 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import static com.freelycar.saas.basic.wrapper.ResultCode.RESULT_DATA_NONE;
+
 @Service
 public class CardServiceService {
     private static Logger logger = LoggerFactory.getLogger(CardServiceService.class);
@@ -114,11 +116,14 @@ public class CardServiceService {
     @Transactional
     public ResultJsonObject delete(String id) {
         try {
-            cardServiceRepository.delById(id);
+            int result = cardServiceRepository.delById(id);
+            if (result != 1) {
+                return ResultJsonObject.getErrorResult(id, "删除失败," + RESULT_DATA_NONE);
+            }
         } catch (Exception e) {
-            return ResultJsonObject.getErrorResult(id);
+            return ResultJsonObject.getErrorResult(id, "删除失败，删除操作出现异常");
         }
-        return ResultJsonObject.getDefaultResult(id);
+        return ResultJsonObject.getDefaultResult(id, "删除成功");
     }
 
 
