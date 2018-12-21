@@ -7,6 +7,7 @@ import com.freelycar.saas.project.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -60,8 +61,29 @@ public class ProjectController {
      */
     @GetMapping(value = "/list")
     @LoggerManage(description = "调用方法：获取项目列表")
-    public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage, @RequestParam(required = false) Integer pageSize) {
-        return ResultJsonObject.getDefaultResult(projectService.list(storeId, currentPage, pageSize));
+    public ResultJsonObject list(
+            @RequestParam String storeId,
+            @RequestParam Integer currentPage,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String projectTypeId
+    ) {
+        if (StringUtils.isEmpty(StringUtils.trimWhitespace(name))) {
+            name = "";
+        }
+        return ResultJsonObject.getDefaultResult(projectService.list(storeId, currentPage, pageSize,name,projectTypeId));
+    }
+
+    /**
+     * 删除操作（软删除）
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/delete")
+    @LoggerManage(description = "调用方法：删除项目信息")
+    public ResultJsonObject delete(@RequestParam String id) {
+        return projectService.delete(id);
     }
 
 }

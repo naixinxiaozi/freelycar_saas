@@ -126,5 +126,43 @@ public class CardServiceService {
         return ResultJsonObject.getDefaultResult(id, "删除成功");
     }
 
+    /**
+     * 上架
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    public ResultJsonObject upperShelf(String id) {
+        try {
+            int result = cardServiceRepository.uppById(id);
+            if (result != 1) {
+                return ResultJsonObject.getErrorResult(id, "上架失败," + RESULT_DATA_NONE);
+            }
+        } catch (Exception e) {
+            return ResultJsonObject.getErrorResult(id, "上架失败，上架操作出现异常");
+        }
+        return ResultJsonObject.getDefaultResult(id, "上架成功");
+    }
+
+    /**
+     * 下架
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    public ResultJsonObject lowerShelf(String id) {
+        try {
+            int result = cardServiceRepository.lowById(id);
+            if (result != 1) {
+                return ResultJsonObject.getErrorResult(id, "下架失败," + RESULT_DATA_NONE);
+            }
+        } catch (Exception e) {
+            return ResultJsonObject.getErrorResult(id, "下架失败，下架操作出现异常");
+        }
+        return ResultJsonObject.getDefaultResult(id, "下架成功");
+    }
+
 
 }

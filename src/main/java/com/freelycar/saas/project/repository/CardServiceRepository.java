@@ -22,10 +22,20 @@ public interface CardServiceRepository extends JpaRepository<CardService, String
     @Query(value = "select * from card_service where store_id = :storeId and del_status = 0 and name = :name", nativeQuery = true)
     List<CardService> checkRepeatName(String name, String storeId);
 
-    Page<CardService> findAllByDelStatusAndStoreIdAndNameContaining(boolean delStatus, String storeId, String name, Pageable pageable);
+    Page<CardService> findAllByDelStatusAndStoreIdAndNameContaining(boolean delStatus, String storeId, String name,Pageable pageable);
 
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query(value = "update card_service set del_status = 1 where id=:id", nativeQuery = true)
     int delById(String id);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update card_service set book_online = 0 where id=:id", nativeQuery = true)
+    int uppById(String id);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update card_service set book_online = 1 where id=:id", nativeQuery = true)
+    int lowById(String id);
 }
