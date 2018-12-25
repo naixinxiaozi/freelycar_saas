@@ -112,8 +112,8 @@ public class Client implements Serializable {
     /**
      *
      */
-    @Column(nullable = false)
-    private Boolean points;
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private Integer points;
 
 
     @Column
@@ -247,12 +247,59 @@ public class Client implements Serializable {
         this.phone = phone;
     }
 
-    public Boolean getPoints() {
+    public Integer getPoints() {
         return points;
     }
 
-    public void setPoints(Boolean points) {
+    public void setPoints(Integer points) {
         this.points = points;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"age\":")
+                .append(age);
+        sb.append(",\"birthday\":\"")
+                .append(birthday).append('\"');
+        sb.append(",\"consumeAmount\":")
+                .append(consumeAmount);
+        sb.append(",\"consumeTimes\":")
+                .append(consumeTimes);
+        sb.append(",\"gender\":\"")
+                .append(gender).append('\"');
+        sb.append(",\"idNumber\":\"")
+                .append(idNumber).append('\"');
+        sb.append(",\"driverLicense\":\"")
+                .append(driverLicense).append('\"');
+        sb.append(",\"isMember\":")
+                .append(isMember);
+        sb.append(",\"lastVisit\":\"")
+                .append(lastVisit).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"phone\":\"")
+                .append(phone).append('\"');
+        sb.append(",\"points\":")
+                .append(points);
+        sb.append(",\"recommendName\":\"")
+                .append(recommendName).append('\"');
+        sb.append(",\"state\":")
+                .append(state);
+        sb.append(",\"trueName\":\"")
+                .append(trueName).append('\"');
+        sb.append(",\"nickName\":\"")
+                .append(nickName).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 
     public String getRecommendName() {
@@ -295,28 +342,4 @@ public class Client implements Serializable {
         this.storeId = storeId;
     }
 
-    @Override
-    public String toString() {
-        return "Client{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", age=" + age +
-                ", birthday=" + birthday +
-                ", consumeAmount=" + consumeAmount +
-                ", consumeTimes=" + consumeTimes +
-                ", gender='" + gender + '\'' +
-                ", idNumber='" + idNumber + '\'' +
-                ", isMember=" + isMember +
-                ", lastVisit=" + lastVisit +
-                ", name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", points=" + points +
-                ", recommendName='" + recommendName + '\'' +
-                ", state=" + state +
-                ", trueName='" + trueName + '\'' +
-                ", nickName='" + nickName + '\'' +
-                ", storeId='" + storeId + '\'' +
-                '}';
-    }
 }

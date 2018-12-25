@@ -113,32 +113,57 @@ public class Car implements Serializable {
 
     @Override
     public String toString() {
-        return "Car{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", carBrand='" + carBrand + '\'' +
-                ", carType='" + carType + '\'' +
-                ", driveLicenseNumber='" + driveLicenseNumber + '\'' +
-                ", engineNumber='" + engineNumber + '\'' +
-                ", frameNumber='" + frameNumber + '\'' +
-                ", insuranceAmount=" + insuranceAmount +
-                ", insuranceStartTime=" + insuranceStartTime +
-                ", insuranceEndTime=" + insuranceEndTime +
-                ", lastMiles=" + lastMiles +
-                ", miles=" + miles +
-                ", licenseDate=" + licenseDate +
-                ", licensePlate='" + licensePlate + '\'' +
-                ", newCar=" + newCar +
-                ", defaultCar=" + defaultCar +
-                ", clientId='" + clientId + '\'' +
-                ", insuranceCity='" + insuranceCity + '\'' +
-                ", insuranceCompany='" + insuranceCompany + '\'' +
-                ", defaultDate=" + defaultDate +
-                ", needInspectionRemind=" + needInspectionRemind +
-                ", needInsuranceRemind=" + needInsuranceRemind +
-                ", carMark='" + carMark + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"carBrand\":\"")
+                .append(carBrand).append('\"');
+        sb.append(",\"carType\":\"")
+                .append(carType).append('\"');
+        sb.append(",\"driveLicenseNumber\":\"")
+                .append(driveLicenseNumber).append('\"');
+        sb.append(",\"engineNumber\":\"")
+                .append(engineNumber).append('\"');
+        sb.append(",\"frameNumber\":\"")
+                .append(frameNumber).append('\"');
+        sb.append(",\"insuranceAmount\":")
+                .append(insuranceAmount);
+        sb.append(",\"insuranceStartTime\":\"")
+                .append(insuranceStartTime).append('\"');
+        sb.append(",\"insuranceEndTime\":\"")
+                .append(insuranceEndTime).append('\"');
+        sb.append(",\"lastMiles\":")
+                .append(lastMiles);
+        sb.append(",\"miles\":")
+                .append(miles);
+        sb.append(",\"licenseDate\":\"")
+                .append(licenseDate).append('\"');
+        sb.append(",\"licensePlate\":\"")
+                .append(licensePlate).append('\"');
+        sb.append(",\"newCar\":")
+                .append(newCar);
+        sb.append(",\"defaultCar\":")
+                .append(defaultCar);
+        sb.append(",\"clientId\":\"")
+                .append(clientId).append('\"');
+        sb.append(",\"insuranceCity\":\"")
+                .append(insuranceCity).append('\"');
+        sb.append(",\"insuranceCompany\":\"")
+                .append(insuranceCompany).append('\"');
+        sb.append(",\"defaultDate\":\"")
+                .append(defaultDate).append('\"');
+        sb.append(",\"needInspectionRemind\":")
+                .append(needInspectionRemind);
+        sb.append(",\"needInsuranceRemind\":")
+                .append(needInsuranceRemind);
+        sb.append(",\"carMark\":\"")
+                .append(carMark).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 
     public String getId() {
