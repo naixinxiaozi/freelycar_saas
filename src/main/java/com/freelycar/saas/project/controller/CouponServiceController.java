@@ -7,6 +7,7 @@ import com.freelycar.saas.project.service.CouponServiceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,7 +28,7 @@ public class CouponServiceController {
     @LoggerManage(description = "调用方法：抵用券新增/修改")
     public ResultJsonObject saveOrUpdate(@RequestBody CouponService couponService) {
         if (null == couponService) {
-            errorMsg = "接收到的参数：cardService为NULL";
+            errorMsg = "接收到的参数：couponService为NULL";
             logger.error(errorMsg);
             return ResultJsonObject.getErrorResult(null, errorMsg);
         }
@@ -59,8 +60,29 @@ public class CouponServiceController {
      */
     @GetMapping(value = "/list")
     @LoggerManage(description = "调用方法：获取抵用券列表")
-    public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage, @RequestParam(required = false) Integer pageSize) {
-        return ResultJsonObject.getDefaultResult(couponServiceService.list(storeId, currentPage,pageSize));
+    public ResultJsonObject list(
+            @RequestParam String storeId,
+            @RequestParam Integer currentPage,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) String name
+    ) {
+        if (StringUtils.isEmpty(StringUtils.trimWhitespace(name))) {
+            name = "";
+        }
+        return ResultJsonObject.getDefaultResult(couponServiceService.list(storeId, currentPage,pageSize,name));
     }
+
+    /**
+     * 删除操作（软删除）
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/delete")
+    @LoggerManage(description = "调用方法：删除抵用券信息")
+    public ResultJsonObject delete(@RequestParam String id) {
+        return couponServiceService.delete(id);
+    }
+
 
 }

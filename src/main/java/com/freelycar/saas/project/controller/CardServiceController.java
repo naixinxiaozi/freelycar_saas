@@ -19,7 +19,7 @@ public class CardServiceController {
     private String errorMsg;
 
     /**
-     * 新增/修改项目
+     * 新增/修改卡类
      *
      * @param cardService
      * @return
@@ -84,6 +84,31 @@ public class CardServiceController {
     public ResultJsonObject delete(@RequestParam String id) {
         return cardServiceService.delete(id);
     }
+
+    /**
+     * 上架
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/upperShelf")
+    @LoggerManage(description = "调用方法：上架卡类信息")
+    public ResultJsonObject upperShelf(@RequestParam String id) {
+        return cardServiceService.upperShelf(id);
+    }
+
+    /**
+     * 下架
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/lowerShelf")
+    @LoggerManage(description = "调用方法：下架卡类信息")
+    public ResultJsonObject lowerShelf(@RequestParam String id) {
+        return cardServiceService.lowerShelf(id);
+    }
+
 
 
 }

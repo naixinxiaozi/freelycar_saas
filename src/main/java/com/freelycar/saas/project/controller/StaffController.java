@@ -7,6 +7,7 @@ import com.freelycar.saas.project.service.StaffService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -60,7 +61,44 @@ public class StaffController {
      */
     @GetMapping(value = "/list")
     @LoggerManage(description = "调用方法：获取员工列表")
-    public ResultJsonObject list(@RequestParam String storeId, @RequestParam Integer currentPage, @RequestParam(required = false) Integer pageSize) {
-        return ResultJsonObject.getDefaultResult(staffService.list(storeId, currentPage, pageSize));
+    public ResultJsonObject list(
+            @RequestParam String storeId,
+            @RequestParam Integer currentPage,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) String id,
+            @RequestParam(required = false) String name
+    ) {
+        if (StringUtils.isEmpty(StringUtils.trimWhitespace(name))) {
+            name = "";
+        }
+        if (StringUtils.isEmpty(StringUtils.trimWhitespace(id))) {
+            id = "";
+        }
+        return ResultJsonObject.getDefaultResult(staffService.list(storeId, currentPage, pageSize,id,name));
+    }
+
+    /**
+     * 删除操作（软删除）
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/delete")
+    @LoggerManage(description = "调用方法：删除员工信息")
+    public ResultJsonObject delete(@RequestParam String id) {
+        return staffService.delete(id);
+    }
+
+
+    /**
+     * 智能柜技师关闭
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/closeArk")
+    @LoggerManage(description = "调用方法：关闭智能柜技师")
+    public ResultJsonObject closeArk(@RequestParam String id) {
+        return staffService.closeArk(id);
     }
 }

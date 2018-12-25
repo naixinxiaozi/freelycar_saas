@@ -14,9 +14,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+
+import static com.freelycar.saas.basic.wrapper.ResultCode.RESULT_DATA_NONE;
 
 @Service
 public class CouponServiceService {
@@ -98,9 +101,29 @@ public class CouponServiceService {
      * @param pageSize
      * @return
      */
-    public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize) {
+    public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize, String name) {
         logger.debug("storeId:" + storeId);
-        Page<CouponService> couponServicePage = couponServiceRepository.findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(DelStatus.EFFECTIVE.isValue(), storeId, PageableTools.basicPage(currentPage, pageSize));
+        Page<CouponService> couponServicePage = couponServiceRepository.findAllByDelStatusAndStoreIdAndNameContaining(DelStatus.EFFECTIVE.isValue(), storeId,name, PageableTools.basicPage(currentPage, pageSize));
         return PaginationRJO.of(couponServicePage);
     }
+
+    /**
+     * 删除操作（软删除）
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    public ResultJsonObject delete(String id) {
+        try {
+            int result = couponServiceRepository.delById(id);
+            if (result != 1) {
+                return ResultJsonObject.getErrorResult(id, "删除失败," + RESULT_DATA_NONE);
+            }
+        } catch (Exception e) {
+            return ResultJsonObject.getErrorResult(id, "删除失败，删除操作出现异常");
+        }
+        return ResultJsonObject.getDefaultResult(id, "删除成功");
+    }
+
 }

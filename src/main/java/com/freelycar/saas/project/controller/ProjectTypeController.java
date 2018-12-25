@@ -66,5 +66,17 @@ public class ProjectTypeController {
         return ResultJsonObject.getDefaultResult(projectTypeService.list(storeId, currentPage, pageSize));
     }
 
+    /**
+     * 删除操作（软删除）
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/delete")
+    @LoggerManage(description = "调用方法：删除项目类型信息")
+    public ResultJsonObject delete(@RequestParam String id) {
+        return projectTypeService.delete(id);
+    }
+
 
 }
