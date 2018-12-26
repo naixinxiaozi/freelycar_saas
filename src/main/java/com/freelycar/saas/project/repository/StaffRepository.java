@@ -22,6 +22,7 @@ public interface StaffRepository extends JpaRepository<Staff,String> {
     @Query(value = "select * from staff where store_id = :storeId and del_status = 0 and name = :name",nativeQuery = true)
     List<Staff> checkRepeatName(String name,String storeId);
 
+
     Page<Staff> findAllByDelStatusAndStoreIdAndIdContainingAndNameContaining(boolean delStatus, String storeId,String id,String name, Pageable pageable);
 
     @Transactional
@@ -29,9 +30,16 @@ public interface StaffRepository extends JpaRepository<Staff,String> {
     @Query(value = "update staff set del_status = 1 where id=:id", nativeQuery = true)
     int delById(String id);
 
+    @Query(value = "select * from staff where account=:account and id!=:id and is_ark = 1",nativeQuery = true)
+    List<Staff> checkRepeatAccount(String account,String id);
 
-    @Transactional
-    @Modifying(clearAutomatically = true)
-    @Query(value = "update staff set is_ark = 1 where id=:id", nativeQuery = true)
-    int closeById(String id);
+    @Query(value = "select * from staff where account=:account",nativeQuery = true)
+    List<Staff> checkRepeatAccount(String account);
+
+
+
+
+
+
+
 }

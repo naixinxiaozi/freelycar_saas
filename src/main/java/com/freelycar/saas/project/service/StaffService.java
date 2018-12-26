@@ -126,6 +126,42 @@ public class StaffService {
     }
 
 
+    /**
+     * 智能柜技师开通
+     *
+     * @param id
+     * @return
+     */
+
+    public ResultJsonObject openArk(String id, String account, String password) {
+        Optional<Staff> optionalStaff=staffRepository.findById(id);
+        if (optionalStaff.isPresent()){
+            Staff staff = optionalStaff.get();
+            staff.setAccount(account);
+            staff.setPassword(password);
+            staff.setArk(true);
+            if (this.checkRepeatAccount(staff)) {
+                return ResultJsonObject.getErrorResult(null, "已包含名称为：“" + staff.getAccount() + "”的账户，不能重复添加。");
+            }
+
+                return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
+        }
+        return ResultJsonObject.getErrorResult(null,"id:"+id+"不存在！");
+
+
+    }
+
+    private boolean checkRepeatAccount(Staff staff) {
+        List<Staff> staffList;
+        if (null != staff.getId()) {
+            staffList = staffRepository.checkRepeatAccount(staff.getAccount());
+        } else {
+
+            staffList = staffRepository.checkRepeatAccount(staff.getId(),staff.getAccount());
+        }
+        return staffList.size() != 0;
+    }
+
 
     /**
      * 智能柜技师关闭
@@ -133,17 +169,18 @@ public class StaffService {
      * @param id
      * @return
      */
-    @Transactional
     public ResultJsonObject closeArk(String id) {
-        try {
-            int result = staffRepository.closeById(id);
-            if (result != 1) {
-                return ResultJsonObject.getErrorResult(id, "关闭失败," + RESULT_DATA_NONE);
-            }
-        } catch (Exception e) {
-            return ResultJsonObject.getErrorResult(id, "关闭失败，关闭操作出现异常");
+
+        Optional<Staff> optionalStaff = staffRepository.findById(id);
+        if (optionalStaff.isPresent()){
+            Staff staff = optionalStaff.get();
+            staff.setAccount(null);
+            staff.setPassword(null);
+            staff.setArk(false);
+
+            return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
         }
-        return ResultJsonObject.getDefaultResult(id, "关闭成功");
+        return ResultJsonObject.getErrorResult(null,"id:"+id+"不存在！");
 
     }
 }

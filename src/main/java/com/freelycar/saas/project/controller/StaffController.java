@@ -91,14 +91,32 @@ public class StaffController {
 
 
     /**
+     * 智能柜技师开通
+     * @param id
+     * @param account
+     * @param password
+     * @return
+     **/
+    @GetMapping(value = "/openArk")
+    @LoggerManage(description = "调用方法：智能柜技师开通")
+    public ResultJsonObject openArk(
+            @RequestParam String id,
+            @RequestParam String account,
+            @RequestParam String password
+    ) {
+        return staffService.openArk(id,account,password);
+    }
+
+
+
+    /**
      * 智能柜技师关闭
-     *
      * @param id
      * @return
      */
     @GetMapping(value = "/closeArk")
-    @LoggerManage(description = "调用方法：关闭智能柜技师")
-    public ResultJsonObject closeArk(@RequestParam String id) {
+    @LoggerManage(description = "调用方法：智能柜技师关闭")
+    public  ResultJsonObject closeArk(@RequestParam String id){
         return staffService.closeArk(id);
     }
 }
