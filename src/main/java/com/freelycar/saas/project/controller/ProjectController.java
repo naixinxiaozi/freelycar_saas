@@ -86,4 +86,28 @@ public class ProjectController {
         return projectService.delete(id);
     }
 
+    /**
+     * 服务上架智能柜
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/upperArk")
+    @LoggerManage(description = "调用方法：服务上架智能柜")
+    public ResultJsonObject upperArk(@RequestParam String id) {
+        return projectService.upperArk(id);
+    }
+
+    /**
+     * 服务下架智能柜
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/lowerArk")
+    @LoggerManage(description = "调用方法：服务下架智能柜")
+    public ResultJsonObject lowerArk(@RequestParam String id) {
+        return projectService.lowerArk(id);
+    }
+
 }

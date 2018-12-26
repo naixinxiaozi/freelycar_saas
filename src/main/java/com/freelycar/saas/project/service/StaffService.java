@@ -134,6 +134,7 @@ public class StaffService {
      */
 
     public ResultJsonObject openArk(String id, String account, String password) {
+        ResultJsonObject.getDefaultResult(staffRepository.findById(id));
         Optional<Staff> optionalStaff=staffRepository.findById(id);
         if (optionalStaff.isPresent()){
             Staff staff = optionalStaff.get();
@@ -150,6 +151,13 @@ public class StaffService {
 
 
     }
+
+    /**
+     * 验证账户是否重复
+     * true：重复，false：不重复
+     * @param staff
+     * @return
+     */
 
     private boolean checkRepeatAccount(Staff staff) {
         List<Staff> staffList;

@@ -28,4 +28,15 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     @Modifying(clearAutomatically = true)
     @Query(value = "update project set del_status = 1 where id=:id", nativeQuery = true)
     int delById(String id);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update project set sale_status = 1 where id=:id", nativeQuery = true)
+    int uppById(String id);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update project set sale_status = 0 where id=:id", nativeQuery = true)
+    int lowById(String id);
+
 }

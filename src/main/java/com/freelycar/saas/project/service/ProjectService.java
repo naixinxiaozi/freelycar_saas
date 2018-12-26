@@ -4,7 +4,6 @@ import com.freelycar.saas.basic.wrapper.DelStatus;
 import com.freelycar.saas.basic.wrapper.PageableTools;
 import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
-import com.freelycar.saas.project.entity.CouponService;
 import com.freelycar.saas.project.entity.Project;
 import com.freelycar.saas.project.repository.ProjectRepository;
 import com.freelycar.saas.util.UpdateTool;
@@ -125,4 +124,44 @@ public class ProjectService {
         }
         return ResultJsonObject.getDefaultResult(id, "删除成功");
     }
+
+
+    /**
+     * 服务上架智能柜
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    public ResultJsonObject upperArk(String id) {
+        try {
+            int result = projectRepository.uppById(id);
+            if (result != 1) {
+                return ResultJsonObject.getErrorResult(id, "上架失败," + RESULT_DATA_NONE);
+            }
+        } catch (Exception e) {
+            return ResultJsonObject.getErrorResult(id, "上架失败，上架操作出现异常");
+        }
+        return ResultJsonObject.getDefaultResult(id, "上架成功");
+    }
+
+    /**
+     * 服务下架智能柜
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    public ResultJsonObject lowerArk(String id) {
+        try {
+            int result = projectRepository.lowById(id);
+            if (result != 1) {
+                return ResultJsonObject.getErrorResult(id, "下架失败," + RESULT_DATA_NONE);
+            }
+        } catch (Exception e) {
+            return ResultJsonObject.getErrorResult(id, "下架失败，下架操作出现异常");
+        }
+        return ResultJsonObject.getDefaultResult(id, "下架成功");
+    }
+
 }
