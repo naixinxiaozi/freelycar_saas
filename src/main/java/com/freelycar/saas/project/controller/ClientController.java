@@ -1,6 +1,9 @@
 package com.freelycar.saas.project.controller;
 
+import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.model.NewClientInfo;
+import com.freelycar.saas.project.service.ClientService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/client")
 public class ClientController {
 
-    @PostMapping("/add")
-    public void addClientAndCar(@RequestBody NewClientInfo newClientInfo) {
-        System.out.println(newClientInfo);
+    @Autowired
+    private ClientService clientService;
+
+    @PostMapping("/addClientAndCar")
+    public ResultJsonObject addClientAndCar(@RequestBody NewClientInfo newClientInfo) {
+        return clientService.addClientAndCar(newClientInfo.getClient(), newClientInfo.getCar());
     }
 }
