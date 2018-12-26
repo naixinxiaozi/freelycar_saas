@@ -29,17 +29,28 @@ public class ClientService {
     @Autowired
     private CarService carService;
 
+    /**
+     * 同时保存客户信息和车辆信息
+     *
+     * @param client
+     * @param car
+     * @return
+     */
     public ResultJsonObject addClientAndCar(Client client, Car car) {
-        //TODO 同时保存客户信息和车辆信息
+        //非空验证
         if (null == client || null == car) {
             return ResultJsonObject.getErrorResult("保存失败！客户信息或车辆信息为空！");
         }
+
+        //保存用户信息
         Client clientRes = this.saveOrUpdate(client);
         if (null == clientRes) {
             return ResultJsonObject.getErrorResult("保存失败！保存客户信息失败！");
         }
         String clientId = clientRes.getId();
         car.setClientId(clientId);
+
+        //保存车辆信息
         Car carRes = carService.saveOrUpdate(car);
 
         if (null == carRes) {
