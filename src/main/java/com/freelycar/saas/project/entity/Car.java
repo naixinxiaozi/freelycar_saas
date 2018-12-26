@@ -84,10 +84,10 @@ public class Car implements Serializable {
     @Column
     private String licensePlate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean newCar;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean defaultCar;
 
     @Column
@@ -102,10 +102,10 @@ public class Car implements Serializable {
     @Column
     private Timestamp defaultDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean needInspectionRemind;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean needInsuranceRemind;
 
     @Column
