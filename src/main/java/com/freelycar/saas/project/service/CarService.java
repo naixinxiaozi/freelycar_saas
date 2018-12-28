@@ -78,7 +78,7 @@ public class CarService {
     private boolean isFirstCar(String clientId) {
         List<Car> carList = carRepository.findByClientIdAndDelStatus(clientId, DelStatus.EFFECTIVE.isValue());
         if (null != carList) {
-            return !carList.isEmpty();
+            return carList.isEmpty();
         }
         return true;
     }
