@@ -49,7 +49,10 @@ public class CarService {
             //新增
             car.setDelStatus(DelStatus.EFFECTIVE.isValue());
             car.setCreateTime(new Timestamp(System.currentTimeMillis()));
-            car.setNewCar(false);
+            //如果没有标识是否新车，则默认为新车（也就是“不是二手车”）
+            if (null == car.getNewCar()) {
+                car.setNewCar(true);
+            }
             car.setDefaultCar(this.isFirstCar(clientId));
             car.setNeedInspectionRemind(false);
             car.setNeedInsuranceRemind(false);
