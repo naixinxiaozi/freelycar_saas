@@ -33,52 +33,114 @@ public class Card implements Serializable {
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime;
 
+    /**
+     * 会员卡所属门店
+     */
     @Column
     private String storeId;
 
+    /**
+     * 卡号
+     */
     @Column
     private String cardNumber;
 
+    /**
+     * 有效截止日期
+     */
     @Column
     private Timestamp expirationDate;
 
+    /**
+     * 支付时间
+     */
     @Column
     private Timestamp payDate;
 
+    /**
+     * 办卡的支付方式
+     */
     @Column
     private Integer payMethod;
 
+    /**
+     * 是哪种卡服务
+     */
     @Column
     private String cardServiceId;
 
+    /**
+     * 属于哪个客户
+     */
     @Column
     private String clientId;
 
-    @Column(nullable = false)
+    /**
+     * 是否过期
+     */
+    @Column(nullable = false,columnDefinition = "bit default 0")
     private Boolean failed;
 
+    /**
+     * 余额
+     */
     @Column
     private Float balance;
+
+    /**
+     * 办理人员
+     */
+    @Column
+    private String staffId;
+
+
+    @Column
+    private String name;
+
+    @Column
+    private Float price;
+
+    @Column
+    private Float actualPrice;
+
+    @Column
+    private Integer type;
+
+    @Column
+    private Integer validTime;
 
     public Card() {
     }
 
     @Override
     public String toString() {
-        return "Card{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", storeId='" + storeId + '\'' +
-                ", cardNumber='" + cardNumber + '\'' +
-                ", expirationDate=" + expirationDate +
-                ", payDate=" + payDate +
-                ", payMethod=" + payMethod +
-                ", cardServiceId='" + cardServiceId + '\'' +
-                ", clientId='" + clientId + '\'' +
-                ", failed=" + failed +
-                ", balance=" + balance +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append(",\"cardNumber\":\"")
+                .append(cardNumber).append('\"');
+        sb.append(",\"expirationDate\":\"")
+                .append(expirationDate).append('\"');
+        sb.append(",\"payDate\":\"")
+                .append(payDate).append('\"');
+        sb.append(",\"payMethod\":")
+                .append(payMethod);
+        sb.append(",\"cardServiceId\":\"")
+                .append(cardServiceId).append('\"');
+        sb.append(",\"clientId\":\"")
+                .append(clientId).append('\"');
+        sb.append(",\"failed\":")
+                .append(failed);
+        sb.append(",\"balance\":")
+                .append(balance);
+        sb.append('}');
+        return sb.toString();
     }
 
     public String getId() {
@@ -175,5 +237,53 @@ public class Card implements Serializable {
 
     public void setBalance(Float balance) {
         this.balance = balance;
+    }
+
+    public String getStaffId() {
+        return staffId;
+    }
+
+    public void setStaffId(String staffId) {
+        this.staffId = staffId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Float getPrice() {
+        return price;
+    }
+
+    public void setPrice(Float price) {
+        this.price = price;
+    }
+
+    public Float getActualPrice() {
+        return actualPrice;
+    }
+
+    public void setActualPrice(Float actualPrice) {
+        this.actualPrice = actualPrice;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getValidTime() {
+        return validTime;
+    }
+
+    public void setValidTime(Integer validTime) {
+        this.validTime = validTime;
     }
 }
