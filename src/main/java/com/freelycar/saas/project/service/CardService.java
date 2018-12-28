@@ -97,6 +97,8 @@ public class CardService {
         client.setMember(true);
         clientRepository.save(client);
 
+        //TODO 办卡成功后需要自动添加一条订单，且是自动结算的
+
         return ResultJsonObject.getDefaultResult(cardRes);
     }
 

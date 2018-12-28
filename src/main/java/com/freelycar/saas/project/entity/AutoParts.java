@@ -73,22 +73,14 @@ public class AutoParts implements Serializable {
     @Column
     private Float totalPrice;
 
+    /**
+     * 订单ID
+     */
+    @Column
+    private String ConsumerOrderId;
+
 
     public AutoParts() {
-    }
-
-    @Override
-    public String toString() {
-        return "AutoParts{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", type='" + type + '\'' +
-                ", name='" + name + '\'' +
-                ", count=" + count +
-                ", unitPrice=" + unitPrice +
-                ", totalPrice=" + totalPrice +
-                '}';
     }
 
     public String getId() {
@@ -153,5 +145,38 @@ public class AutoParts implements Serializable {
 
     public void setTotalPrice(Float totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public String getConsumerOrderId() {
+        return ConsumerOrderId;
+    }
+
+    public void setConsumerOrderId(String consumerOrderId) {
+        ConsumerOrderId = consumerOrderId;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"type\":\"")
+                .append(type).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"count\":")
+                .append(count);
+        sb.append(",\"unitPrice\":")
+                .append(unitPrice);
+        sb.append(",\"totalPrice\":")
+                .append(totalPrice);
+        sb.append(",\"ConsumerOrderId\":\"")
+                .append(ConsumerOrderId).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 }
