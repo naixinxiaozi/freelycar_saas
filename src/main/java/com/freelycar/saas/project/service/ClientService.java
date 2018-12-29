@@ -3,9 +3,15 @@ package com.freelycar.saas.project.service;
 import com.freelycar.saas.basic.wrapper.DelStatus;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.Car;
+import com.freelycar.saas.project.entity.Card;
 import com.freelycar.saas.project.entity.Client;
+import com.freelycar.saas.project.entity.Coupon;
+import com.freelycar.saas.project.model.CustomerInfo;
 import com.freelycar.saas.project.model.NewClientInfo;
+import com.freelycar.saas.project.repository.CarRepository;
+import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.ClientRepository;
+import com.freelycar.saas.project.repository.CouponRepository;
 import com.freelycar.saas.util.UpdateTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,6 +32,12 @@ import java.util.Optional;
 public class ClientService {
     @Autowired
     private ClientRepository clientRepository;
+    @Autowired
+    private CarRepository carRepository;
+    @Autowired
+    private CardRepository cardRepository;
+    @Autowired
+    private CouponRepository couponRepository;
 
     @Autowired
     private CarService carService;
@@ -93,4 +106,47 @@ public class ClientService {
         }
         return clientRepository.saveAndFlush(client);
     }
+
+    /**
+     * 获取客户详情（不包括会员卡、车辆）
+     *
+     * @param id
+     * @return
+     */
+    public ResultJsonObject getDetail(String id) {
+        return ResultJsonObject.getDefaultResult(clientRepository.findById(id));
+    }
+
+    /**
+     * 获取客户详情（包括会员卡、车辆）
+     *
+     * @param id
+     * @return
+     */
+    public ResultJsonObject getCustomerInfo(String id) {
+
+
+        Optional<Client> optionalClient=clientRepository.findById(id);
+        if (!optionalClient.isPresent()) {
+            return ResultJsonObject.getErrorResult(null, "不存在id为"+id+"的用户。");
+        }
+        Client client=optionalClient.get();
+
+        List<Car> cars=carRepository.findByClientIdAndDelStatus(id,DelStatus.EFFECTIVE.isValue());
+
+        List<Card> cards=cardRepository.findByClientIdAndDelStatus(id,DelStatus.EFFECTIVE.isValue());
+
+        List<Coupon> coupons=couponRepository.findByClientIdAndDelStatus(id,DelStatus.EFFECTIVE.isValue());
+
+        CustomerInfo customerInfo = new CustomerInfo();
+        customerInfo.setClient(client);
+        customerInfo.setCar(cars);
+        customerInfo.setCard(cards);
+        customerInfo.setCoupon(coupons);
+
+
+        return ResultJsonObject.getDefaultResult(customerInfo);
+
+    }
+
 }

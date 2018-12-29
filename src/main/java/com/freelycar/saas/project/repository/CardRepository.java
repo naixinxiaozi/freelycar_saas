@@ -11,6 +11,7 @@ import java.util.List;
  * @email toby911115@gmail.com
  */
 public interface CardRepository extends JpaRepository<Card, String> {
-
+    List<Card> findByClientIdAndDelStatus(String client,boolean delStatus);
     List<Card> findByCardNumberAndDelStatusAndStoreId(String cardNumber,boolean delStauts,String storeId);
+
 }

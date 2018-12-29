@@ -91,5 +91,13 @@ public class CardService {
         return new Timestamp(calendar.getTimeInMillis());
     }
 
-
+    /**
+     * 获取会员卡详情
+     *
+     * @param id
+     * @return
+     */
+    public ResultJsonObject getDetail(String id) {
+        return ResultJsonObject.getDefaultResult(cardRepository.findById(id));
+    }
 }
