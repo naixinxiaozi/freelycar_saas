@@ -55,16 +55,25 @@ public class Coupon implements Serializable {
 
     @Override
     public String toString() {
-        return "Coupon{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", storeId='" + storeId + '\'' +
-                ", couponServiceId='" + couponServiceId + '\'' +
-                ", clientId='" + clientId + '\'' +
-                ", name='" + name + '\'' +
-                ", deadline=" + deadline +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append(",\"couponServiceId\":\"")
+                .append(couponServiceId).append('\"');
+        sb.append(",\"clientId\":\"")
+                .append(clientId).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"deadline\":\"")
+                .append(deadline).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 
     public String getId() {

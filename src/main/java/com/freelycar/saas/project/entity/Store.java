@@ -162,19 +162,32 @@ public class Store implements Serializable {
 
     @Override
     public String toString() {
-        return "Store{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", openingTime=" + openingTime +
-                ", closingTime=" + closingTime +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", linkman='" + linkman + '\'' +
-                ", phone='" + phone + '\'' +
-                ", remark='" + remark + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"address\":\"")
+                .append(address).append('\"');
+        sb.append(",\"openingTime\":\"")
+                .append(openingTime).append('\"');
+        sb.append(",\"closingTime\":\"")
+                .append(closingTime).append('\"');
+        sb.append(",\"latitude\":")
+                .append(latitude);
+        sb.append(",\"longitude\":")
+                .append(longitude);
+        sb.append(",\"linkman\":\"")
+                .append(linkman).append('\"');
+        sb.append(",\"phone\":\"")
+                .append(phone).append('\"');
+        sb.append(",\"remark\":\"")
+                .append(remark).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 }

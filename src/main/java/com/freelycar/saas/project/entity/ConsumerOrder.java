@@ -86,6 +86,12 @@ public class ConsumerOrder implements Serializable {
     private String phone;
 
     /**
+     * 是否会员
+     */
+    @Column(nullable = false, columnDefinition = "bit default 0")
+    private Boolean isMember;
+
+    /**
      * 交付时间
      */
     @Column
@@ -205,6 +211,12 @@ public class ConsumerOrder implements Serializable {
      */
     @Column
     private String faultDescription;
+
+    /**
+     * 计划用车时间（智能柜预约服务）
+     */
+    @Column
+    private Timestamp useTime;
 
 
     /**
@@ -469,6 +481,22 @@ public class ConsumerOrder implements Serializable {
         this.faultDescription = faultDescription;
     }
 
+    public Boolean getMember() {
+        return isMember;
+    }
+
+    public void setMember(Boolean member) {
+        isMember = member;
+    }
+
+    public Timestamp getUseTime() {
+        return useTime;
+    }
+
+    public void setUseTime(Timestamp useTime) {
+        this.useTime = useTime;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -496,6 +524,8 @@ public class ConsumerOrder implements Serializable {
                 .append(gender).append('\"');
         sb.append(",\"phone\":\"")
                 .append(phone).append('\"');
+        sb.append(",\"isMember\":")
+                .append(isMember);
         sb.append(",\"deliverTime\":\"")
                 .append(deliverTime).append('\"');
         sb.append(",\"finishTime\":\"")
@@ -536,6 +566,8 @@ public class ConsumerOrder implements Serializable {
                 .append(cardOrCouponId).append('\"');
         sb.append(",\"faultDescription\":\"")
                 .append(faultDescription).append('\"');
+        sb.append(",\"useTime\":\"")
+                .append(useTime).append('\"');
         sb.append('}');
         return sb.toString();
     }
