@@ -63,19 +63,31 @@ public class CouponService implements Serializable {
 
     @Override
     public String toString() {
-        return "CouponService{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", storeId='" + storeId + '\'' +
-                ", buyStartTime=" + buyStartTime +
-                ", buyEndTime=" + buyEndTime +
-                ", content='" + content + '\'' +
-                ", name='" + name + '\'' +
-                ", type=" + type +
-                ", validTime=" + validTime +
-                ", price=" + price +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append(",\"buyStartTime\":\"")
+                .append(buyStartTime).append('\"');
+        sb.append(",\"buyEndTime\":\"")
+                .append(buyEndTime).append('\"');
+        sb.append(",\"content\":\"")
+                .append(content).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"type\":")
+                .append(type);
+        sb.append(",\"validTime\":")
+                .append(validTime);
+        sb.append(",\"price\":")
+                .append(price);
+        sb.append('}');
+        return sb.toString();
     }
 
     public String getId() {

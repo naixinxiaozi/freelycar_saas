@@ -23,10 +23,9 @@ public class PageableTools {
      */
     public static Pageable basicPage(Integer page, Integer size, SortDto... dtos) {
         Sort sort = SortTools.basicSort(dtos);
-        page = (page == null || page < 0) ? 0 : page;
+        page = (page == null || page <= 0) ? 0 : page - 1;
         size = (size == null || size <= 0) ? 10 : size;
-        Pageable pageable = PageRequest.of(page, size, sort);
-        return pageable;
+        return PageRequest.of(page, size, sort);
     }
 
     /**
@@ -37,7 +36,7 @@ public class PageableTools {
      * @return
      */
     public static Pageable basicPage(Integer page) {
-        return basicPage(page, 0, new SortDto("desc", "id"));
+        return basicPage(page, 0, new SortDto("desc", "createTime"));
     }
 
     /**

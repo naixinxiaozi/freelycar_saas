@@ -1,6 +1,6 @@
 package com.freelycar.saas.temp;
 
-import com.freelycar.saas.project.entity.Card;
+import com.freelycar.saas.project.entity.CouponService;
 
 /**
  * @author tangwei - Toby
@@ -9,7 +9,7 @@ import com.freelycar.saas.project.entity.Card;
  */
 public class PrintTest {
     public static void main(String[] args) {
-        Object obj = new Card();
+        Object obj = new CouponService();
         System.out.println(obj);
     }
 }
