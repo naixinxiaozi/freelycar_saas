@@ -12,6 +12,6 @@ import java.util.List;
  */
 public interface CardRepository extends JpaRepository<Card, String> {
     List<Card> findByClientIdAndDelStatus(String client,boolean delStatus);
-    List<Card> findByCardNumberAndDelStatusAndStoreId(String cardNumber,boolean delStauts,String storeId);
+    List<Card> findByCardNumberAndDelStatusAndStoreId(String cardNumber,boolean delStatus,String storeId);
 
 }
