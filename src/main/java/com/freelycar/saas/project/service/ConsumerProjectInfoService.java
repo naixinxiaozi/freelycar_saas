@@ -6,9 +6,9 @@ import com.freelycar.saas.project.repository.ConsumerProjectInfoRepository;
 import com.freelycar.saas.util.UpdateTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.Optional;
 

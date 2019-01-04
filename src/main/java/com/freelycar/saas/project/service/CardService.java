@@ -9,9 +9,9 @@ import com.freelycar.saas.project.repository.CardServiceRepository;
 import com.freelycar.saas.project.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
