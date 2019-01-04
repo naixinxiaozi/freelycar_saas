@@ -96,6 +96,6 @@ public class ConsumerOrderService {
             }
         }
 
-        return ResultJsonObject.getDefaultResult(consumerOrderRes, "订单生成成功！");
+        return ResultJsonObject.getDefaultResult(consumerOrderRes.getId(), "订单生成成功！");
     }
 }
