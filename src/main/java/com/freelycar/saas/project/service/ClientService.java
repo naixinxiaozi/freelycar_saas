@@ -7,12 +7,15 @@ import com.freelycar.saas.project.entity.Card;
 import com.freelycar.saas.project.entity.Client;
 import com.freelycar.saas.project.entity.Coupon;
 import com.freelycar.saas.project.model.CustomerInfo;
+import com.freelycar.saas.project.model.CustomerList;
 import com.freelycar.saas.project.model.NewClientInfo;
 import com.freelycar.saas.project.repository.CarRepository;
 import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.ClientRepository;
 import com.freelycar.saas.project.repository.CouponRepository;
 import com.freelycar.saas.util.UpdateTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,7 @@ import java.util.Optional;
 @Service
 @Transactional
 public class ClientService {
+    private static Logger logger = LoggerFactory.getLogger(ClientService.class);
     @Autowired
     private ClientRepository clientRepository;
     @Autowired
@@ -149,4 +153,28 @@ public class ClientService {
 
     }
 
+    /**
+     * 获取客户列表
+     * @param storeId
+     * @param currentPage
+     * @param pageSize
+     * @param name
+     * @param phone
+     * @return
+     */
+    public ResultJsonObject list(String storeId, Integer currentPage,Integer pageSize,String name,String phone,boolean isMember,String licensePlate) {
+        logger.debug("storeId:" + storeId);
+        //TODO 会员管理—客户管理—获取客户列表
+       // Page<Client> clientPage = clientRepository.findAllByDelStatusAndStoreIdAndNameContainingAndPhoneContainingAndIsMember(DelStatus.EFFECTIVE.isValue(), storeId,name,phone, isMember,PageableTools.basicPage(currentPage, pageSize));
+        //Page<Client> clientPage=clientRepository.asd(name,phone,licensePlate,carBrand,isMember,consumeTimes,lastVisit,balance);
+
+
+
+        CustomerList customerList=new CustomerList();
+        customerList.setName(clientRepository.findName(name));
+        customerList.setPhone(clientRepository.findPhone(phone));
+        customerList.setLicensePlate(clientRepository.findLicensePlate(licensePlate));
+
+        return ResultJsonObject.getDefaultResult(customerList);
+    }
 }

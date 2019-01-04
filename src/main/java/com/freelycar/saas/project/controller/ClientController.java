@@ -8,6 +8,7 @@ import com.freelycar.saas.project.service.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/client")
 public class ClientController {
-
     private static Logger logger = LoggerFactory.getLogger(ClientController.class);
     @Autowired
     private ClientService clientService;
@@ -75,5 +75,35 @@ public class ClientController {
             return ResultJsonObject.getErrorResult(null, errorMsg);
         }
         return clientService.getCustomerInfo(id);
+    }
+
+    /**
+     * 获取客户列表
+     * @param storeId
+     * @param currentPage
+     * @param pageSize
+     * @param name
+     * @param phone
+     * @return
+     */
+    @GetMapping(value = "/list")
+    @LoggerManage(description = "调用方法：获取客户列表")
+    public ResultJsonObject list(
+            @RequestParam String storeId,
+            @RequestParam Integer currentPage,
+            @RequestParam Integer pageSize,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) boolean isMember,
+            @RequestParam(required = false) String licensePlate
+
+    ) {
+        if (StringUtils.isEmpty(StringUtils.trimWhitespace(name))) {
+            name = "";
+        }
+        if (StringUtils.isEmpty(StringUtils.trimWhitespace(phone))) {
+            phone = "";
+        }
+        return ResultJsonObject.getDefaultResult(clientService.list(storeId, currentPage, pageSize,name,phone,isMember,licensePlate));
     }
 }
