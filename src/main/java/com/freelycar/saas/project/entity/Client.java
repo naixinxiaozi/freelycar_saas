@@ -255,6 +255,14 @@ public class Client implements Serializable {
         this.points = points;
     }
 
+    public String getDriverLicense() {
+        return driverLicense;
+    }
+
+    public void setDriverLicense(String driverLicense) {
+        this.driverLicense = driverLicense;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");

@@ -31,11 +31,11 @@ public interface CardServiceRepository extends JpaRepository<CardService, String
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "update card_service set book_online = 0 where id=:id", nativeQuery = true)
+    @Query(value = "update card_service set book_online = 1 where id=:id", nativeQuery = true)
     int uppById(String id);
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "update card_service set book_online = 1 where id=:id", nativeQuery = true)
+    @Query(value = "update card_service set book_online = 0 where id=:id", nativeQuery = true)
     int lowById(String id);
 }

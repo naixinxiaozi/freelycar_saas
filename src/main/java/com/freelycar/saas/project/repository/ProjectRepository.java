@@ -16,13 +16,15 @@ import java.util.List;
  * @email toby911115@gmail.com
  */
 public interface ProjectRepository extends JpaRepository<Project, String> {
-    @Query(value = "select * from project where id != :id and store_id = :storeId and del_status = 0 and name = :name",nativeQuery = true)
+    @Query(value = "select * from project where id != :id and store_id = :storeId and del_status = 0 and name = :name", nativeQuery = true)
     List<Project> checkRepeatName(String id, String name, String storeId);
 
-    @Query(value = "select * from project where store_id = :storeId and del_status = 0 and name = :name",nativeQuery = true)
-    List<Project> checkRepeatName(String name,String storeId);
+    @Query(value = "select * from project where store_id = :storeId and del_status = 0 and name = :name", nativeQuery = true)
+    List<Project> checkRepeatName(String name, String storeId);
 
-    Page<Project> findAllByDelStatusAndStoreIdAndNameContainingAndProjectTypeId(boolean delStatus, String storeId,String name,String projectTypeId,Pageable pageable);
+    Page<Project> findAllByDelStatusAndStoreIdAndNameContainingAndProjectTypeId(boolean delStatus, String storeId, String name, String projectTypeId, Pageable pageable);
+
+    Page<Project> findAllByDelStatusAndStoreIdAndNameContaining(boolean delStatus, String storeId, String name, Pageable pageable);
 
     @Transactional
     @Modifying(clearAutomatically = true)

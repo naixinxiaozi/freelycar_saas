@@ -6,14 +6,13 @@ import com.freelycar.saas.project.entity.AutoParts;
 import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.entity.ConsumerProjectInfo;
 import com.freelycar.saas.project.model.OrderObject;
-import com.freelycar.saas.project.repository.AutoPartsRepository;
 import com.freelycar.saas.project.repository.ConsumerOrderRepository;
 import com.freelycar.saas.util.UpdateTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +32,7 @@ public class ConsumerOrderService {
     private ConsumerProjectInfoService consumerProjectInfoService;
 
     @Autowired
-    private AutoPartsRepository autoPartsRepository;
+    private AutoPartsService autoPartsService;
 
     /**
      * 保存和修改
@@ -93,7 +92,7 @@ public class ConsumerOrderService {
         if (null != autoParts && !autoParts.isEmpty()) {
             for (AutoParts autoPart : autoParts) {
                 autoPart.setConsumerOrderId(orderId);
-                autoPartsRepository.saveAll(autoParts);
+                autoPartsService.saveOrUpdate(autoPart);
             }
         }
 

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/card")
 public class CardController {
-    private static Logger logger = LoggerFactory.getLogger(ClientController.class);
+    private static Logger logger = LoggerFactory.getLogger(CardController.class);
     @Autowired
     private CardService cardService;
     private String errorMsg;

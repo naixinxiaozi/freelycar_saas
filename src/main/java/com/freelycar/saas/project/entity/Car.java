@@ -43,13 +43,13 @@ public class Car implements Serializable {
     private Timestamp createTime;
 
     /**
-     * 车辆商标（精确到某一系列，比如：马自达6）
+     * 品牌车系（精确到某一系列，比如：马自达6）
      */
     @Column
     private String carBrand;
 
     /**
-     * 车辆
+     * 具体车型
      */
     @Column
     private String carType;

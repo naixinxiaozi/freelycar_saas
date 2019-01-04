@@ -11,10 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -100,9 +101,14 @@ public class ProjectService {
      * @param pageSize
      * @return
      */
-    public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize,String name,String projectTypeId) {
-        logger.debug("storeId:" + storeId);
-        Page<Project> projectPage = projectRepository.findAllByDelStatusAndStoreIdAndNameContainingAndProjectTypeId(DelStatus.EFFECTIVE.isValue(), storeId,name,projectTypeId, PageableTools.basicPage(currentPage, pageSize));
+    public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize, String name, String projectTypeId) {
+        Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
+        Page<Project> projectPage;
+        if (StringUtils.isEmpty(projectTypeId)) {
+            projectPage = projectRepository.findAllByDelStatusAndStoreIdAndNameContaining(DelStatus.EFFECTIVE.isValue(), storeId, name, pageable);
+        } else {
+            projectPage = projectRepository.findAllByDelStatusAndStoreIdAndNameContainingAndProjectTypeId(DelStatus.EFFECTIVE.isValue(), storeId, name, projectTypeId, pageable);
+        }
         return PaginationRJO.of(projectPage);
     }
 
