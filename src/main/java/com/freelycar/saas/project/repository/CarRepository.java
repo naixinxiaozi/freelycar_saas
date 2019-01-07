@@ -13,7 +13,7 @@ import java.util.List;
  * @date 2018/10/17
  * @email toby911115@gmail.com
  */
-public interface CarRepository extends JpaRepository<Car,String> {
+public interface CarRepository extends JpaRepository<Car, String> {
     List<Car> findByClientIdAndDelStatus(String clientId, boolean delStatus);
 
     @Transactional
@@ -21,10 +21,12 @@ public interface CarRepository extends JpaRepository<Car,String> {
     @Query(value = "update car set del_status = 1 where id=:id", nativeQuery = true)
     int delById(String id);
 
-    @Query(value = "select * from car where id != :id and store_id = :storeId and del_status = 0 and license_plate = :license_plate",nativeQuery = true)
+    @Query(value = "select * from car where id != :id and store_id = :storeId and del_status = 0 and license_plate = :license_plate", nativeQuery = true)
     List<Car> checkRepeatName(String id, String license_plate, String storeId);
 
-    @Query(value = "select * from car where store_id = :storeId and del_status = 0 and license_plate = :license_plate",nativeQuery = true)
-    List<Car> checkRepeatName(String license_plate,String storeId);
+    @Query(value = "select * from car where store_id = :storeId and del_status = 0 and license_plate = :license_plate", nativeQuery = true)
+    List<Car> checkRepeatName(String license_plate, String storeId);
 
+    @Query()
+    List<Car> listByStoreIdWithoutSamePlate();
 }

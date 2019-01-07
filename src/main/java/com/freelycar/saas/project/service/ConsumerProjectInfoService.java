@@ -1,6 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.DelStatus;
+import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.project.entity.ConsumerProjectInfo;
 import com.freelycar.saas.project.repository.ConsumerProjectInfoRepository;
 import com.freelycar.saas.util.UpdateTool;
@@ -36,7 +36,7 @@ public class ConsumerProjectInfoService {
         String id = consumerProjectInfo.getId();
 
         if (StringUtils.isEmpty(id)) {
-            consumerProjectInfo.setDelStatus(DelStatus.EFFECTIVE.isValue());
+            consumerProjectInfo.setDelStatus(Constants.DelStatus.NORMAL.isValue());
             consumerProjectInfo.setCreateTime(new Timestamp(System.currentTimeMillis()));
         } else {
             Optional<ConsumerProjectInfo> optional = consumerProjectInfoRepository.findById(id);

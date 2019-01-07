@@ -1,6 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.DelStatus;
+import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.PageableTools;
 import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
@@ -44,7 +44,7 @@ public class CouponServiceService {
             //是否有ID，判断时新增还是修改
             String id = couponService.getId();
             if (StringUtils.isEmpty(id)) {
-                couponService.setDelStatus(DelStatus.EFFECTIVE.isValue());
+                couponService.setDelStatus(Constants.DelStatus.NORMAL.isValue());
                 couponService.setCreateTime(new Timestamp(System.currentTimeMillis()));
                // couponService.setBookOnline(false);
             } else {
@@ -103,7 +103,7 @@ public class CouponServiceService {
      */
     public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize, String name) {
         logger.debug("storeId:" + storeId);
-        Page<CouponService> couponServicePage = couponServiceRepository.findAllByDelStatusAndStoreIdAndNameContaining(DelStatus.EFFECTIVE.isValue(), storeId,name, PageableTools.basicPage(currentPage, pageSize));
+        Page<CouponService> couponServicePage = couponServiceRepository.findAllByDelStatusAndStoreIdAndNameContaining(Constants.DelStatus.NORMAL.isValue(), storeId, name, PageableTools.basicPage(currentPage, pageSize));
         return PaginationRJO.of(couponServicePage);
     }
 

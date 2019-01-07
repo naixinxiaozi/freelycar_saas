@@ -1,6 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.DelStatus;
+import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.project.entity.AutoParts;
 import com.freelycar.saas.project.repository.AutoPartsRepository;
 import com.freelycar.saas.util.UpdateTool;
@@ -37,7 +37,7 @@ public class AutoPartsService {
         String id = autoParts.getId();
         if (StringUtils.isEmpty(id)) {
             autoParts.setCreateTime(new Timestamp(System.currentTimeMillis()));
-            autoParts.setDelStatus(DelStatus.EFFECTIVE.isValue());
+            autoParts.setDelStatus(Constants.DelStatus.NORMAL.isValue());
         } else {
             Optional<AutoParts> optional = autoPartsRepository.findById(id);
             if (!optional.isPresent()) {

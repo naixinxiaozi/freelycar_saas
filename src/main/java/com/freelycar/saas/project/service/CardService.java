@@ -1,6 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.DelStatus;
+import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.Card;
 import com.freelycar.saas.project.entity.Client;
@@ -80,7 +80,7 @@ public class CardService {
         }
 
         //为字段赋默认值
-        card.setDelStatus(DelStatus.EFFECTIVE.isValue());
+        card.setDelStatus(Constants.DelStatus.NORMAL.isValue());
         card.setCreateTime(new Timestamp(System.currentTimeMillis()));
         card.setPayDate(new Timestamp(System.currentTimeMillis()));
         card.setBalance(cardServiceObject.getActualPrice());
@@ -108,7 +108,7 @@ public class CardService {
      * @return
      */
     private boolean isCardNumberRepeat(Card card) {
-        List<Card> cardList = cardRepository.findByCardNumberAndDelStatusAndStoreId(card.getCardNumber(), DelStatus.EFFECTIVE.isValue(), card.getStoreId());
+        List<Card> cardList = cardRepository.findByCardNumberAndDelStatusAndStoreId(card.getCardNumber(), Constants.DelStatus.NORMAL.isValue(), card.getStoreId());
         return !cardList.isEmpty();
     }
 

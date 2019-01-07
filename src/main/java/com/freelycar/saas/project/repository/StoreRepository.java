@@ -10,6 +10,8 @@ import java.util.List;
  * @date 2018/10/17
  * @email toby911115@gmail.com
  */
-public interface StoreRepository extends JpaRepository<Store,String> {
-    List<Store> findStoreByNameOrderByCreateTimeAsc(String name);
+public interface StoreRepository extends JpaRepository<Store, String> {
+    List<Store> findStoreByDelStatusAndNameContainingOrderByCreateTimeAsc(boolean delStatus, String name);
+
+    List<Store> findAllByDelStatus(boolean delStatus);
 }

@@ -1,6 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.DelStatus;
+import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.Car;
 import com.freelycar.saas.project.repository.CarRepository;
@@ -50,7 +50,7 @@ public class CarService {
 
         if (StringUtils.isEmpty(id)) {
             //新增
-            car.setDelStatus(DelStatus.EFFECTIVE.isValue());
+            car.setDelStatus(Constants.DelStatus.NORMAL.isValue());
             car.setCreateTime(new Timestamp(System.currentTimeMillis()));
             //如果没有标识是否新车，则默认为新车（也就是“不是二手车”）
             if (null == car.getNewCar()) {
@@ -79,7 +79,7 @@ public class CarService {
      * @return
      */
     private boolean isFirstCar(String clientId) {
-        List<Car> carList = carRepository.findByClientIdAndDelStatus(clientId, DelStatus.EFFECTIVE.isValue());
+        List<Car> carList = carRepository.findByClientIdAndDelStatus(clientId, Constants.DelStatus.NORMAL.isValue());
         if (null != carList) {
             return carList.isEmpty();
         }
@@ -127,7 +127,7 @@ public class CarService {
             //是否有ID，判断时新增还是修改
             String id = car.getId();
             if (StringUtils.isEmpty(id)) {
-                car.setDelStatus(DelStatus.EFFECTIVE.isValue());
+                car.setDelStatus(Constants.DelStatus.NORMAL.isValue());
                 car.setCreateTime(new Timestamp(System.currentTimeMillis()));
             } else {
                 Optional<Car> optional = carRepository.findById(id);

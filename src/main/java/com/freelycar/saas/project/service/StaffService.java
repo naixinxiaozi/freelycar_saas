@@ -1,6 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.DelStatus;
+import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.PageableTools;
 import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
@@ -44,7 +44,7 @@ public class StaffService {
             //是否有ID，判断时新增还是修改
             String id = staff.getId();
             if (StringUtils.isEmpty(id)) {
-                staff.setDelStatus(DelStatus.EFFECTIVE.isValue());
+                staff.setDelStatus(Constants.DelStatus.NORMAL.isValue());
                 staff.setCreateTime(new Timestamp(System.currentTimeMillis()));
             } else {
                 Optional<Staff> optional = staffRepository.findById(id);
@@ -102,7 +102,7 @@ public class StaffService {
      */
     public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize, String id, String name) {
         logger.debug("storeId:" + storeId);
-        Page<Staff> staffPage = staffRepository.findAllByDelStatusAndStoreIdAndIdContainingAndNameContaining(DelStatus.EFFECTIVE.isValue(), storeId, id, name, PageableTools.basicPage(currentPage, pageSize));
+        Page<Staff> staffPage = staffRepository.findAllByDelStatusAndStoreIdAndIdContainingAndNameContaining(Constants.DelStatus.NORMAL.isValue(), storeId, id, name, PageableTools.basicPage(currentPage, pageSize));
         return PaginationRJO.of(staffPage);
     }
 

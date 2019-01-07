@@ -21,44 +21,104 @@ import java.sql.Timestamp;
 public class WxUserInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 主键ID
+     */
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
     @NotNull
     private String id;
+
+    /**
+     * 创建时间
+     */
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime = new Timestamp(System.currentTimeMillis());
+
+    /**
+     * 生日，从微信授权获取
+     */
     @Column
     private Date birthday;
+
+    /**
+     * 性别，从微信授权获取
+     */
     @Column(length = 10)
     private String gender;
+
+    /**
+     * 微信头像地址，从微信授权获取
+     */
     @Column
     private String headImgUrl;
+
+    /**
+     * 昵称，client表中也会冗余一份
+     */
     @Column
     private String nickName;
+
+    /**
+     * 真实姓名，client表中也会冗余一份
+     */
+    @Column
+    private String trueName;
+
+    /**
+     * openId（只用于推送通知用）
+     */
     @Column
     private String openId;
+
+    /**
+     * 手机号（作为与client表数据对应的唯一凭证）
+     */
     @Column(length = 20)
     private String phone;
+    /**
+     * 删除标记位
+     */
     @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean delStatus = false;
+
+    /**
+     * 默认门店id
+     */
+    @Column
+    private String defaultStoreId;
 
     public WxUserInfo() {
     }
 
     @Override
     public String toString() {
-        return "WxUserInfo{" +
-                "id='" + id + '\'' +
-                ", createTime=" + createTime +
-                ", birthday=" + birthday +
-                ", gender='" + gender + '\'' +
-                ", headImgUrl='" + headImgUrl + '\'' +
-                ", nickName='" + nickName + '\'' +
-                ", openId='" + openId + '\'' +
-                ", phone='" + phone + '\'' +
-                ", delStatus=" + delStatus +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"birthday\":\"")
+                .append(birthday).append('\"');
+        sb.append(",\"gender\":\"")
+                .append(gender).append('\"');
+        sb.append(",\"headImgUrl\":\"")
+                .append(headImgUrl).append('\"');
+        sb.append(",\"nickName\":\"")
+                .append(nickName).append('\"');
+        sb.append(",\"trueName\":\"")
+                .append(trueName).append('\"');
+        sb.append(",\"openId\":\"")
+                .append(openId).append('\"');
+        sb.append(",\"phone\":\"")
+                .append(phone).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"defaultStoreId\":\"")
+                .append(defaultStoreId).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 
     public String getId() {
@@ -131,5 +191,21 @@ public class WxUserInfo implements Serializable {
 
     public void setDelStatus(Boolean delStatus) {
         this.delStatus = delStatus;
+    }
+
+    public String getTrueName() {
+        return trueName;
+    }
+
+    public void setTrueName(String trueName) {
+        this.trueName = trueName;
+    }
+
+    public String getDefaultStoreId() {
+        return defaultStoreId;
+    }
+
+    public void setDefaultStoreId(String defaultStoreId) {
+        this.defaultStoreId = defaultStoreId;
     }
 }

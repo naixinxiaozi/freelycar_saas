@@ -1,6 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.DelStatus;
+import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.PageableTools;
 import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
@@ -45,7 +45,7 @@ public class ProjectService {
             //是否有ID，判断时新增还是修改
             String id = project.getId();
             if (StringUtils.isEmpty(id)) {
-                project.setDelStatus(DelStatus.EFFECTIVE.isValue());
+                project.setDelStatus(Constants.DelStatus.NORMAL.isValue());
                 project.setCreateTime(new Timestamp(System.currentTimeMillis()));
             } else {
                 Optional<Project> optional = projectRepository.findById(id);
@@ -105,9 +105,9 @@ public class ProjectService {
         Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
         Page<Project> projectPage;
         if (StringUtils.isEmpty(projectTypeId)) {
-            projectPage = projectRepository.findAllByDelStatusAndStoreIdAndNameContaining(DelStatus.EFFECTIVE.isValue(), storeId, name, pageable);
+            projectPage = projectRepository.findAllByDelStatusAndStoreIdAndNameContaining(Constants.DelStatus.NORMAL.isValue(), storeId, name, pageable);
         } else {
-            projectPage = projectRepository.findAllByDelStatusAndStoreIdAndNameContainingAndProjectTypeId(DelStatus.EFFECTIVE.isValue(), storeId, name, projectTypeId, pageable);
+            projectPage = projectRepository.findAllByDelStatusAndStoreIdAndNameContainingAndProjectTypeId(Constants.DelStatus.NORMAL.isValue(), storeId, name, projectTypeId, pageable);
         }
         return PaginationRJO.of(projectPage);
     }

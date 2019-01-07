@@ -1,6 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.DelStatus;
+import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.Car;
 import com.freelycar.saas.project.entity.Card;
@@ -96,7 +96,7 @@ public class ClientService {
         String id = client.getId();
         if (StringUtils.isEmpty(id)) {
             client.setCreateTime(new Timestamp(System.currentTimeMillis()));
-            client.setDelStatus(DelStatus.EFFECTIVE.isValue());
+            client.setDelStatus(Constants.DelStatus.NORMAL.isValue());
             client.setMember(false);
             client.setPoints(0);
             client.setState(0);
@@ -136,11 +136,11 @@ public class ClientService {
         }
         Client client=optionalClient.get();
 
-        List<Car> cars=carRepository.findByClientIdAndDelStatus(id,DelStatus.EFFECTIVE.isValue());
+        List<Car> cars = carRepository.findByClientIdAndDelStatus(id, Constants.DelStatus.NORMAL.isValue());
 
-        List<Card> cards=cardRepository.findByClientIdAndDelStatus(id,DelStatus.EFFECTIVE.isValue());
+        List<Card> cards = cardRepository.findByClientIdAndDelStatus(id, Constants.DelStatus.NORMAL.isValue());
 
-        List<Coupon> coupons=couponRepository.findByClientIdAndDelStatus(id,DelStatus.EFFECTIVE.isValue());
+        List<Coupon> coupons = couponRepository.findByClientIdAndDelStatus(id, Constants.DelStatus.NORMAL.isValue());
 
         CustomerInfo customerInfo = new CustomerInfo();
         customerInfo.setClient(client);
@@ -165,7 +165,7 @@ public class ClientService {
     public ResultJsonObject list(String storeId, Integer currentPage,Integer pageSize,String name,String phone,boolean isMember,String licensePlate) {
         logger.debug("storeId:" + storeId);
         //TODO 会员管理—客户管理—获取客户列表
-       // Page<Client> clientPage = clientRepository.findAllByDelStatusAndStoreIdAndNameContainingAndPhoneContainingAndIsMember(DelStatus.EFFECTIVE.isValue(), storeId,name,phone, isMember,PageableTools.basicPage(currentPage, pageSize));
+        // Page<Client> clientPage = clientRepository.findAllByDelStatusAndStoreIdAndNameContainingAndPhoneContainingAndIsMember(Constants.DelStatus.NORMAL.isValue(), storeId,name,phone, isMember,PageableTools.basicPage(currentPage, pageSize));
         //Page<Client> clientPage=clientRepository.asd(name,phone,licensePlate,carBrand,isMember,consumeTimes,lastVisit,balance);
 
 

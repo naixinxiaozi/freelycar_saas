@@ -1,6 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.DelStatus;
+import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.PageableTools;
 import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
@@ -49,7 +49,7 @@ public class ProjectTypeService {
             //是否有ID，判断时新增还是修改
             String id = projectType.getId();
             if (StringUtils.isEmpty(id)) {
-                projectType.setDelStatus(DelStatus.EFFECTIVE.isValue());
+                projectType.setDelStatus(Constants.DelStatus.NORMAL.isValue());
                 projectType.setCreateTime(new Timestamp(System.currentTimeMillis()));
             } else {
                 Optional<ProjectType> optional = projectTypeRepository.findById(id);
@@ -113,7 +113,7 @@ public class ProjectTypeService {
      */
     public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize) {
         logger.debug("storeId:" + storeId);
-        Page<ProjectType> projectTypePage = projectTypeRepository.findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(DelStatus.EFFECTIVE.isValue(), storeId, PageableTools.basicPage(currentPage, pageSize));
+        Page<ProjectType> projectTypePage = projectTypeRepository.findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(Constants.DelStatus.NORMAL.isValue(), storeId, PageableTools.basicPage(currentPage, pageSize));
         return PaginationRJO.of(projectTypePage);
     }
 

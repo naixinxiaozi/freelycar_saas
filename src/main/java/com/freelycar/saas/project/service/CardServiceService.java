@@ -1,6 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.DelStatus;
+import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.PageableTools;
 import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
@@ -44,7 +44,7 @@ public class CardServiceService {
             //是否有ID，判断时新增还是修改
             String id = cardService.getId();
             if (StringUtils.isEmpty(id)) {
-                cardService.setDelStatus(DelStatus.EFFECTIVE.isValue());
+                cardService.setDelStatus(Constants.DelStatus.NORMAL.isValue());
                 cardService.setCreateTime(new Timestamp(System.currentTimeMillis()));
                 cardService.setBookOnline(false);
             } else {
@@ -103,7 +103,7 @@ public class CardServiceService {
      */
     public PaginationRJO list(String storeId, Integer currentPage, Integer pageSize, String name) {
         logger.debug("storeId:" + storeId);
-        Page<CardService> cardServicePage = cardServiceRepository.findAllByDelStatusAndStoreIdAndNameContaining(DelStatus.EFFECTIVE.isValue(), storeId, name, PageableTools.basicPage(currentPage, pageSize));
+        Page<CardService> cardServicePage = cardServiceRepository.findAllByDelStatusAndStoreIdAndNameContaining(Constants.DelStatus.NORMAL.isValue(), storeId, name, PageableTools.basicPage(currentPage, pageSize));
         return PaginationRJO.of(cardServicePage);
     }
 
