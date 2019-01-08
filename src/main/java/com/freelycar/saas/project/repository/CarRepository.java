@@ -27,6 +27,9 @@ public interface CarRepository extends JpaRepository<Car, String> {
     @Query(value = "select * from car where store_id = :storeId and del_status = 0 and license_plate = :license_plate", nativeQuery = true)
     List<Car> checkRepeatName(String license_plate, String storeId);
 
-    @Query()
-    List<Car> listByStoreIdWithoutSamePlate();
+    @Query(value = "SELECT car.* FROM car LEFT JOIN client c ON c.id = car.client_id WHERE phone = :phone AND car.del_status = 0 GROUP BY car.license_plate ORDER BY car.default_car DESC, car.create_time ASC", nativeQuery = true)
+    List<Car> listCarsByStoreIdWithoutSamePlate(String phone);
+
+    @Query(value = "SELECT car.* FROM car LEFT JOIN client c ON c.id = car.client_id WHERE c.store_id=:storeId AND c.phone = :phone AND car.del_status = 0 ORDER BY car.default_car DESC, car.create_time ASC", nativeQuery = true)
+    List<Car> listCarsByStoreIdAndPhone(String storeId, String phone);
 }

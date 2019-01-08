@@ -86,12 +86,6 @@ public class CarService {
         return true;
     }
 
-
-    //TODO 同一门店中车牌是否重复 ？
-
-
-
-
     /**
      * 删除操作（软删除）
      *

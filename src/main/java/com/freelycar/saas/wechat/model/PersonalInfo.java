@@ -15,12 +15,12 @@ public class PersonalInfo {
 
     private List<Car> cars;
 
-    private float cardBalance;
+    private Float cardBalance;
 
     public PersonalInfo() {
     }
 
-    public PersonalInfo(WxUserInfo wxUserInfo, List<Car> cars, float cardBalance) {
+    public PersonalInfo(WxUserInfo wxUserInfo, List<Car> cars, Float cardBalance) {
         this.wxUserInfo = wxUserInfo;
         this.cars = cars;
         this.cardBalance = cardBalance;
@@ -42,11 +42,11 @@ public class PersonalInfo {
         this.cars = cars;
     }
 
-    public float getCardBalance() {
+    public Float getCardBalance() {
         return cardBalance;
     }
 
-    public void setCardBalance(float cardBalance) {
+    public void setCardBalance(Float cardBalance) {
         this.cardBalance = cardBalance;
     }
 

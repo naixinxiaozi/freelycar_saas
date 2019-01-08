@@ -29,4 +29,6 @@ public interface ClientRepository extends JpaRepository<Client,String> {
 
     @Query(value = "SELECT license_plate FROM client LEFT JOIN car on client.id=car.client_id LEFT JOIN card on client.id=card.client_id where car.default_car=1 GROUP BY card.client_id;",nativeQuery = true)
     String findLicensePlate(String licensePlate);
+
+    List<Client> findByPhoneAndStoreIdAndDelStatusOrderByCreateTimeAsc(String phone, String storeId, boolean delStatus);
 }
