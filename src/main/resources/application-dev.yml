@@ -6,6 +6,6 @@ server:
 spring:
   # 数据库连接配置
   datasource:
-    url: jdbc:mysql://192.168.0.163:3306/${project.name}?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://www.pwai.net.cn:3306/${project.name}?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=GMT%2B8
     username: root
-    password: root
+    password: ymq920907

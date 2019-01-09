@@ -17,6 +17,7 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'war'
 
 group = 'com.freelycar.saas'
 version = '1.0.0-SNAPSHOT'
@@ -51,6 +52,9 @@ dependencies {
     //devtools
     compile('org.springframework.boot:spring-boot-devtools')
 
+    //tomcat
+    providedCompile("org.springframework.boot:spring-boot-starter-tomcat")
+    
     //test
     testCompile('org.springframework.boot:spring-boot-starter-test')
 

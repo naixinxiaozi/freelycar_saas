@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ApplicationContext;
 
@@ -14,7 +16,7 @@ import java.util.Arrays;
  */
 @SpringBootApplication
 @EnableCaching
-public class BootApplication {
+public class BootApplication extends SpringBootServletInitializer {
 
     private static Logger logger = LoggerFactory.getLogger(BootApplication.class);
 
@@ -29,5 +31,10 @@ public class BootApplication {
             logger.info(beanName);
         }
         logger.info("FreelyCar-SaaS服务启动完成。");
+    }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        return builder.sources(BootApplication.class);
     }
 }
