@@ -38,17 +38,53 @@ public class Coupon implements Serializable {
     @Column
     private String storeId;
 
+    /**
+     * 抵用券服务ID
+     */
     @Column
     private String couponServiceId;
 
+    /**
+     * 客户ID
+     */
     @Column
     private String clientId;
 
+    /**
+     * 优惠券名称
+     */
     @Column
     private String name;
 
+    /**
+     * 过期时间
+     */
     @Column
     private Timestamp deadline;
+
+    /**
+     * 购买价格
+     */
+    @Column
+    private Double price;
+
+    /**
+     * 抵用券对应的项目ID
+     */
+    @Column
+    private String projectId;
+
+    /**
+     * 单据ID，用于挂单和结算关联
+     */
+    @Column
+    private String orderId;
+
+    /**
+     * 使用状态（0：未使用；1：已使用；2：挂单中）
+     */
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private Integer status;
 
     public Coupon() {
     }
@@ -72,6 +108,14 @@ public class Coupon implements Serializable {
                 .append(name).append('\"');
         sb.append(",\"deadline\":\"")
                 .append(deadline).append('\"');
+        sb.append(",\"price\":")
+                .append(price);
+        sb.append(",\"projectId\":\"")
+                .append(projectId).append('\"');
+        sb.append(",\"orderId\":\"")
+                .append(orderId).append('\"');
+        sb.append(",\"status\":")
+                .append(status);
         sb.append('}');
         return sb.toString();
     }
@@ -138,5 +182,37 @@ public class Coupon implements Serializable {
 
     public void setDeadline(Timestamp deadline) {
         this.deadline = deadline;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

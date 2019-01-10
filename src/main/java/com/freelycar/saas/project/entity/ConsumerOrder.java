@@ -131,7 +131,7 @@ public class ConsumerOrder implements Serializable {
     /**
      * 订单状态
      */
-    @Column
+    @Column(columnDefinition = "int default 0")
     private Integer state;
 
     /**
@@ -150,7 +150,7 @@ public class ConsumerOrder implements Serializable {
      * 第一支付方式
      */
     @Column
-    private String firstPayMethod;
+    private Integer firstPayMethod;
 
     /**
      * 第一实付价格
@@ -168,7 +168,7 @@ public class ConsumerOrder implements Serializable {
      * 第二支付方式
      */
     @Column
-    private String secondPayMethod;
+    private Integer secondPayMethod;
 
     /**
      * 第二实付价格
@@ -185,7 +185,7 @@ public class ConsumerOrder implements Serializable {
     /**
      * 支付状态（0：未结算；1：已结算）
      */
-    @Column
+    @Column(columnDefinition = "int default 0")
     private Integer payState;
 
     /**
@@ -417,11 +417,11 @@ public class ConsumerOrder implements Serializable {
         this.carId = carId;
     }
 
-    public String getFirstPayMethod() {
+    public Integer getFirstPayMethod() {
         return firstPayMethod;
     }
 
-    public void setFirstPayMethod(String firstPayMethod) {
+    public void setFirstPayMethod(Integer firstPayMethod) {
         this.firstPayMethod = firstPayMethod;
     }
 
@@ -433,11 +433,11 @@ public class ConsumerOrder implements Serializable {
         this.firstActualPrice = firstActualPrice;
     }
 
-    public String getSecondPayMethod() {
+    public Integer getSecondPayMethod() {
         return secondPayMethod;
     }
 
-    public void setSecondPayMethod(String secondPayMethod) {
+    public void setSecondPayMethod(Integer secondPayMethod) {
         this.secondPayMethod = secondPayMethod;
     }
 
@@ -544,14 +544,14 @@ public class ConsumerOrder implements Serializable {
                 .append(totalPrice);
         sb.append(",\"actualPrice\":")
                 .append(actualPrice);
-        sb.append(",\"firstPayMethod\":\"")
-                .append(firstPayMethod).append('\"');
+        sb.append(",\"firstPayMethod\":")
+                .append(firstPayMethod);
         sb.append(",\"firstActualPrice\":")
                 .append(firstActualPrice);
         sb.append(",\"firstCardOrCouponId\":\"")
                 .append(firstCardOrCouponId).append('\"');
-        sb.append(",\"secondPayMethod\":\"")
-                .append(secondPayMethod).append('\"');
+        sb.append(",\"secondPayMethod\":")
+                .append(secondPayMethod);
         sb.append(",\"secondActualPrice\":")
                 .append(secondActualPrice);
         sb.append(",\"secondCardOrCouponId\":\"")

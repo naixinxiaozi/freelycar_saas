@@ -2,12 +2,10 @@ package com.freelycar.saas.project.controller;
 
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.model.OrderObject;
+import com.freelycar.saas.project.model.PayOrder;
 import com.freelycar.saas.project.service.ConsumerOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author tangwei - Toby
@@ -21,8 +19,47 @@ public class ConsumerOrderController {
     @Autowired
     private ConsumerOrderService consumerOrderService;
 
+    /**
+     * 开单
+     *
+     * @param orderObject
+     * @return
+     */
     @PostMapping("/handleOrder")
     public ResultJsonObject handleOrder(@RequestBody OrderObject orderObject) {
         return consumerOrderService.handleOrder(orderObject);
+    }
+
+    /**
+     * 获取单据详情
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/detail")
+    public ResultJsonObject detail(@RequestParam String id) {
+        return consumerOrderService.getOrderObjectDetail(id);
+    }
+
+    /**
+     * 结算
+     *
+     * @param payOrder
+     * @return
+     */
+    @PostMapping("/payment")
+    public ResultJsonObject payment(@RequestBody PayOrder payOrder) {
+        return consumerOrderService.payment(payOrder);
+    }
+
+    /**
+     * 挂单
+     *
+     * @param payOrder
+     * @return
+     */
+    @PostMapping("/pendingOrder")
+    public ResultJsonObject pendingOrder(@RequestBody PayOrder payOrder) {
+        return consumerOrderService.pendingOrder(payOrder);
     }
 }

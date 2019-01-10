@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -47,5 +48,15 @@ public class ConsumerProjectInfoService {
             UpdateTool.copyNullProperties(source, consumerProjectInfo);
         }
         return consumerProjectInfoRepository.save(consumerProjectInfo);
+    }
+
+    /**
+     * 查询指定订单的相关项目信息
+     *
+     * @param orderId
+     * @return
+     */
+    public List<ConsumerProjectInfo> getAllProjectInfoByOrderId(String orderId) {
+        return consumerProjectInfoRepository.findAllByDelStatusAndConsumerOrderIdOrderByCreateTimeAsc(Constants.DelStatus.NORMAL.isValue(), orderId);
     }
 }

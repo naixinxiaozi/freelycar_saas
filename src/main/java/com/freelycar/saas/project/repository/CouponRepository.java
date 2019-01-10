@@ -13,4 +13,6 @@ import java.util.List;
 public interface CouponRepository extends JpaRepository<Coupon, String> {
 
    List<Coupon> findByClientIdAndDelStatus(String id,boolean delStatus);
+
+   List<Coupon> findByOrderIdAndStatus(String orderId, int status);
 }

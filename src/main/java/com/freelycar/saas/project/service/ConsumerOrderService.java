@@ -5,7 +5,9 @@ import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.AutoParts;
 import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.entity.ConsumerProjectInfo;
+import com.freelycar.saas.project.entity.Coupon;
 import com.freelycar.saas.project.model.OrderObject;
+import com.freelycar.saas.project.model.PayOrder;
 import com.freelycar.saas.project.repository.ConsumerOrderRepository;
 import com.freelycar.saas.util.UpdateTool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,9 @@ public class ConsumerOrderService {
 
     @Autowired
     private AutoPartsService autoPartsService;
+
+    @Autowired
+    private CouponService couponService;
 
     /**
      * 保存和修改
@@ -73,7 +78,9 @@ public class ConsumerOrderService {
         //TODO 订单号生成规则：门店（3位）+ 日期（6位）+ 每日递增（4位）
         //设置order的额外信息
         consumerOrder.setOrderType(Constants.OrderType.SERVICE.getValue());
-        consumerOrder.setPayState(Constants.PayState.NOTPAY.getValue());
+        consumerOrder.setPayState(Constants.PayState.NOT_PAY.getValue());
+        //快速开单时订单状态直接为接车状态（不需要预约）
+        consumerOrder.setState(Constants.OrderState.RECEIVE_CAR.getValue());
 
         ConsumerOrder consumerOrderRes = this.saveOrUpdate(consumerOrder);
         if (null == consumerOrderRes) {
@@ -130,4 +137,104 @@ public class ConsumerOrderService {
         }
         return null;
     }
+
+    /**
+     * 获取订单详情的数据（用于详情页展示和结算中心展示）
+     *
+     * @param id
+     * @return
+     */
+    public ResultJsonObject getOrderObjectDetail(String id) {
+        if (StringUtils.isEmpty(id)) {
+            return ResultJsonObject.getErrorResult(null, "参数id为NULL");
+        }
+
+        OrderObject orderObject = new OrderObject();
+
+        Optional<ConsumerOrder> optionalConsumerOrder = consumerOrderRepository.findById(id);
+        if (!optionalConsumerOrder.isPresent()) {
+            return ResultJsonObject.getErrorResult(null, "未找到id为：" + id + " 的订单数据");
+        }
+
+        List<ConsumerProjectInfo> consumerProjectInfos = consumerProjectInfoService.getAllProjectInfoByOrderId(id);
+
+        List<AutoParts> autoPartsList = autoPartsService.getAllAutoPartsByOrderId(id);
+
+        orderObject.setConsumerOrder(optionalConsumerOrder.get());
+        orderObject.setConsumerProjectInfos(consumerProjectInfos);
+        orderObject.setAutoParts(autoPartsList);
+
+        return ResultJsonObject.getDefaultResult(orderObject);
+    }
+
+    /**
+     * 结算（需要处理卡券抵扣等业务逻辑）
+     *
+     * @param payOrder
+     * @return
+     */
+    public ResultJsonObject payment(PayOrder payOrder) {
+        ConsumerOrder consumerOrder = payOrder.getConsumerOrder();
+        if (null == consumerOrder) {
+            return ResultJsonObject.getErrorResult(null, "consumerOrder对象为NULL！");
+        }
+
+        String orderId = consumerOrder.getId();
+
+        /*
+        处理抵用券的结算
+         */
+        //查询所有关联的抵用券，并将所有orderId和status初始化
+        couponService.initCouponByOrderId(orderId);
+
+        //将抵用券设置为挂单
+        List<Coupon> coupons = payOrder.getUseCoupons();
+        for (Coupon coupon : coupons) {
+            coupon.setOrderId(orderId);
+            coupon.setStatus(Constants.CouponStatus.BEEN_USED.getValue());
+            couponService.saveOrUpdate(coupon);
+        }
+
+        //结算方式一
+        Integer firstPayMethod = consumerOrder.getFirstPayMethod();
+
+        //结算方式二
+        Integer secondPayMethod = consumerOrder.getSecondPayMethod();
+
+
+        return null;
+    }
+
+    /**
+     * 挂单（本质是保存，但是需要考虑抵用券选用的情况）
+     *
+     * @param payOrder
+     * @return
+     */
+    public ResultJsonObject pendingOrder(PayOrder payOrder) {
+        ConsumerOrder consumerOrder = payOrder.getConsumerOrder();
+        if (null == consumerOrder) {
+            return ResultJsonObject.getErrorResult(null, "consumerOrder对象为NULL！");
+        }
+        consumerOrder = this.saveOrUpdate(consumerOrder);
+        if (null == consumerOrder) {
+            return ResultJsonObject.getErrorResult(null, "挂单操作失败：数据保存错误！");
+        }
+
+        String orderId = consumerOrder.getId();
+
+        //查询所有关联的抵用券，并将所有orderId和status初始化
+        couponService.initCouponByOrderId(orderId);
+
+        //将抵用券设置为挂单
+        List<Coupon> coupons = payOrder.getUseCoupons();
+        for (Coupon coupon : coupons) {
+            coupon.setOrderId(orderId);
+            coupon.setStatus(Constants.CouponStatus.KEEP.getValue());
+            couponService.saveOrUpdate(coupon);
+        }
+
+        return ResultJsonObject.getDefaultResult(orderId);
+    }
+
 }

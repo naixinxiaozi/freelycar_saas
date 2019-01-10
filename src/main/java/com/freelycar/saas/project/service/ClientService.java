@@ -165,7 +165,7 @@ public class ClientService {
     public ResultJsonObject list(String storeId, Integer currentPage,Integer pageSize,String name,String phone,boolean isMember,String licensePlate) {
         logger.debug("storeId:" + storeId);
         //TODO 会员管理—客户管理—获取客户列表
-        // Page<Client> clientPage = clientRepository.findAllByDelStatusAndStoreIdAndNameContainingAndPhoneContainingAndIsMember(Constants.DelStatus.NORMAL.isValue(), storeId,name,phone, isMember,PageableTools.basicPage(currentPage, pageSize));
+        //Page<Client> clientPage = clientRepository.findAllByDelStatusAndStoreIdAndNameContainingAndPhoneContainingAndIsMember(Constants.DelStatus.NORMAL.isValue(), storeId,name,phone, isMember,PageableTools.basicPage(currentPage, pageSize));
         //Page<Client> clientPage=clientRepository.asd(name,phone,licensePlate,carBrand,isMember,consumeTimes,lastVisit,balance);
 
 

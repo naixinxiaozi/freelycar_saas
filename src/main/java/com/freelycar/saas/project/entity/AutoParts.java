@@ -77,7 +77,7 @@ public class AutoParts implements Serializable {
      * 订单ID
      */
     @Column
-    private String ConsumerOrderId;
+    private String consumerOrderId;
 
 
     public AutoParts() {
@@ -148,11 +148,11 @@ public class AutoParts implements Serializable {
     }
 
     public String getConsumerOrderId() {
-        return ConsumerOrderId;
+        return consumerOrderId;
     }
 
     public void setConsumerOrderId(String consumerOrderId) {
-        ConsumerOrderId = consumerOrderId;
+        consumerOrderId = consumerOrderId;
     }
 
     @Override
@@ -174,8 +174,8 @@ public class AutoParts implements Serializable {
                 .append(unitPrice);
         sb.append(",\"totalPrice\":")
                 .append(totalPrice);
-        sb.append(",\"ConsumerOrderId\":\"")
-                .append(ConsumerOrderId).append('\"');
+        sb.append(",\"consumerOrderId\":\"")
+                .append(consumerOrderId).append('\"');
         sb.append('}');
         return sb.toString();
     }

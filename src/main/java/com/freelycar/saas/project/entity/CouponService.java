@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 
 /**
  * 优惠券代售表
+ *
  * @author tangwei - Toby
  * @date 2018/10/23
  * @email toby911115@gmail.com
@@ -37,57 +38,44 @@ public class CouponService implements Serializable {
     @Column
     private String storeId;
 
-    @Column
-    private Timestamp buyStartTime;
-
-    @Column
-    private Timestamp buyEndTime;
-
+    /**
+     * 备注
+     */
     @Column
     private String content;
 
+    /**
+     * 抵用券名称
+     */
     @Column
     private String name;
 
+    /**
+     * 抵用券类型（暂时冗余）
+     */
     @Column
     private Integer type;
 
+    /**
+     * 有效期（月）
+     * 0：永久
+     */
     @Column
     private Integer validTime;
 
+    /**
+     * 售价
+     */
     @Column
     private Double price;
 
-    public CouponService() {
-    }
+    /**
+     * 抵用券对应的项目ID
+     */
+    @Column
+    private String projectId;
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"id\":\"")
-                .append(id).append('\"');
-        sb.append(",\"delStatus\":")
-                .append(delStatus);
-        sb.append(",\"createTime\":\"")
-                .append(createTime).append('\"');
-        sb.append(",\"storeId\":\"")
-                .append(storeId).append('\"');
-        sb.append(",\"buyStartTime\":\"")
-                .append(buyStartTime).append('\"');
-        sb.append(",\"buyEndTime\":\"")
-                .append(buyEndTime).append('\"');
-        sb.append(",\"content\":\"")
-                .append(content).append('\"');
-        sb.append(",\"name\":\"")
-                .append(name).append('\"');
-        sb.append(",\"type\":")
-                .append(type);
-        sb.append(",\"validTime\":")
-                .append(validTime);
-        sb.append(",\"price\":")
-                .append(price);
-        sb.append('}');
-        return sb.toString();
+    public CouponService() {
     }
 
     public String getId() {
@@ -122,22 +110,6 @@ public class CouponService implements Serializable {
         this.storeId = storeId;
     }
 
-    public Timestamp getBuyStartTime() {
-        return buyStartTime;
-    }
-
-    public void setBuyStartTime(Timestamp buyStartTime) {
-        this.buyStartTime = buyStartTime;
-    }
-
-    public Timestamp getBuyEndTime() {
-        return buyEndTime;
-    }
-
-    public void setBuyEndTime(Timestamp buyEndTime) {
-        this.buyEndTime = buyEndTime;
-    }
-
     public String getContent() {
         return content;
     }
@@ -170,11 +142,47 @@ public class CouponService implements Serializable {
         this.validTime = validTime;
     }
 
-    public Double getPrice() { return price; }
+    public Double getPrice() {
+        return price;
+    }
 
-    public void setPrice(Double price) { this.price = price; }
+    public void setPrice(Double price) {
+        this.price = price;
+    }
 
+    public String getProjectId() {
+        return projectId;
+    }
 
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append(",\"content\":\"")
+                .append(content).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"type\":")
+                .append(type);
+        sb.append(",\"validTime\":")
+                .append(validTime);
+        sb.append(",\"price\":")
+                .append(price);
+        sb.append(",\"projectId\":\"")
+                .append(projectId).append('\"');
+        sb.append('}');
+        return sb.toString();
+    }
 }
 

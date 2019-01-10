@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -47,5 +48,9 @@ public class AutoPartsService {
             UpdateTool.copyNullProperties(source, autoParts);
         }
         return autoPartsRepository.save(autoParts);
+    }
+
+    public List<AutoParts> getAllAutoPartsByOrderId(String orderId) {
+        return autoPartsRepository.findAllByDelStatusAndConsumerOrderIdOrderByCreateTimeAsc(Constants.DelStatus.NORMAL.isValue(), orderId);
     }
 }

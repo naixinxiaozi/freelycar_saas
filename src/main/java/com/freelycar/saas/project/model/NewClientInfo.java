@@ -4,6 +4,7 @@ import com.freelycar.saas.project.entity.Car;
 import com.freelycar.saas.project.entity.Client;
 
 /**
+ * 新增客户信息的JavaBean
  * @author tangwei - Toby
  * @date 2018-12-25
  * @email toby911115@gmail.com

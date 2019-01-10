@@ -51,10 +51,36 @@ public class Constants {
     }
 
     /**
+     * 订单状态
+     */
+    public enum OrderState {
+        RESERVATION(0, "预约"),
+        RECEIVE_CAR(1, "接车"),
+        SERVICE_FINISH(2, "完工"),
+        HAND_OVER(3, "交车");
+
+        private final Integer value;
+        private final String name;
+
+        OrderState(Integer value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    /**
      * 订单支付状态
      */
     public enum PayState {
-        NOTPAY(1, "未结算"), FINISHPAY(2, "已结算");
+        NOT_PAY(1, "未结算"), FINISH_PAY(2, "已结算");
 
         private final Integer value;
         private final String name;
@@ -78,11 +104,12 @@ public class Constants {
      */
     public enum PayMethod {
 
+        CARD(0, "储值卡"),
         CASH(1, "现金"),
-        CREDIT_CARD(2, "刷卡"),
+        WECHAT_PAY(2, "微信"),
         ALIPAY(3, "支付宝"),
         SUNING_PAY(4, "易付宝"),
-        WECHAT_PAY(5, "微信支付");
+        CREDIT_CARD(5, "刷卡");
 
         private final Integer code;
 
@@ -99,6 +126,31 @@ public class Constants {
 
         public String getValue() {
             return value;
+        }
+    }
+
+    /**
+     * 抵用券使用状态（0：未使用；1：已使用；2：挂单中）
+     */
+    public enum CouponStatus {
+        NOT_USE(0, "未使用"),
+        BEEN_USED(1, "已使用"),
+        KEEP(2, "挂单中");
+
+        private final Integer value;
+        private final String name;
+
+        CouponStatus(Integer value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 }

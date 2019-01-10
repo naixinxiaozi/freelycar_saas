@@ -83,7 +83,7 @@ public class CouponServiceService {
     }
 
     /**
-     * 获取卡类详情
+     * 获取抵用券类详情
      *
      * @param id
      * @return
@@ -94,7 +94,7 @@ public class CouponServiceService {
 
 
     /**
-     * 查询卡类列表
+     * 查询抵用券类列表
      *
      * @param storeId
      * @param currentPage

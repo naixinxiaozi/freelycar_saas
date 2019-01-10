@@ -7,6 +7,7 @@ import com.freelycar.saas.project.entity.ConsumerProjectInfo;
 import java.util.List;
 
 /**
+ * 快速开单的JavaBean
  * @author tangwei - Toby
  * @date 2018-12-28
  * @email toby911115@gmail.com

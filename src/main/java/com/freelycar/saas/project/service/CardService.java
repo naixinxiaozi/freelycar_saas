@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
@@ -104,6 +105,7 @@ public class CardService {
 
     /**
      * 会员卡号是否重复
+     *
      * @param card
      * @return
      */
@@ -114,6 +116,7 @@ public class CardService {
 
     /**
      * 获取有效期的截止日期
+     *
      * @param validTime
      * @return
      */
@@ -133,5 +136,17 @@ public class CardService {
      */
     public ResultJsonObject getDetail(String id) {
         return ResultJsonObject.getDefaultResult(cardRepository.findById(id));
+    }
+
+    //TODO 会员卡结算业务
+    public void settlementMemberCard(String cardId, float amount) throws EntityNotFoundException, IllegalArgumentException {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("扣除金额必须是正数！");
+        }
+        Card card = cardRepository.getOne(cardId);
+        Float balance = card.getBalance();
+        /*if () {
+
+        }*/
     }
 }
