@@ -39,6 +39,9 @@ public class ConsumerOrderService {
     @Autowired
     private CouponService couponService;
 
+    @Autowired
+    private CardService cardService;
+
     /**
      * 保存和修改
      *
@@ -187,7 +190,7 @@ public class ConsumerOrderService {
         //查询所有关联的抵用券，并将所有orderId和status初始化
         couponService.initCouponByOrderId(orderId);
 
-        //将抵用券设置为挂单
+        //将抵用券设置为已使用
         List<Coupon> coupons = payOrder.getUseCoupons();
         for (Coupon coupon : coupons) {
             coupon.setOrderId(orderId);
@@ -195,14 +198,47 @@ public class ConsumerOrderService {
             couponService.saveOrUpdate(coupon);
         }
 
-        //结算方式一
+        /*
+        结算方式一
+         */
         Integer firstPayMethod = consumerOrder.getFirstPayMethod();
+        Double firstActualPrice = consumerOrder.getFirstActualPrice();
+        String firstCardId = consumerOrder.getFirstCardId();
 
-        //结算方式二
+        //如果支付方式为空，不结算支付方式一
+        if (null != firstPayMethod) {
+            //如果支付一是卡支付，进行余额扣除
+            if (Constants.PayMethod.CARD.getCode().intValue() == firstPayMethod) {
+                cardService.cardSettlement(firstCardId, firstActualPrice.floatValue());
+            }
+            //如果是其他支付方式，直接保存即可
+        }
+
+
+        /*
+        结算方式二
+         */
         Integer secondPayMethod = consumerOrder.getSecondPayMethod();
+        Double secondActualPrice = consumerOrder.getSecondActualPrice();
+        String secondCardId = consumerOrder.getSecondCardId();
 
+        //如果支付方式为空，不结算支付方式一
+        if (null != secondPayMethod) {
+            //如果支付一是卡支付，进行余额扣除
+            if (Constants.PayMethod.CARD.getCode().intValue() == secondPayMethod) {
+                cardService.cardSettlement(secondCardId, secondActualPrice.floatValue());
+            }
+            //如果是其他支付方式，直接保存即可
+        }
 
-        return null;
+        //判断实付总金额是否为两种支付方式的总和
+        if (!this.isTotalActualPriceRight(consumerOrder)) {
+            consumerOrder.setActualPrice(this.sumActualPrice(consumerOrder));
+        }
+
+        //TODO 处理其他逻辑，比如推送消息和消费金额叠加之类的
+
+        return ResultJsonObject.getDefaultResult(consumerOrder.getId(), "结算成功");
     }
 
     /**
@@ -236,5 +272,35 @@ public class ConsumerOrderService {
 
         return ResultJsonObject.getDefaultResult(orderId);
     }
+
+    /**
+     * 判断总实付金额是否等于两种支付方式总和
+     *
+     * @param consumerOrder
+     * @return
+     */
+    private boolean isTotalActualPriceRight(ConsumerOrder consumerOrder) {
+        Double firstActualPrice = consumerOrder.getFirstActualPrice() == null ? 0 : consumerOrder.getFirstActualPrice();
+        Double secondActualPrice = consumerOrder.getSecondActualPrice() == null ? 0 : consumerOrder.getSecondActualPrice();
+        Double actualPrice = consumerOrder.getActualPrice();
+        if (null != actualPrice && firstActualPrice + secondActualPrice == actualPrice) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 计算实付金额
+     *
+     * @param consumerOrder
+     * @return
+     */
+    private double sumActualPrice(ConsumerOrder consumerOrder) {
+        Double firstActualPrice = consumerOrder.getFirstActualPrice() == null ? 0 : consumerOrder.getFirstActualPrice();
+        Double secondActualPrice = consumerOrder.getSecondActualPrice() == null ? 0 : consumerOrder.getSecondActualPrice();
+        return firstActualPrice + secondActualPrice;
+    }
+
+
 
 }

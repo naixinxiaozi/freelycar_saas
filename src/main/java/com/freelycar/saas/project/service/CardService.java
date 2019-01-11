@@ -146,7 +146,7 @@ public class CardService {
      * @throws EntityNotFoundException
      * @throws IllegalArgumentException
      */
-    public void settlementMemberCard(String cardId, float amount) throws EntityNotFoundException, IllegalArgumentException {
+    public void cardSettlement(String cardId, float amount) throws EntityNotFoundException, IllegalArgumentException {
         if (amount <= 0) {
             throw new IllegalArgumentException("扣除金额必须是正数！");
         }

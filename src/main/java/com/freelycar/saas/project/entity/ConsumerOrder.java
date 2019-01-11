@@ -159,10 +159,10 @@ public class ConsumerOrder implements Serializable {
     private Double firstActualPrice;
 
     /**
-     * 第一支付使用的卡/券ID
+     * 第一支付使用的卡ID
      */
     @Column
-    private String firstCardOrCouponId;
+    private String firstCardId;
 
     /**
      * 第二支付方式
@@ -177,10 +177,10 @@ public class ConsumerOrder implements Serializable {
     private Double secondActualPrice;
 
     /**
-     * 第二支付使用的卡/券ID
+     * 第二支付使用的卡ID
      */
     @Column
-    private String secondCardOrCouponId;
+    private String secondCardId;
 
     /**
      * 支付状态（0：未结算；1：已结算）
@@ -449,20 +449,20 @@ public class ConsumerOrder implements Serializable {
         this.secondActualPrice = secondActualPrice;
     }
 
-    public String getFirstCardOrCouponId() {
-        return firstCardOrCouponId;
+    public String getFirstCardId() {
+        return firstCardId;
     }
 
-    public void setFirstCardOrCouponId(String firstCardOrCouponId) {
-        this.firstCardOrCouponId = firstCardOrCouponId;
+    public void setFirstCardId(String firstCardId) {
+        this.firstCardId = firstCardId;
     }
 
-    public String getSecondCardOrCouponId() {
-        return secondCardOrCouponId;
+    public String getSecondCardId() {
+        return secondCardId;
     }
 
-    public void setSecondCardOrCouponId(String secondCardOrCouponId) {
-        this.secondCardOrCouponId = secondCardOrCouponId;
+    public void setSecondCardId(String secondCardId) {
+        this.secondCardId = secondCardId;
     }
 
     public String getCardOrCouponId() {
@@ -548,14 +548,14 @@ public class ConsumerOrder implements Serializable {
                 .append(firstPayMethod);
         sb.append(",\"firstActualPrice\":")
                 .append(firstActualPrice);
-        sb.append(",\"firstCardOrCouponId\":\"")
-                .append(firstCardOrCouponId).append('\"');
+        sb.append(",\"firstCardId\":\"")
+                .append(firstCardId).append('\"');
         sb.append(",\"secondPayMethod\":")
                 .append(secondPayMethod);
         sb.append(",\"secondActualPrice\":")
                 .append(secondActualPrice);
-        sb.append(",\"secondCardOrCouponId\":\"")
-                .append(secondCardOrCouponId).append('\"');
+        sb.append(",\"secondCardId\":\"")
+                .append(secondCardId).append('\"');
         sb.append(",\"payState\":")
                 .append(payState);
         sb.append(",\"pickCarStaffId\":\"")
