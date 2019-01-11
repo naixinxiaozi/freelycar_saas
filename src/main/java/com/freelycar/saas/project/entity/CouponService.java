@@ -70,10 +70,22 @@ public class CouponService implements Serializable {
     private Double price;
 
     /**
+     * 上架标记
+     */
+    @Column(nullable = false, columnDefinition = "bit default 0")
+    private Boolean bookOnline;
+
+    /**
      * 抵用券对应的项目ID
      */
     @Column
     private String projectId;
+
+    /**
+     * 抵用券对应项目对象（不入库）
+     */
+    @Transient
+    private Project project;
 
     public CouponService() {
     }
@@ -158,6 +170,22 @@ public class CouponService implements Serializable {
         this.projectId = projectId;
     }
 
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public Boolean getBookOnline() {
+        return bookOnline;
+    }
+
+    public void setBookOnline(Boolean bookOnline) {
+        this.bookOnline = bookOnline;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -179,8 +207,12 @@ public class CouponService implements Serializable {
                 .append(validTime);
         sb.append(",\"price\":")
                 .append(price);
+        sb.append(",\"bookOnline\":")
+                .append(bookOnline);
         sb.append(",\"projectId\":\"")
                 .append(projectId).append('\"');
+        sb.append(",\"project\":")
+                .append(project);
         sb.append('}');
         return sb.toString();
     }

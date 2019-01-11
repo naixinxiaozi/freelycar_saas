@@ -33,15 +33,27 @@ public class Project implements Serializable {
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime;
 
+    /**
+     * 备注（内容）
+     */
     @Column
     private String comment;
 
+    /**
+     * 项目名称
+     */
     @Column
     private String name;
 
+    /**
+     * 金额
+     */
     @Column(nullable = false, columnDefinition = "float default 0.0")
     private Float price;
 
+    /**
+     * 单价（冗余）
+     */
     @Column(nullable = false, columnDefinition = "float default 0.0")
     private Float pricePerUnit;
 
@@ -51,8 +63,17 @@ public class Project implements Serializable {
     @Column
     private Integer referWorkTime;
 
+    /**
+     * 项目类别ID
+     */
     @Column
     private String projectTypeId;
+
+    /**
+     * 项目类别对象
+     */
+    @Transient
+    private ProjectType projectType;
 
     /**
      * 使用次数
@@ -69,6 +90,9 @@ public class Project implements Serializable {
     @Column
     private String storeId;
 
+
+    public Project() {
+    }
 
     @Override
     public String toString() {
@@ -91,6 +115,8 @@ public class Project implements Serializable {
                 .append(referWorkTime);
         sb.append(",\"projectTypeId\":\"")
                 .append(projectTypeId).append('\"');
+        sb.append(",\"projectType\":")
+                .append(projectType);
         sb.append(",\"useTimes\":")
                 .append(useTimes);
         sb.append(",\"saleStatus\":")
@@ -197,6 +223,11 @@ public class Project implements Serializable {
         this.storeId = storeId;
     }
 
-    public Project() {
+    public ProjectType getProjectType() {
+        return projectType;
+    }
+
+    public void setProjectType(ProjectType projectType) {
+        this.projectType = projectType;
     }
 }

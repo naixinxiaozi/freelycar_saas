@@ -84,5 +84,27 @@ public class CouponServiceController {
         return couponServiceService.delete(id);
     }
 
+    /**
+     * 上架
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/upperShelf")
+    @LoggerManage(description = "调用方法：上架卡类信息")
+    public ResultJsonObject upperShelf(@RequestParam String id) {
+        return couponServiceService.upperShelf(id);
+    }
 
+    /**
+     * 下架
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/lowerShelf")
+    @LoggerManage(description = "调用方法：下架卡类信息")
+    public ResultJsonObject lowerShelf(@RequestParam String id) {
+        return couponServiceService.lowerShelf(id);
+    }
 }

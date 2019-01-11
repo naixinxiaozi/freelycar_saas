@@ -138,15 +138,24 @@ public class CardService {
         return ResultJsonObject.getDefaultResult(cardRepository.findById(id));
     }
 
-    //TODO 会员卡结算业务
+    /**
+     * 会员卡结算业务
+     *
+     * @param cardId
+     * @param amount
+     * @throws EntityNotFoundException
+     * @throws IllegalArgumentException
+     */
     public void settlementMemberCard(String cardId, float amount) throws EntityNotFoundException, IllegalArgumentException {
         if (amount <= 0) {
             throw new IllegalArgumentException("扣除金额必须是正数！");
         }
         Card card = cardRepository.getOne(cardId);
         Float balance = card.getBalance();
-        /*if () {
-
-        }*/
+        if (balance < amount) {
+            throw new IllegalArgumentException("扣除金额大于卡内余额！");
+        }
+        card.setBalance(balance - amount);
+        cardRepository.save(card);
     }
 }
