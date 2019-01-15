@@ -153,4 +153,31 @@ public class Constants {
             return name;
         }
     }
+
+    /**
+     * 单据查询时间类型
+     */
+    public enum DateType {
+        ORDER(1, "单据时间"),
+        DELIVER(2, "接车时间"),
+        FINISH(3, "完工时间"),
+        PICK(4, "交车时间");
+
+        private final Integer value;
+
+        private final String name;
+
+        DateType(Integer value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package com.freelycar.saas.project.controller;
 
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.project.model.OrderListParam;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
 import com.freelycar.saas.project.service.ConsumerOrderService;
@@ -61,5 +62,10 @@ public class ConsumerOrderController {
     @PostMapping("/pendingOrder")
     public ResultJsonObject pendingOrder(@RequestBody PayOrder payOrder) {
         return consumerOrderService.pendingOrder(payOrder);
+    }
+
+    @PostMapping("/list")
+    public ResultJsonObject list(@RequestBody OrderListParam params) {
+        return null;
     }
 }
