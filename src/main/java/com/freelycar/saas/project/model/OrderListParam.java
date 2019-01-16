@@ -12,25 +12,32 @@ public class OrderListParam {
 
     private String projectId;
 
-    private String payState;
+    private Integer payState;
 
-    private int dateType;
+    private Integer dateType;
 
-    private String startDate;
+    private String startTime;
 
-    private String endDate;
+    private String endTime;
 
-    public OrderListParam(String orderId, String licensePlate, String projectId, String payState, int dateType, String startDate, String endDate) {
+    private Integer orderState;
+
+    private Integer OrderType;
+
+
+    public OrderListParam() {
+    }
+
+    public OrderListParam(String orderId, String licensePlate, String projectId, Integer payState, Integer dateType, String startTime, String endTime, Integer orderState, Integer orderType) {
         this.orderId = orderId;
         this.licensePlate = licensePlate;
         this.projectId = projectId;
         this.payState = payState;
         this.dateType = dateType;
-        this.startDate = startDate;
-        this.endDate = endDate;
-    }
-
-    public OrderListParam() {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.orderState = orderState;
+        OrderType = orderType;
     }
 
     @Override
@@ -42,14 +49,18 @@ public class OrderListParam {
                 .append(licensePlate).append('\"');
         sb.append(",\"projectId\":\"")
                 .append(projectId).append('\"');
-        sb.append(",\"payState\":\"")
-                .append(payState).append('\"');
+        sb.append(",\"payState\":")
+                .append(payState);
         sb.append(",\"dateType\":")
                 .append(dateType);
-        sb.append(",\"startDate\":\"")
-                .append(startDate).append('\"');
-        sb.append(",\"endDate\":\"")
-                .append(endDate).append('\"');
+        sb.append(",\"startTime\":\"")
+                .append(startTime).append('\"');
+        sb.append(",\"endTime\":\"")
+                .append(endTime).append('\"');
+        sb.append(",\"orderState\":")
+                .append(orderState);
+        sb.append(",\"OrderType\":")
+                .append(OrderType);
         sb.append('}');
         return sb.toString();
     }
@@ -78,35 +89,51 @@ public class OrderListParam {
         this.projectId = projectId;
     }
 
-    public String getPayState() {
+    public Integer getPayState() {
         return payState;
     }
 
-    public void setPayState(String payState) {
+    public void setPayState(Integer payState) {
         this.payState = payState;
     }
 
-    public int getDateType() {
+    public Integer getDateType() {
         return dateType;
     }
 
-    public void setDateType(int dateType) {
+    public void setDateType(Integer dateType) {
         this.dateType = dateType;
     }
 
-    public String getStartDate() {
-        return startDate;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
-    public String getEndDate() {
-        return endDate;
+    public String getEndTime() {
+        return endTime;
     }
 
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public Integer getOrderState() {
+        return orderState;
+    }
+
+    public void setOrderState(Integer orderState) {
+        this.orderState = orderState;
+    }
+
+    public Integer getOrderType() {
+        return OrderType;
+    }
+
+    public void setOrderType(Integer orderType) {
+        OrderType = orderType;
     }
 }

@@ -92,7 +92,7 @@ public class ConsumerOrder implements Serializable {
     private Boolean isMember;
 
     /**
-     * 交付时间
+     * 交车时间
      */
     @Column
     private Timestamp deliverTime;
@@ -104,7 +104,7 @@ public class ConsumerOrder implements Serializable {
     private Timestamp finishTime;
 
     /**
-     * 取车时间
+     * 接车时间
      */
     @Column
     private Timestamp pickTime;

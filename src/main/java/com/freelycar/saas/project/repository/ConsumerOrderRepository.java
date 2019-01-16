@@ -1,6 +1,9 @@
 package com.freelycar.saas.project.repository;
 
 import com.freelycar.saas.project.entity.ConsumerOrder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -14,4 +17,6 @@ public interface ConsumerOrderRepository extends JpaRepository<ConsumerOrder, St
     List<ConsumerOrder> findAllByClientIdAndDelStatusOrderByCreateTimeDesc(String clientId, boolean delStatus);
 
     List<ConsumerOrder> findAllByClientIdAndDelStatusAndOrderTypeOrderByCreateTimeDesc(String clientId, boolean delStatus, Integer orderType);
+
+    Page<ConsumerOrder> findAll(Specification specification, Pageable pageable);
 }

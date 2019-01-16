@@ -65,7 +65,12 @@ public class ConsumerOrderController {
     }
 
     @PostMapping("/list")
-    public ResultJsonObject list(@RequestBody OrderListParam params) {
-        return null;
+    public ResultJsonObject list(
+            @RequestParam String storeId,
+            @RequestParam Integer currentPage,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestBody OrderListParam params
+    ) {
+        return consumerOrderService.list(storeId, currentPage, pageSize, params);
     }
 }

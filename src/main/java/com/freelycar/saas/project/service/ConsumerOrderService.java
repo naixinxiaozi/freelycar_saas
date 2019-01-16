@@ -1,21 +1,31 @@
 package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.Constants;
+import com.freelycar.saas.basic.wrapper.PageableTools;
+import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.AutoParts;
 import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.entity.ConsumerProjectInfo;
 import com.freelycar.saas.project.entity.Coupon;
+import com.freelycar.saas.project.model.OrderListParam;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
 import com.freelycar.saas.project.repository.ConsumerOrderRepository;
 import com.freelycar.saas.util.UpdateTool;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.criteria.Predicate;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -283,10 +293,7 @@ public class ConsumerOrderService {
         Double firstActualPrice = consumerOrder.getFirstActualPrice() == null ? 0 : consumerOrder.getFirstActualPrice();
         Double secondActualPrice = consumerOrder.getSecondActualPrice() == null ? 0 : consumerOrder.getSecondActualPrice();
         Double actualPrice = consumerOrder.getActualPrice();
-        if (null != actualPrice && firstActualPrice + secondActualPrice == actualPrice) {
-            return true;
-        }
-        return false;
+        return null != actualPrice && firstActualPrice + secondActualPrice == actualPrice;
     }
 
     /**
@@ -301,6 +308,114 @@ public class ConsumerOrderService {
         return firstActualPrice + secondActualPrice;
     }
 
+
+    /**
+     * 单据列表条件查询
+     *
+     * @param params
+     * @return
+     */
+    public ResultJsonObject list(String storeId, Integer currentPage, Integer pageSize, OrderListParam params) {
+        String orderId = params.getOrderId();
+        String licensePlate = params.getLicensePlate();
+        String projectId = params.getProjectId();
+
+        Integer orderState = params.getOrderState();
+        Integer orderType = params.getOrderType();
+        Integer payState = params.getPayState();
+
+        Integer dateType = params.getDateType();
+        String startTime = params.getStartTime();
+        String endTime = params.getEndTime();
+
+        Page<ConsumerOrder> resultPage;
+        Specification<ConsumerOrder> querySpecification = (Specification<ConsumerOrder>) (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(criteriaBuilder.equal(root.get("delStatus"), 0));
+            predicates.add(criteriaBuilder.equal(root.get("storeId"), storeId));
+
+            //订单号模糊查询
+            if (StringUtils.hasText(orderId)) {
+                predicates.add(criteriaBuilder.like(root.get("id"), "%" + orderId + "%"));
+            }
+            //车牌号模糊查询
+            if (StringUtils.hasText(licensePlate)) {
+                predicates.add(criteriaBuilder.like(root.get("licensePlate"), "%" + licensePlate + "%"));
+            }
+            //订单状态条件查询
+            if (null != orderState) {
+                predicates.add(criteriaBuilder.equal(root.get("orderState"), orderState));
+            }
+            //订单类型条件查询（如果没传，默认是查询出非办卡类的）
+            if (null != orderType) {
+                predicates.add(criteriaBuilder.equal(root.get("orderType"), orderType));
+            } else {
+                predicates.add(criteriaBuilder.notEqual(root.get("orderType"), Constants.OrderType.CARD.getValue()));
+            }
+            //支付状态条件查询
+            if (null != payState) {
+                predicates.add(criteriaBuilder.equal(root.get("payState"), payState));
+            }
+            //时间范围条件查询
+            if (null != dateType) {
+                Date start = null;
+                Date end = null;
+                if (StringUtils.hasText(startTime)) {
+                    try {
+                        start = DateUtils.parseDate(startTime + " 00:00:00", "yyyy-MM-dd HH:mm:ss");
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (StringUtils.hasText(endTime)) {
+                    try {
+                        end = DateUtils.parseDate(endTime + " 23:59:59", "yyyy-MM-dd HH:mm:ss");
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (Constants.DateType.ORDER.getValue().intValue() == dateType) {
+                    if (null != start) {
+                        predicates.add(criteriaBuilder.greaterThan(root.get("createTime"), start));
+                    }
+                    if (null != end) {
+                        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime"), end));
+                    }
+                }
+
+                if (Constants.DateType.PICK.getValue().intValue() == dateType) {
+                    if (null != start) {
+                        predicates.add(criteriaBuilder.greaterThan(root.get("pickTime"), start));
+                    }
+                    if (null != end) {
+                        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("pickTime"), end));
+                    }
+                }
+
+                if (Constants.DateType.FINISH.getValue().intValue() == dateType) {
+                    if (null != start) {
+                        predicates.add(criteriaBuilder.greaterThan(root.get("finishTime"), start));
+                    }
+                    if (null != end) {
+                        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("finishTime"), end));
+                    }
+                }
+
+                if (Constants.DateType.DELIVER.getValue().intValue() == dateType) {
+                    if (null != start) {
+                        predicates.add(criteriaBuilder.greaterThan(root.get("deliverTime"), start));
+                    }
+                    if (null != end) {
+                        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("deliverTime"), end));
+                    }
+                }
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+        resultPage = consumerOrderRepository.findAll(querySpecification, PageableTools.basicPage(currentPage, pageSize));
+        return ResultJsonObject.getDefaultResult(PaginationRJO.of(resultPage));
+    }
 
 
 }

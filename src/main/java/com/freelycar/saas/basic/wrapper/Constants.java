@@ -159,9 +159,9 @@ public class Constants {
      */
     public enum DateType {
         ORDER(1, "单据时间"),
-        DELIVER(2, "接车时间"),
+        PICK(2, "接车时间"),
         FINISH(3, "完工时间"),
-        PICK(4, "交车时间");
+        DELIVER(4, "交车时间");
 
         private final Integer value;
 
