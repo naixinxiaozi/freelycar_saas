@@ -7,6 +7,7 @@ import com.freelycar.saas.project.entity.Client;
 import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.CardServiceRepository;
 import com.freelycar.saas.project.repository.ClientRepository;
+import com.freelycar.saas.util.TimestampUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +15,6 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,7 +89,7 @@ public class CardService {
         card.setFailed(false);
         card.setName(cardServiceObject.getName());
         card.setPrice(cardServiceObject.getPrice());
-        card.setExpirationDate(this.getExpirationDate(cardServiceObject.getValidTime()));
+        card.setExpirationDate(TimestampUtil.getExpirationDateForYear(cardServiceObject.getValidTime()));
 
         Card cardRes = cardRepository.saveAndFlush(card);
 
@@ -114,19 +114,6 @@ public class CardService {
         return !cardList.isEmpty();
     }
 
-    /**
-     * 获取有效期的截止日期
-     *
-     * @param validTime
-     * @return
-     */
-    private Timestamp getExpirationDate(int validTime) {
-        Calendar calendar = Calendar.getInstance();
-        int currentYear = calendar.get(Calendar.YEAR);
-        int year = currentYear + validTime;
-        calendar.set(Calendar.YEAR, year);
-        return new Timestamp(calendar.getTimeInMillis());
-    }
 
     /**
      * 获取会员卡详情

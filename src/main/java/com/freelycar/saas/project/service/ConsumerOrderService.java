@@ -318,6 +318,8 @@ public class ConsumerOrderService {
     public ResultJsonObject list(String storeId, Integer currentPage, Integer pageSize, OrderListParam params) {
         String orderId = params.getOrderId();
         String licensePlate = params.getLicensePlate();
+
+        //TODO 如何查出订单类型，还得考虑一下
         String projectId = params.getProjectId();
 
         Integer orderState = params.getOrderState();

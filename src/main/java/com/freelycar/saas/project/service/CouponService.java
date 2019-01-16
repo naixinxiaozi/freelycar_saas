@@ -3,6 +3,8 @@ package com.freelycar.saas.project.service;
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.project.entity.Coupon;
 import com.freelycar.saas.project.repository.CouponRepository;
+import com.freelycar.saas.project.repository.CouponServiceRepository;
+import com.freelycar.saas.util.TimestampUtil;
 import com.freelycar.saas.util.UpdateTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,9 @@ public class CouponService {
     @Autowired
     private CouponRepository couponRepository;
 
+    @Autowired
+    private CouponServiceRepository couponServiceRepository;
+
     /**
      * 新增或修改
      *
@@ -35,12 +40,17 @@ public class CouponService {
         if (null == coupon) {
             return null;
         }
+
         String id = coupon.getId();
         if (StringUtils.isEmpty(id)) {
             coupon.setDelStatus(Constants.DelStatus.NORMAL.isValue());
             coupon.setCreateTime(new Timestamp(System.currentTimeMillis()));
-            //TODO 计算deadline（截止日期）
-
+            //计算deadline（截止日期）
+            com.freelycar.saas.project.entity.CouponService couponServiceObject = couponServiceRepository.getOne(coupon.getCouponServiceId());
+            if (null == couponServiceObject) {
+                return null;
+            }
+            coupon.setDeadline(TimestampUtil.getExpirationDateForMonth(couponServiceObject.getValidTime()));
         } else {
             Optional<Coupon> couponOptional = couponRepository.findById(id);
             if (!couponOptional.isPresent()) {
