@@ -1,19 +1,40 @@
 package com.freelycar.saas.project.model;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import java.math.BigInteger;
+import java.sql.Timestamp;
 
 public class CustomerList {
+    private String id;
     private String name;
     private String phone;
-    private String licensePlate;
-    private String carBrand;
-    private boolean isMember;
-    private Integer customerTimes;
-    private DateTimeFormat lastVisit;
-    private Float balance;
+    private String plates;
+    private String brands;
+    private String isMember;
+    private BigInteger totalCount;
+    private Timestamp lastVisit;
+    private Double totalBalance;
 
-    public CustomerList(){
+    public CustomerList() {
+    }
 
+    public CustomerList(String id, String name, String phone, String plates, String brands, String isMember, BigInteger totalCount, Timestamp lastVisit, Double totalBalance) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.plates = plates;
+        this.brands = brands;
+        this.isMember = isMember;
+        this.totalCount = totalCount;
+        this.lastVisit = lastVisit;
+        this.totalBalance = totalBalance;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -32,65 +53,76 @@ public class CustomerList {
         this.phone = phone;
     }
 
-    public String getLicensePlate() {
-        return licensePlate;
+    public String getPlates() {
+        return plates;
     }
 
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
+    public void setPlates(String plates) {
+        this.plates = plates;
     }
 
-    public String getCarBrand() {
-        return carBrand;
+    public String getBrands() {
+        return brands;
     }
 
-    public void setCarBrand(String carBrand) {
-        this.carBrand = carBrand;
+    public void setBrands(String brands) {
+        this.brands = brands;
     }
 
-    public boolean isMember() {
+    public String getIsMember() {
         return isMember;
     }
 
-    public void setMember(boolean member) {
-        isMember = member;
+    public void setIsMember(String isMember) {
+        this.isMember = isMember;
     }
 
-    public Integer getCustomerTimes() {
-        return customerTimes;
+    public BigInteger getTotalCount() {
+        return totalCount;
     }
 
-    public void setCustomerTimes(Integer customerTimes) {
-        this.customerTimes = customerTimes;
+    public void setTotalCount(BigInteger totalCount) {
+        this.totalCount = totalCount;
     }
 
-    public DateTimeFormat getLastVisit() {
+    public Timestamp getLastVisit() {
         return lastVisit;
     }
 
-    public void setLastVisit(DateTimeFormat lastVisit) {
+    public void setLastVisit(Timestamp lastVisit) {
         this.lastVisit = lastVisit;
     }
 
-    public Float getBalance() {
-        return balance;
+    public Double getTotalBalance() {
+        return totalBalance;
     }
 
-    public void setBalance(Float balance) {
-        this.balance = balance;
+    public void setTotalBalance(Double totalBalance) {
+        this.totalBalance = totalBalance;
     }
 
     @Override
     public String toString() {
-        return "CustomerList{" +
-                "name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", licensePlate='" + licensePlate + '\'' +
-                ", carBrand='" + carBrand + '\'' +
-                ", isMember=" + isMember +
-                ", customerTimes=" + customerTimes +
-                ", lastVisit=" + lastVisit +
-                ", balance=" + balance +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"phone\":\"")
+                .append(phone).append('\"');
+        sb.append(",\"plates\":\"")
+                .append(plates).append('\"');
+        sb.append(",\"brands\":\"")
+                .append(brands).append('\"');
+        sb.append(",\"isMember\":\"")
+                .append(isMember).append('\"');
+        sb.append(",\"totalCount\":")
+                .append(totalCount);
+        sb.append(",\"lastVisit\":\"")
+                .append(lastVisit).append('\"');
+        sb.append(",\"totalBalance\":")
+                .append(totalBalance);
+        sb.append('}');
+        return sb.toString();
     }
 }

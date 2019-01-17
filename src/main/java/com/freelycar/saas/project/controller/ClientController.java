@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author tangwei - Toby
  * @date 2018-12-25
@@ -94,16 +97,23 @@ public class ClientController {
             @RequestParam Integer pageSize,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String phone,
-            @RequestParam(required = false) boolean isMember,
+            @RequestParam(required = false) Boolean isMember,
             @RequestParam(required = false) String licensePlate
 
     ) {
-        if (StringUtils.isEmpty(StringUtils.trimWhitespace(name))) {
-            name = "";
+        Map<String, Object> params = new HashMap<>();
+        if (StringUtils.hasText(StringUtils.trimWhitespace(name))) {
+            params.put("name", name);
         }
-        if (StringUtils.isEmpty(StringUtils.trimWhitespace(phone))) {
-            phone = "";
+        if (StringUtils.hasText(StringUtils.trimWhitespace(phone))) {
+            params.put("phone", phone);
         }
-        return ResultJsonObject.getDefaultResult(clientService.list(storeId, currentPage, pageSize,name,phone,isMember,licensePlate));
+        if (null != isMember) {
+            params.put("isMember", isMember);
+        }
+        if (StringUtils.hasText(StringUtils.trimWhitespace(phone))) {
+            params.put("licensePlate", licensePlate);
+        }
+        return ResultJsonObject.getDefaultResult(clientService.list(storeId, currentPage, pageSize, params));
     }
 }

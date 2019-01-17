@@ -1,7 +1,5 @@
 package com.freelycar.saas.basic.wrapper;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -103,12 +101,18 @@ public class PaginationRJO {
 
     @Override
     public String toString() {
-        return "PaginationRJO{" +
-                "data=" + data +
-                ", pageSize=" + pageSize +
-                ", currentPage=" + currentPage +
-                ", total=" + total +
-                ", pageCount=" + pageCount +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"data\":")
+                .append(data);
+        sb.append(",\"pageSize\":")
+                .append(pageSize);
+        sb.append(",\"currentPage\":")
+                .append(currentPage);
+        sb.append(",\"total\":")
+                .append(total);
+        sb.append(",\"pageCount\":")
+                .append(pageCount);
+        sb.append('}');
+        return sb.toString();
     }
 }

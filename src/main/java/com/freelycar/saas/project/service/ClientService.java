@@ -1,6 +1,8 @@
 package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.Constants;
+import com.freelycar.saas.basic.wrapper.PageableTools;
+import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.Car;
 import com.freelycar.saas.project.entity.Card;
@@ -13,16 +15,26 @@ import com.freelycar.saas.project.repository.CarRepository;
 import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.ClientRepository;
 import com.freelycar.saas.project.repository.CouponRepository;
+import com.freelycar.saas.util.MySQLPageTool;
 import com.freelycar.saas.util.UpdateTool;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -45,6 +57,9 @@ public class ClientService {
 
     @Autowired
     private CarService carService;
+
+    @Autowired
+    private LocalContainerEntityManagerFactoryBean entityManagerFactory;
 
     /**
      * 同时保存客户信息和车辆信息
@@ -130,11 +145,11 @@ public class ClientService {
     public ResultJsonObject getCustomerInfo(String id) {
 
 
-        Optional<Client> optionalClient=clientRepository.findById(id);
+        Optional<Client> optionalClient = clientRepository.findById(id);
         if (!optionalClient.isPresent()) {
-            return ResultJsonObject.getErrorResult(null, "不存在id为"+id+"的用户。");
+            return ResultJsonObject.getErrorResult(null, "不存在id为" + id + "的用户。");
         }
-        Client client=optionalClient.get();
+        Client client = optionalClient.get();
 
         List<Car> cars = carRepository.findByClientIdAndDelStatus(id, Constants.DelStatus.NORMAL.isValue());
 
@@ -155,26 +170,68 @@ public class ClientService {
 
     /**
      * 获取客户列表
+     *
      * @param storeId
      * @param currentPage
      * @param pageSize
-     * @param name
-     * @param phone
+     * @param params
      * @return
      */
-    public ResultJsonObject list(String storeId, Integer currentPage,Integer pageSize,String name,String phone,boolean isMember,String licensePlate) {
-        logger.debug("storeId:" + storeId);
-        //TODO 会员管理—客户管理—获取客户列表
-        //Page<Client> clientPage = clientRepository.findAllByDelStatusAndStoreIdAndNameContainingAndPhoneContainingAndIsMember(Constants.DelStatus.NORMAL.isValue(), storeId,name,phone, isMember,PageableTools.basicPage(currentPage, pageSize));
-        //Page<Client> clientPage=clientRepository.asd(name,phone,licensePlate,carBrand,isMember,consumeTimes,lastVisit,balance);
+    public ResultJsonObject list(String storeId, Integer currentPage, Integer pageSize, Map params) {
+        String name = null;
+        String phone = null;
+        Boolean isMember = null;
+        String licensePlate = null;
+        if (null != params) {
+            name = (String) params.get("name");
+            phone = (String) params.get("phone");
+            isMember = (Boolean) params.get("isMember");
+            licensePlate = (String) params.get("licensePlate");
+        }
 
 
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT client.id, client.name, client.phone, p.plates, p.brands, if(client.is_member=0,'否','是') as isMember, (select count(1) from consumer_order co where co.client_id=client.id and co.del_status=0) as totalCount, client.last_visit as lastVisit, round((select sum(card.balance) from card where card.client_id=client.id and card.del_status=0),2) as totalBalance FROM client LEFT JOIN (SELECT c.id, group_concat( car.license_plate ) as plates, GROUP_CONCAT( car_brand ) as brands FROM car LEFT JOIN client c ON c.id = car.client_id WHERE car.del_status = 0 ");
+        if (StringUtils.hasText(licensePlate)) {
+            sql.append(" AND car.license_plate LIKE '%").append(licensePlate).append("%' ");
+        }
+        sql.append("GROUP BY c.id ) p ON p.id = client.id WHERE client.del_status = 0 ")
+                .append(" AND client.store_id = '").append(storeId).append("' ");
 
-        CustomerList customerList=new CustomerList();
-        customerList.setName(clientRepository.findName(name));
-        customerList.setPhone(clientRepository.findPhone(phone));
-        customerList.setLicensePlate(clientRepository.findLicensePlate(licensePlate));
+        if (StringUtils.hasText(name)) {
+            sql.append(" AND client.NAME LIKE '%").append(name).append("%' ");
+        }
+        if (StringUtils.hasText(phone)) {
+            sql.append(" AND client.phone LIKE '%").append(phone).append("%'  ");
+        }
+        if (null != isMember) {
+            sql.append(" AND client.is_member= ");
+            if (isMember) {
+                sql.append("1");
+            } else {
+                sql.append("0");
+            }
+        }
 
-        return ResultJsonObject.getDefaultResult(customerList);
+        sql.append(" ORDER BY client.create_time ASC ");
+
+        Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(CustomerList.class));
+        int total = nativeQuery.getResultList().size();
+        @SuppressWarnings({"unused", "unchecked"})
+        List<CustomerList> customerInfos = nativeQuery.setFirstResult(MySQLPageTool.getStartPosition(currentPage, pageSize)).setMaxResults(pageSize).getResultList();
+
+        //关闭em
+        em.close();
+
+        @SuppressWarnings("unchecked")
+        Page<CustomerList> page = new PageImpl(customerInfos, pageable, total);
+
+        return ResultJsonObject.getDefaultResult(PaginationRJO.of(page));
     }
+
+
 }

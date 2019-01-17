@@ -145,4 +145,9 @@ public class CardService {
         card.setBalance(balance - amount);
         cardRepository.save(card);
     }
+
+    //TODO 办卡成功后需要自动添加一条订单，且是自动结算的
+    public void autoGenerateOrderForHandleCard() {
+
+    }
 }

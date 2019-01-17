@@ -31,4 +31,6 @@ public interface ClientRepository extends JpaRepository<Client,String> {
     String findLicensePlate(String licensePlate);
 
     List<Client> findByPhoneAndStoreIdAndDelStatusOrderByCreateTimeAsc(String phone, String storeId, boolean delStatus);
+
+
 }

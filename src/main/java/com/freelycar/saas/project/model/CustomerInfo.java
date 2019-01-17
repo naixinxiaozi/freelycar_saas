@@ -54,11 +54,16 @@ public class CustomerInfo {
 
     @Override
     public String toString() {
-        return "CustomerInfo{" +
-                "client=" + client +
-                ", car=" + car +
-                ", card=" + card +
-                ", coupon=" + coupon +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"client\":")
+                .append(client);
+        sb.append(",\"car\":")
+                .append(car);
+        sb.append(",\"card\":")
+                .append(card);
+        sb.append(",\"coupon\":")
+                .append(coupon);
+        sb.append('}');
+        return sb.toString();
     }
 }
