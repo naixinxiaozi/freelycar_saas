@@ -23,8 +23,10 @@ import java.util.Map;
 @RequestMapping("/client")
 public class ClientController {
     private static Logger logger = LoggerFactory.getLogger(ClientController.class);
+
     @Autowired
     private ClientService clientService;
+
     private String errorMsg;
 
     @PostMapping("/addClientAndCar")
@@ -34,6 +36,7 @@ public class ClientController {
 
     /**
      * 新增/修改客户
+     *
      * @param client
      * @return
      */
@@ -49,6 +52,7 @@ public class ClientController {
 
     /**
      * 获取客户基本信息（不包含会员卡、车辆等）
+     *
      * @param id
      * @return
      */
@@ -66,7 +70,6 @@ public class ClientController {
 
     /**
      * 获取客户基本信息（包含会员卡、车辆等）
-     *
      */
     @GetMapping(value = "/getCustomerInfo")
     @LoggerManage(description = "调用方法：获取客户基本信息（包含会员卡、车辆）")
@@ -82,6 +85,7 @@ public class ClientController {
 
     /**
      * 获取客户列表
+     *
      * @param storeId
      * @param currentPage
      * @param pageSize
@@ -115,5 +119,14 @@ public class ClientController {
             params.put("licensePlate", licensePlate);
         }
         return ResultJsonObject.getDefaultResult(clientService.list(storeId, currentPage, pageSize, params));
+    }
+
+    @GetMapping(value = "/memberStatistics")
+    @LoggerManage(description = "调用方法：会员统计")
+    public ResultJsonObject memberStatistics(
+            @RequestParam String storeId
+    ) {
+
+        return ResultJsonObject.getDefaultResult(null);
     }
 }

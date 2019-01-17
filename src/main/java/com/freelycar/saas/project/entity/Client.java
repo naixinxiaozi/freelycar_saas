@@ -92,6 +92,12 @@ public class Client implements Serializable {
     private Boolean isMember;
 
     /**
+     * 开通会员的时间
+     */
+    @Column
+    private Timestamp memberDate;
+
+    /**
      * 最后登录时间
      */
     @Column
@@ -263,51 +269,12 @@ public class Client implements Serializable {
         this.driverLicense = driverLicense;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"id\":\"")
-                .append(id).append('\"');
-        sb.append(",\"delStatus\":")
-                .append(delStatus);
-        sb.append(",\"createTime\":\"")
-                .append(createTime).append('\"');
-        sb.append(",\"age\":")
-                .append(age);
-        sb.append(",\"birthday\":\"")
-                .append(birthday).append('\"');
-        sb.append(",\"consumeAmount\":")
-                .append(consumeAmount);
-        sb.append(",\"consumeTimes\":")
-                .append(consumeTimes);
-        sb.append(",\"gender\":\"")
-                .append(gender).append('\"');
-        sb.append(",\"idNumber\":\"")
-                .append(idNumber).append('\"');
-        sb.append(",\"driverLicense\":\"")
-                .append(driverLicense).append('\"');
-        sb.append(",\"isMember\":")
-                .append(isMember);
-        sb.append(",\"lastVisit\":\"")
-                .append(lastVisit).append('\"');
-        sb.append(",\"name\":\"")
-                .append(name).append('\"');
-        sb.append(",\"phone\":\"")
-                .append(phone).append('\"');
-        sb.append(",\"points\":")
-                .append(points);
-        sb.append(",\"recommendName\":\"")
-                .append(recommendName).append('\"');
-        sb.append(",\"state\":")
-                .append(state);
-        sb.append(",\"trueName\":\"")
-                .append(trueName).append('\"');
-        sb.append(",\"nickName\":\"")
-                .append(nickName).append('\"');
-        sb.append(",\"storeId\":\"")
-                .append(storeId).append('\"');
-        sb.append('}');
-        return sb.toString();
+    public Timestamp getMemberDate() {
+        return memberDate;
+    }
+
+    public void setMemberDate(Timestamp memberDate) {
+        this.memberDate = memberDate;
     }
 
     public String getRecommendName() {
@@ -350,4 +317,52 @@ public class Client implements Serializable {
         this.storeId = storeId;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"age\":")
+                .append(age);
+        sb.append(",\"birthday\":\"")
+                .append(birthday).append('\"');
+        sb.append(",\"consumeAmount\":")
+                .append(consumeAmount);
+        sb.append(",\"consumeTimes\":")
+                .append(consumeTimes);
+        sb.append(",\"gender\":\"")
+                .append(gender).append('\"');
+        sb.append(",\"idNumber\":\"")
+                .append(idNumber).append('\"');
+        sb.append(",\"driverLicense\":\"")
+                .append(driverLicense).append('\"');
+        sb.append(",\"isMember\":")
+                .append(isMember);
+        sb.append(",\"memberDate\":\"")
+                .append(memberDate).append('\"');
+        sb.append(",\"lastVisit\":\"")
+                .append(lastVisit).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"phone\":\"")
+                .append(phone).append('\"');
+        sb.append(",\"points\":")
+                .append(points);
+        sb.append(",\"recommendName\":\"")
+                .append(recommendName).append('\"');
+        sb.append(",\"state\":")
+                .append(state);
+        sb.append(",\"trueName\":\"")
+                .append(trueName).append('\"');
+        sb.append(",\"nickName\":\"")
+                .append(nickName).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append('}');
+        return sb.toString();
+    }
 }

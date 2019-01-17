@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -32,5 +33,7 @@ public interface ClientRepository extends JpaRepository<Client,String> {
 
     List<Client> findByPhoneAndStoreIdAndDelStatusOrderByCreateTimeAsc(String phone, String storeId, boolean delStatus);
 
+    int countByDelStatusAndStoreIdAndIsMember(boolean delStatus, String storeId, boolean isMember);
 
+    int countByDelStatusAndStoreIdAndIsMemberAndCreateTimeBetween(boolean delStatus, String storeId, boolean isMember, Timestamp createTimeStart, Timestamp createTimeEnd);
 }

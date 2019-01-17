@@ -16,6 +16,7 @@ import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.ClientRepository;
 import com.freelycar.saas.project.repository.CouponRepository;
 import com.freelycar.saas.util.MySQLPageTool;
+import com.freelycar.saas.util.TimestampUtil;
 import com.freelycar.saas.util.UpdateTool;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.Transformers;
@@ -33,6 +34,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -234,4 +236,38 @@ public class ClientService {
     }
 
 
+    /**
+     * 获取门店会员总个数
+     *
+     * @param storeId
+     * @return
+     */
+    public int memberCount(String storeId) {
+        return clientRepository.countByDelStatusAndStoreIdAndIsMember(Constants.DelStatus.NORMAL.isValue(), storeId, true);
+    }
+
+    /**
+     * 统计当月的会员新增
+     *
+     * @param storeId
+     * @return
+     */
+    public int memberCountForMonth(String storeId) {
+        Calendar calendar = Calendar.getInstance();
+        String startTime = TimestampUtil.getFisrtDayOfMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
+        String endTime = TimestampUtil.getFisrtDayOfMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 2);
+        return clientRepository.countByDelStatusAndStoreIdAndIsMemberAndCreateTimeBetween(Constants.DelStatus.NORMAL.isValue(), storeId, true, Timestamp.valueOf(startTime), Timestamp.valueOf(endTime));
+    }
+
+    /**
+     * 统计当天的会员新增
+     *
+     * @param storeId
+     * @return
+     */
+    public int memberCountForToday(String storeId) {
+        String startTime = TimestampUtil.getCurrentDate() + " 00:00:00";
+        String endTime = TimestampUtil.getCurrentDate() + " 23:59:59";
+        return clientRepository.countByDelStatusAndStoreIdAndIsMemberAndCreateTimeBetween(Constants.DelStatus.NORMAL.isValue(), storeId, true, Timestamp.valueOf(startTime), Timestamp.valueOf(endTime));
+    }
 }

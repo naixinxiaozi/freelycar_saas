@@ -23,19 +23,19 @@ public class LoggerAdvice {
 
 	protected Logger logger =  LoggerFactory.getLogger(this.getClass());
 
-	@Before("within(cn.net.pwai.mps..*) && @annotation(loggerManage)")
+	@Before("within(com.freelycar.saas..*) && @annotation(loggerManage)")
 	public void addBeforeLogger(JoinPoint joinPoint, LoggerManage loggerManage) {
 		logger.info("执行 " + loggerManage.description() + " 开始");
 		logger.info(joinPoint.getSignature().toString());
 		logger.info(parseParames(joinPoint.getArgs()));
 	}
-	
-	@AfterReturning("within(cn.net.pwai.mps..*) && @annotation(loggerManage)")
+
+	@AfterReturning("within(com.freelycar.saas..*) && @annotation(loggerManage)")
 	public void addAfterReturningLogger(JoinPoint joinPoint, LoggerManage loggerManage) {
 		logger.info("执行 " + loggerManage.description() + " 结束");
 	}
-	
-	@AfterThrowing(pointcut = "within(cn.net.pwai.mps..*) && @annotation(loggerManage)", throwing = "ex")
+
+	@AfterThrowing(pointcut = "within(com.freelycar.saas..*) && @annotation(loggerManage)", throwing = "ex")
 	public void addAfterThrowingLogger(JoinPoint joinPoint, LoggerManage loggerManage, Exception ex) {
 		logger.error("执行 " + loggerManage.description() + " 异常", ex);
 	}
