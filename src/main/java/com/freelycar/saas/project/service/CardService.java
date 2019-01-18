@@ -100,10 +100,11 @@ public class CardService {
 
         Card cardRes = cardRepository.saveAndFlush(card);
 
-        //更新用户“是否会员”的标记位
+        //更新用户“是否会员”的标记位、更新消费金额记录
         Client client = clientOptional.get();
         client.setMember(true);
         client.setMemberDate(currentTime);
+        client.setConsumeAmount(client.getConsumeAmount() + cardRes.getPrice());
         Client clientRes = clientRepository.save(client);
 
         // 办卡成功后需要自动添加一条订单，且是自动结算的
