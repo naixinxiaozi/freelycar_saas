@@ -52,6 +52,9 @@ public class ConsumerOrderService {
     @Autowired
     private CardService cardService;
 
+    @Autowired
+    private ClientService clientService;
+
     /**
      * 保存和修改
      *
@@ -246,7 +249,11 @@ public class ConsumerOrderService {
             consumerOrder.setActualPrice(this.sumActualPrice(consumerOrder));
         }
 
-        //TODO 处理其他逻辑，比如推送消息和消费金额叠加之类的
+        //保存订单信息（结算）
+        consumerOrderRepository.saveAndFlush(consumerOrder);
+
+        // 处理其他逻辑，比如推送消息和消费金额叠加之类的
+        clientService.updateClientAcount(consumerOrder.getClientId(), consumerOrder.getActualPrice());
 
         return ResultJsonObject.getDefaultResult(consumerOrder.getId(), "结算成功");
     }

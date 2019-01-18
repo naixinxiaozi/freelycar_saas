@@ -281,4 +281,21 @@ public class ClientService {
         map.put("today_new", this.memberCountForToday(storeId));
         return map;
     }
+
+    /**
+     * 更新client的累积消费金额
+     *
+     * @param clientId
+     * @param amount
+     * @return
+     */
+    public Client updateClientAcount(String clientId, double amount) {
+        if (StringUtils.isEmpty(clientId)) {
+            return null;
+        }
+        Client client = clientRepository.getOne(clientId);
+        double consumeAmount = client.getConsumeAmount() == null ? 0 : client.getConsumeAmount();
+        client.setConsumeAmount(consumeAmount + amount);
+        return clientRepository.saveAndFlush(client);
+    }
 }
