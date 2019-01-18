@@ -34,10 +34,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author tangwei - Toby
@@ -254,9 +251,9 @@ public class ClientService {
      */
     public int memberCountForMonth(String storeId) {
         Calendar calendar = Calendar.getInstance();
-        String startTime = TimestampUtil.getFisrtDayOfMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1);
-        String endTime = TimestampUtil.getFisrtDayOfMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 2);
-        return clientRepository.countByDelStatusAndStoreIdAndIsMemberAndCreateTimeBetween(Constants.DelStatus.NORMAL.isValue(), storeId, true, Timestamp.valueOf(startTime), Timestamp.valueOf(endTime));
+        String startTime = TimestampUtil.getFisrtDayOfMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1) + " 00:00:00";
+        String endTime = TimestampUtil.getFisrtDayOfMonth(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 2) + " 00:00:00";
+        return clientRepository.countByDelStatusAndStoreIdAndIsMemberAndMemberDateBetween(Constants.DelStatus.NORMAL.isValue(), storeId, true, Timestamp.valueOf(startTime), Timestamp.valueOf(endTime));
     }
 
     /**
@@ -268,6 +265,20 @@ public class ClientService {
     public int memberCountForToday(String storeId) {
         String startTime = TimestampUtil.getCurrentDate() + " 00:00:00";
         String endTime = TimestampUtil.getCurrentDate() + " 23:59:59";
-        return clientRepository.countByDelStatusAndStoreIdAndIsMemberAndCreateTimeBetween(Constants.DelStatus.NORMAL.isValue(), storeId, true, Timestamp.valueOf(startTime), Timestamp.valueOf(endTime));
+        return clientRepository.countByDelStatusAndStoreIdAndIsMemberAndMemberDateBetween(Constants.DelStatus.NORMAL.isValue(), storeId, true, Timestamp.valueOf(startTime), Timestamp.valueOf(endTime));
+    }
+
+    /**
+     * 门店会员统计
+     *
+     * @param storeId
+     * @return key:value
+     */
+    public Map<String, Integer> memberStatistics(String storeId) {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("total", this.memberCount(storeId));
+        map.put("month_new", this.memberCountForMonth(storeId));
+        map.put("today_new", this.memberCountForToday(storeId));
+        return map;
     }
 }

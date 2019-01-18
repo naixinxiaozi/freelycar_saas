@@ -35,5 +35,5 @@ public interface ClientRepository extends JpaRepository<Client,String> {
 
     int countByDelStatusAndStoreIdAndIsMember(boolean delStatus, String storeId, boolean isMember);
 
-    int countByDelStatusAndStoreIdAndIsMemberAndCreateTimeBetween(boolean delStatus, String storeId, boolean isMember, Timestamp createTimeStart, Timestamp createTimeEnd);
+    int countByDelStatusAndStoreIdAndIsMemberAndMemberDateBetween(boolean delStatus, String storeId, boolean isMember, Timestamp memberDateStart, Timestamp memberDateEnd);
 }

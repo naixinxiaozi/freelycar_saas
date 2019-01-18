@@ -126,7 +126,7 @@ public class ClientController {
     public ResultJsonObject memberStatistics(
             @RequestParam String storeId
     ) {
-
-        return ResultJsonObject.getDefaultResult(null);
+        return ResultJsonObject.getDefaultResult(clientService.memberStatistics(storeId));
     }
+
 }
