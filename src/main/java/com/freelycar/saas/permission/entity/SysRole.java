@@ -16,6 +16,8 @@ public class SysRole {
     private Long id;
     private String name;
 
+    public SysRole() {
+    }
 
     public Long getId() {
         return id;

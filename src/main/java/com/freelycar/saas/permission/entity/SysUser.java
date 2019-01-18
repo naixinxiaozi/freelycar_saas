@@ -21,8 +21,12 @@ public class SysUser implements UserDetails {
     private String username;
     private String password;
 
+
     @ManyToMany(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
     private List<SysRole> roles;
+
+    public SysUser() {
+    }
 
     public Long getId() {
         return id;
