@@ -4,9 +4,11 @@ import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.Card;
 import com.freelycar.saas.project.entity.Client;
+import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.CardServiceRepository;
 import com.freelycar.saas.project.repository.ClientRepository;
+import com.freelycar.saas.project.repository.ConsumerOrderRepository;
 import com.freelycar.saas.util.TimestampUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,9 @@ public class CardService {
 
     @Autowired
     private ClientRepository clientRepository;
+
+    @Autowired
+    private ConsumerOrderRepository consumerOrderRepository;
 
     /**
      * 办理会员卡
@@ -80,10 +85,12 @@ public class CardService {
             return ResultJsonObject.getErrorResult(null, "开卡失败！未查询到登记的用户信息！如有疑问，请联系管理员！");
         }
 
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
         //为字段赋默认值
         card.setDelStatus(Constants.DelStatus.NORMAL.isValue());
-        card.setCreateTime(new Timestamp(System.currentTimeMillis()));
-        card.setPayDate(new Timestamp(System.currentTimeMillis()));
+        card.setCreateTime(currentTime);
+        card.setPayDate(currentTime);
         card.setBalance(cardServiceObject.getActualPrice());
         card.setActualPrice(cardServiceObject.getActualPrice());
         card.setFailed(false);
@@ -96,9 +103,11 @@ public class CardService {
         //更新用户“是否会员”的标记位
         Client client = clientOptional.get();
         client.setMember(true);
-        clientRepository.save(client);
+        client.setMemberDate(currentTime);
+        Client clientRes = clientRepository.save(client);
 
-        //TODO 办卡成功后需要自动添加一条订单，且是自动结算的
+        // 办卡成功后需要自动添加一条订单，且是自动结算的
+        this.autoGenerateOrderForHandleCard(cardRes, clientRes);
 
         return ResultJsonObject.getDefaultResult(cardRes);
     }
@@ -146,8 +155,29 @@ public class CardService {
         cardRepository.save(card);
     }
 
-    //TODO 办卡成功后需要自动添加一条订单，且是自动结算的
-    public void autoGenerateOrderForHandleCard() {
+    /**
+     * 办卡成功后需要自动添加一条订单，且是自动结算的
+     *
+     * @param card
+     * @param client
+     */
+    public void autoGenerateOrderForHandleCard(Card card, Client client) {
+        ConsumerOrder cardOrder = new ConsumerOrder();
+        cardOrder.setDelStatus(Constants.DelStatus.NORMAL.isValue());
+        cardOrder.setCreateTime(card.getCreateTime());
+        cardOrder.setPayState(Constants.PayState.FINISH_PAY.getValue());
+        cardOrder.setOrderType(Constants.OrderType.CARD.getValue());
+        cardOrder.setCardOrCouponId(card.getId());
+        cardOrder.setClientId(card.getClientId());
+        cardOrder.setTotalPrice(card.getPrice().doubleValue());
+        cardOrder.setActualPrice(card.getPrice().doubleValue());
 
+        cardOrder.setClientName(client.getName());
+        cardOrder.setPhone(client.getPhone());
+        cardOrder.setMember(client.getMember());
+        cardOrder.setGender(client.getGender());
+        cardOrder.setStoreId(client.getStoreId());
+
+        consumerOrderRepository.save(cardOrder);
     }
 }

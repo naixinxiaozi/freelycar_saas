@@ -22,6 +22,9 @@ public class SysUser implements UserDetails {
     private String password;
 
 
+    //TODO 需要跟前端商量怎样去返回功能菜单
+
+
     @ManyToMany(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
     private List<SysRole> roles;
 
