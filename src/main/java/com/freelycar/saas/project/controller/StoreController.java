@@ -23,13 +23,13 @@ public class StoreController {
 
 
     /**
-     * 新增门店
+     * 新增/修改门店
      *
      * @param store
      * @return
      */
-    @PostMapping("/add")
-    public ResultJsonObject add(@RequestBody Store store) {
+    @PostMapping("/modify")
+    public ResultJsonObject modify(@RequestBody Store store) {
         Store storeRes = storeService.saveOrUpdate(store);
         if (null == storeRes) {
             return ResultJsonObject.getErrorResult(null, "保存失败");

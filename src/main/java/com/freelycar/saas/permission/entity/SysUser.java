@@ -5,6 +5,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -21,12 +22,43 @@ public class SysUser implements UserDetails {
     private String username;
     private String password;
 
-
-    //TODO 需要跟前端商量怎样去返回功能菜单
-
-
-    @ManyToMany(cascade = {CascadeType.REFRESH},fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.REFRESH}, fetch = FetchType.EAGER)
     private List<SysRole> roles;
+
+    /**
+     * 删除标记位
+     */
+    private Boolean delStatus;
+
+    /**
+     * 创建时间
+     */
+    private Timestamp createTime;
+
+    /**
+     * 所属门店
+     */
+    private String storeId;
+
+    /**
+     * 使用者姓名
+     */
+    private String staffName;
+
+    /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 备注
+     */
+    private String remark;
+
+    /**
+     * 权限
+     */
+    private String permissions;
 
     public SysUser() {
     }
@@ -37,14 +69,6 @@ public class SysUser implements UserDetails {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public List<SysRole> getRoles() {
@@ -59,8 +83,10 @@ public class SysUser implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> auths = new ArrayList<>();
         List<SysRole> roles = this.getRoles();
-        for (SysRole role : roles) {
-            auths.add(new SimpleGrantedAuthority(role.getName()));
+        if (null != roles && !roles.isEmpty()) {
+            for (SysRole role : roles) {
+                auths.add(new SimpleGrantedAuthority(role.getName()));
+            }
         }
         return auths;
     }
@@ -70,9 +96,17 @@ public class SysUser implements UserDetails {
         return this.password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String getUsername() {
         return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Override
@@ -93,5 +127,88 @@ public class SysUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Boolean getDelStatus() {
+        return delStatus;
+    }
+
+    public void setDelStatus(Boolean delStatus) {
+        this.delStatus = delStatus;
+    }
+
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(String storeId) {
+        this.storeId = storeId;
+    }
+
+    public String getStaffName() {
+        return staffName;
+    }
+
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public String getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(String permissions) {
+        this.permissions = permissions;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":")
+                .append(id);
+        sb.append(",\"username\":\"")
+                .append(username).append('\"');
+        sb.append(",\"password\":\"")
+                .append(password).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append(",\"staffName\":\"")
+                .append(staffName).append('\"');
+        sb.append(",\"phone\":\"")
+                .append(phone).append('\"');
+        sb.append(",\"remark\":\"")
+                .append(remark).append('\"');
+        sb.append(",\"permissions\":\"")
+                .append(permissions).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 }
