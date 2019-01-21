@@ -61,6 +61,9 @@ public class Store implements Serializable {
     @Column
     private String remark;
 
+    @Column
+    private Long sort;
+
     public Store() {
     }
 
@@ -160,6 +163,14 @@ public class Store implements Serializable {
         this.name = name;
     }
 
+    public Long getSort() {
+        return sort;
+    }
+
+    public void setSort(Long sort) {
+        this.sort = sort;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -187,6 +198,8 @@ public class Store implements Serializable {
                 .append(phone).append('\"');
         sb.append(",\"remark\":\"")
                 .append(remark).append('\"');
+        sb.append(",\"sort\":")
+                .append(sort);
         sb.append('}');
         return sb.toString();
     }
