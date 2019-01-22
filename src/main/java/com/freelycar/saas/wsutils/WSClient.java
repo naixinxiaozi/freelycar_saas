@@ -13,8 +13,8 @@ public class WSClient {
     public static final String DOOR_STATE_CLOSE = "0";
     public static final String DOOR_STATE_OPEN = "1";
     private static final Logger log = LogManager.getLogger(WSClient.class);
-    private static final String USER_NAME = "xiaoyi";
-    private static final String USER_PASSWORD = "159357123";
+    private static final String USER_NAME = "admin";
+    private static final String USER_PASSWORD = "admin";
     private static String handle = null;
     private static String outdate = "0";
     private static Client client;

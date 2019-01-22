@@ -49,8 +49,10 @@ dependencies {
     //jwt
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
-    // https://mvnrepository.com/artifact/org.apache.cxf/cxf-rt-frontend-jaxws
+    // org.apache.cxf
     compile group: 'org.apache.cxf', name: 'cxf-rt-frontend-jaxws', version: '3.2.7'
+    compile group: 'org.apache.cxf', name: 'cxf-rt-transports-http', version: '3.2.7'
+    compile group: 'org.apache.cxf', name: 'cxf-rt-transports-http-jetty', version: '3.2.7'
 
 
 
