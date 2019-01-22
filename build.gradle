@@ -49,6 +49,11 @@ dependencies {
     //jwt
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 
+    // https://mvnrepository.com/artifact/org.apache.cxf/cxf-rt-frontend-jaxws
+    compile group: 'org.apache.cxf', name: 'cxf-rt-frontend-jaxws', version: '3.2.7'
+
+
+
     //devtools
     compile('org.springframework.boot:spring-boot-devtools')
 
