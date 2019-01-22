@@ -8,6 +8,7 @@ import com.freelycar.saas.permission.repository.SysUserRepository;
 import com.freelycar.saas.util.UpdateTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -96,5 +97,37 @@ public class SysUserService {
             return ResultJsonObject.getErrorResult(null, "保存失败，" + ResultCode.UNKNOWN_ERROR.message());
         }
         return ResultJsonObject.getDefaultResult(res.getId());
+    }
+
+    /**
+     * 删除某个账号
+     *
+     * @param id
+     * @return
+     */
+    public ResultJsonObject deleteById(long id) {
+        int res = sysUserRepository.delById(id);
+        if (res == 1) {
+            return ResultJsonObject.getDefaultResult(id);
+        }
+        return ResultJsonObject.getErrorResult(id, "删除失败！");
+    }
+
+    /**
+     * 批量删除
+     *
+     * @param ids
+     * @return
+     */
+    public ResultJsonObject delByIds(String ids) {
+        if (StringUtils.isEmpty(ids)) {
+            return ResultJsonObject.getErrorResult(null, "删除失败：ids" + ResultCode.PARAM_NOT_COMPLETE.message());
+        }
+        String[] idsList = ids.split(",");
+        for (String idStr : idsList) {
+            long id = Long.parseLong(idStr);
+            sysUserRepository.delById(id);
+        }
+        return ResultJsonObject.getDefaultResult(null);
     }
 }

@@ -98,6 +98,14 @@ public class StoreService {
         return ResultJsonObject.getDefaultResult(null);
     }
 
+    /**
+     * 分页查询（包含“门店名称”的模糊查询）
+     *
+     * @param name
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
     public Page<Store> list(String name, Integer currentPage, Integer pageSize) {
         return storeRepository.findStoreByDelStatusAndNameContainingOrderBySortAsc(Constants.DelStatus.NORMAL.isValue(), name, PageableTools.basicPage(currentPage, pageSize));
     }
