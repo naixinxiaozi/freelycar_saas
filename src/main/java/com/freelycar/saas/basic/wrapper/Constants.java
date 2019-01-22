@@ -57,7 +57,8 @@ public class Constants {
         RESERVATION(0, "预约"),
         RECEIVE_CAR(1, "接车"),
         SERVICE_FINISH(2, "完工"),
-        HAND_OVER(3, "交车");
+        HAND_OVER(3, "交车"),
+        CANCEL(4, "取消");
 
         private final Integer value;
         private final String name;
@@ -168,6 +169,33 @@ public class Constants {
         private final String name;
 
         DateType(Integer value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    /**
+     * 智能柜门状态
+     */
+    public enum DoorState {
+        EMPTY(0, "可使用"),
+        USER_RESERVATION(1, "预约状态"),
+        STAFF_FINISH(2, "完工状态"),
+        DISABLED(6, "不可用");
+
+        private final Integer value;
+
+        private final String name;
+
+        DoorState(Integer value, String name) {
             this.value = value;
             this.name = name;
         }
