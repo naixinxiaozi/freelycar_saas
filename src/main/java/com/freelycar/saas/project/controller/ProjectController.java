@@ -110,4 +110,29 @@ public class ProjectController {
         return projectService.lowerArk(id);
     }
 
+
+    /**
+     * 上架（在微信显示）
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/upperShelf")
+    @LoggerManage(description = "调用方法：上架（在微信显示")
+    public ResultJsonObject upperShelf(@RequestParam String id) {
+        return projectService.upperShelf(id);
+    }
+
+    /**
+     * 下架（不在微信显示）
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping(value = "/lowerShelf")
+    @LoggerManage(description = "调用方法：下架（不在微信显示）")
+    public ResultJsonObject lowerShelf(@RequestParam String id) {
+        return projectService.lowerShelf(id);
+    }
+
 }

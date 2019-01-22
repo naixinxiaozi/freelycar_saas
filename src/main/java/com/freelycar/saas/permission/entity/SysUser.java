@@ -28,11 +28,13 @@ public class SysUser implements UserDetails {
     /**
      * 删除标记位
      */
+    @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean delStatus;
 
     /**
      * 创建时间
      */
+    @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime;
 
     /**

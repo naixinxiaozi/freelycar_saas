@@ -34,11 +34,20 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query(value = "update project set sale_status = 1 where id=:id", nativeQuery = true)
-    int uppById(String id);
+    int uppArkById(String id);
 
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query(value = "update project set sale_status = 0 where id=:id", nativeQuery = true)
-    int lowById(String id);
+    int lowArkById(String id);
 
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update project set book_online = 1 where id=:id", nativeQuery = true)
+    int uppById(String id);
+
+    @Transactional
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update project set book_online = 0 where id=:id", nativeQuery = true)
+    int lowById(String id);
 }

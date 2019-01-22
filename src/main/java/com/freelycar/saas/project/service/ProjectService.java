@@ -141,7 +141,7 @@ public class ProjectService {
     @Transactional
     public ResultJsonObject upperArk(String id) {
         try {
-            int result = projectRepository.uppById(id);
+            int result = projectRepository.uppArkById(id);
             if (result != 1) {
                 return ResultJsonObject.getErrorResult(id, "上架失败," + RESULT_DATA_NONE);
             }
@@ -160,7 +160,7 @@ public class ProjectService {
     @Transactional
     public ResultJsonObject lowerArk(String id) {
         try {
-            int result = projectRepository.lowById(id);
+            int result = projectRepository.lowArkById(id);
             if (result != 1) {
                 return ResultJsonObject.getErrorResult(id, "下架失败," + RESULT_DATA_NONE);
             }
@@ -170,4 +170,41 @@ public class ProjectService {
         return ResultJsonObject.getDefaultResult(id, "下架成功");
     }
 
+    /**
+     * 上架（在微信端显示）
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    public ResultJsonObject upperShelf(String id) {
+        try {
+            int result = projectRepository.uppById(id);
+            if (result != 1) {
+                return ResultJsonObject.getErrorResult(id, "上架失败," + RESULT_DATA_NONE);
+            }
+        } catch (Exception e) {
+            return ResultJsonObject.getErrorResult(id, "上架失败，上架操作出现异常");
+        }
+        return ResultJsonObject.getDefaultResult(id, "上架成功");
+    }
+
+    /**
+     * 下架（不在微信端显示）
+     *
+     * @param id
+     * @return
+     */
+    @Transactional
+    public ResultJsonObject lowerShelf(String id) {
+        try {
+            int result = projectRepository.lowById(id);
+            if (result != 1) {
+                return ResultJsonObject.getErrorResult(id, "下架失败," + RESULT_DATA_NONE);
+            }
+        } catch (Exception e) {
+            return ResultJsonObject.getErrorResult(id, "下架失败，下架操作出现异常");
+        }
+        return ResultJsonObject.getDefaultResult(id, "下架成功");
+    }
 }

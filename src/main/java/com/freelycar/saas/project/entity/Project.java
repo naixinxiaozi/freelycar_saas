@@ -90,6 +90,12 @@ public class Project implements Serializable {
     @Column
     private String storeId;
 
+    /**
+     * 上架标记
+     */
+    @Column(nullable = false, columnDefinition = "bit default 0")
+    private Boolean bookOnline;
+
 
     public Project() {
     }
@@ -123,6 +129,8 @@ public class Project implements Serializable {
                 .append(saleStatus);
         sb.append(",\"storeId\":\"")
                 .append(storeId).append('\"');
+        sb.append(",\"bookOnline\":")
+                .append(bookOnline);
         sb.append('}');
         return sb.toString();
     }
@@ -229,5 +237,13 @@ public class Project implements Serializable {
 
     public void setProjectType(ProjectType projectType) {
         this.projectType = projectType;
+    }
+
+    public Boolean getBookOnline() {
+        return bookOnline;
+    }
+
+    public void setBookOnline(Boolean bookOnline) {
+        this.bookOnline = bookOnline;
     }
 }
