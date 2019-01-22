@@ -1,6 +1,7 @@
 package com.freelycar.saas.permission.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.permission.entity.SysUser;
 import com.freelycar.saas.permission.service.SysUserService;
@@ -34,7 +35,7 @@ public class SysUserController {
      * @param id
      * @return
      */
-    @GetMapping
+    @GetMapping("/delete")
     public ResultJsonObject delete(@RequestParam long id) {
         return sysUserService.deleteById(id);
     }
@@ -51,6 +52,22 @@ public class SysUserController {
             return ResultJsonObject.getErrorResult(null, "ids参数为NULL");
         }
         return sysUserService.delByIds(ids.getString("ids"));
+    }
+
+    /**
+     * 查询
+     *
+     * @param storeId
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/list")
+    public ResultJsonObject list(
+            @RequestParam(required = false) String storeId,
+            @RequestParam Integer currentPage,
+            @RequestParam(required = false) Integer pageSize) {
+        return ResultJsonObject.getDefaultResult(PaginationRJO.of(sysUserService.list(storeId, currentPage, pageSize)));
     }
 
 }

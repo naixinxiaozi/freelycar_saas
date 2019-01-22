@@ -1,12 +1,12 @@
 package com.freelycar.saas.permission.service;
 
-import com.freelycar.saas.basic.wrapper.Constants;
-import com.freelycar.saas.basic.wrapper.ResultCode;
-import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.permission.entity.SysUser;
 import com.freelycar.saas.permission.repository.SysUserRepository;
 import com.freelycar.saas.util.UpdateTool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -130,4 +130,13 @@ public class SysUserService {
         }
         return ResultJsonObject.getDefaultResult(null);
     }
+
+    public Page list(String storeId, Integer currentPage, Integer pageSize) {
+        Pageable pageable = PageableTools.basicPage(currentPage, pageSize, new SortDto("asc", "id"));
+        if (StringUtils.hasText(storeId)) {
+            return sysUserRepository.findByDelStatusAndStoreId(Constants.DelStatus.NORMAL.isValue(), storeId, pageable);
+        }
+        return sysUserRepository.findByDelStatus(Constants.DelStatus.NORMAL.isValue(), pageable);
+    }
+
 }

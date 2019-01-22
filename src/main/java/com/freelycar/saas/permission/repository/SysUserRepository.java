@@ -1,6 +1,8 @@
 package com.freelycar.saas.permission.repository;
 
 import com.freelycar.saas.permission.entity.SysUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +27,8 @@ public interface SysUserRepository extends JpaRepository<SysUser, Long> {
     @Modifying
     @Query(value = "update sys_user set del_status=1 where id=:id", nativeQuery = true)
     int delById(long id);
+
+    Page<SysUser> findByDelStatusAndStoreId(boolean delStatus, String storeId, Pageable pageable);
+
+    Page<SysUser> findByDelStatus(boolean delStatus, Pageable pageable);
 }
