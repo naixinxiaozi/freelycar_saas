@@ -1,6 +1,6 @@
 project:
   name: freelycar_saas
-# 开发环境配置
+# 生产环境配置
 server:
   port: 8080
 spring:
