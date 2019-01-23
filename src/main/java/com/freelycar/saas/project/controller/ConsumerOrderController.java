@@ -73,4 +73,26 @@ public class ConsumerOrderController {
     ) {
         return consumerOrderService.list(storeId, currentPage, pageSize, params);
     }
+
+    /**
+     * 完工
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/serviceFinish")
+    public ResultJsonObject serviceFinish(@RequestParam String id) {
+        return consumerOrderService.serviceFinish(id);
+    }
+
+    /**
+     * 交车
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/handOver")
+    public ResultJsonObject handOver(@RequestParam String id) {
+        return consumerOrderService.handOver(id);
+    }
 }

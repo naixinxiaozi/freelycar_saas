@@ -93,10 +93,12 @@ public class ConsumerOrderService {
 
         //TODO 订单号生成规则：门店（3位）+ 日期（6位）+ 每日递增（4位）
         //设置order的额外信息
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         consumerOrder.setOrderType(Constants.OrderType.SERVICE.getValue());
         consumerOrder.setPayState(Constants.PayState.NOT_PAY.getValue());
         //快速开单时订单状态直接为接车状态（不需要预约）
         consumerOrder.setState(Constants.OrderState.RECEIVE_CAR.getValue());
+        consumerOrder.setPickTime(currentTime);
 
         ConsumerOrder consumerOrderRes = this.saveOrUpdate(consumerOrder);
         if (null == consumerOrderRes) {
@@ -427,4 +429,40 @@ public class ConsumerOrderService {
     }
 
 
+    /**
+     * 完工
+     *
+     * @param orderId
+     * @return
+     */
+    public ResultJsonObject serviceFinish(String orderId) {
+        if (StringUtils.isEmpty(orderId)) {
+            return ResultJsonObject.getErrorResult(orderId, "参数orderId为空值，完工操作失败");
+        }
+        ConsumerOrder consumerOrder = consumerOrderRepository.getOne(orderId);
+        consumerOrder.setFinishTime(new Timestamp(System.currentTimeMillis()));
+        consumerOrder.setState(Constants.OrderState.SERVICE_FINISH.getValue());
+
+        this.saveOrUpdate(consumerOrder);
+        return ResultJsonObject.getDefaultResult(orderId);
+    }
+
+
+    /**
+     * 交车
+     *
+     * @param orderId
+     * @return
+     */
+    public ResultJsonObject handOver(String orderId) {
+        if (StringUtils.isEmpty(orderId)) {
+            return ResultJsonObject.getErrorResult(orderId, "参数orderId为空值，交车操作失败");
+        }
+        ConsumerOrder consumerOrder = consumerOrderRepository.getOne(orderId);
+        consumerOrder.setDeliverTime(new Timestamp(System.currentTimeMillis()));
+        consumerOrder.setState(Constants.OrderState.HAND_OVER.getValue());
+
+        this.saveOrUpdate(consumerOrder);
+        return ResultJsonObject.getDefaultResult(orderId);
+    }
 }
