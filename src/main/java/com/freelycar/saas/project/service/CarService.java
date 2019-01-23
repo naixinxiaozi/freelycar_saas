@@ -54,7 +54,7 @@ public class CarService {
             car.setCreateTime(new Timestamp(System.currentTimeMillis()));
             //如果没有标识是否新车，则默认为新车（也就是“不是二手车”）
             if (null == car.getNewCar()) {
-                car.setNewCar(true);
+                car.setNewCar(false);
             }
             car.setDefaultCar(this.isFirstCar(clientId));
             car.setNeedInspectionRemind(false);
@@ -115,27 +115,14 @@ public class CarService {
         try {
             //验重
             if (this.checkRepeatName(car)) {
-                return ResultJsonObject.getErrorResult(null, "已包含名称为：“" + car.getLicensePlate() + "”的数据，不能重复添加。");
+                return ResultJsonObject.getErrorResult(null, "该门店已包含名称为：“" + car.getLicensePlate() + "”的数据，不能重复添加。");
             }
 
-            //是否有ID，判断时新增还是修改
-            String id = car.getId();
-            if (StringUtils.isEmpty(id)) {
-                car.setDelStatus(Constants.DelStatus.NORMAL.isValue());
-                car.setCreateTime(new Timestamp(System.currentTimeMillis()));
-            } else {
-                Optional<Car> optional = carRepository.findById(id);
-                //判断数据库中是否有该对象
-                if (!optional.isPresent()) {
-                    logger.error("修改失败，原因：" + Car.class + "中不存在id为 " + id + " 的对象");
-                    return ResultJsonObject.getErrorResult(null);
-                }
-                Car source = optional.get();
-                //将目标对象（car）中的null值，用源对象中的值替换
-                UpdateTool.copyNullProperties(source, car);
+            Car res = this.saveOrUpdate(car);
+            if (null == res) {
+                return ResultJsonObject.getErrorResult(null);
             }
-            //执行保存/修改
-            return ResultJsonObject.getDefaultResult(carRepository.saveAndFlush(car));
+            return ResultJsonObject.getDefaultResult(res);
         } catch (Exception e) {
             return ResultJsonObject.getErrorResult(null);
         }

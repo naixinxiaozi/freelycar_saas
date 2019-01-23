@@ -2,6 +2,8 @@ package com.freelycar.saas.wechat.controller;
 
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.WxUserInfo;
+import com.freelycar.saas.project.service.CardService;
+import com.freelycar.saas.project.service.CouponService;
 import com.freelycar.saas.project.service.WxUserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,12 @@ public class WeChatWxUserInfoController {
     @Autowired
     private WxUserInfoService wxUserInfoService;
 
+    @Autowired
+    private CouponService couponService;
+
+    @Autowired
+    private CardService cardService;
+
     @GetMapping("/getPersonalInfo")
     public ResultJsonObject getPersonalInfo(@RequestParam String id) {
         return wxUserInfoService.getPersonalInfo(id);
@@ -33,5 +41,19 @@ public class WeChatWxUserInfoController {
         return wxUserInfoService.chooseDefaultStore(wxUserInfo);
     }
 
+    @GetMapping("/getMyCoupons")
+    public ResultJsonObject getMyCoupons(
+            @RequestParam String id,
+            @RequestParam String storeId
+    ) {
+        return couponService.getMyCoupons(id, storeId);
+    }
 
+    @GetMapping("/getMyCards")
+    public ResultJsonObject getMyCards(
+            @RequestParam String id,
+            @RequestParam String storeId
+    ) {
+        return cardService.getMyCards(id, storeId);
+    }
 }

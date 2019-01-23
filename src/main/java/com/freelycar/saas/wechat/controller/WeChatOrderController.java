@@ -34,4 +34,12 @@ public class WeChatOrderController {
         }
         return ResultJsonObject.getErrorResult(null);
     }
+
+
+    @GetMapping("/getOrderDetail")
+    public ResultJsonObject getOrderDetail(@RequestParam String id) {
+        return consumerOrderService.getOrderObjectDetail(id);
+    }
+
+
 }

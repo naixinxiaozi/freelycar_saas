@@ -1,6 +1,7 @@
 package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.Constants;
+import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.Coupon;
 import com.freelycar.saas.project.repository.CouponRepository;
 import com.freelycar.saas.project.repository.CouponServiceRepository;
@@ -84,5 +85,23 @@ public class CouponService {
             coupon.setStatus(Constants.CouponStatus.NOT_USE.getValue());
             this.saveOrUpdate(coupon);
         }
+    }
+
+    /**
+     * 查询某客户的所有有效优惠券
+     *
+     * @param clientId
+     * @param storeId
+     * @return
+     */
+    public ResultJsonObject getMyCoupons(String clientId, String storeId) {
+        if (StringUtils.isEmpty(storeId)) {
+            return ResultJsonObject.getErrorResult(null, "查询失败：参数storeId为空值");
+        }
+        if (StringUtils.isEmpty(clientId)) {
+            return ResultJsonObject.getErrorResult(null, "查询失败：参数clientId为空值");
+        }
+        List<Coupon> res = couponRepository.findByClientIdAndDelStatusAndStatusAndStoreId(clientId, Constants.DelStatus.NORMAL.isValue(), Constants.CouponStatus.NOT_USE.getValue(), storeId);
+        return ResultJsonObject.getDefaultResult(res);
     }
 }

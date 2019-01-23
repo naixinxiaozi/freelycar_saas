@@ -181,4 +181,23 @@ public class CardService {
 
         consumerOrderRepository.save(cardOrder);
     }
+
+
+    /**
+     * 查询某客户的所有有效会员卡
+     *
+     * @param clientId
+     * @param storeId
+     * @return
+     */
+    public ResultJsonObject getMyCards(String clientId, String storeId) {
+        if (StringUtils.isEmpty(clientId)) {
+            return ResultJsonObject.getErrorResult(null, "查询失败：参数clientId为空值");
+        }
+        if (StringUtils.isEmpty(storeId)) {
+            return ResultJsonObject.getErrorResult(null, "查询失败：参数storeId为空值");
+        }
+        List<Card> res = cardRepository.findByClientIdAndDelStatusAndStoreId(clientId, Constants.DelStatus.NORMAL.isValue(), storeId);
+        return ResultJsonObject.getDefaultResult(res);
+    }
 }
