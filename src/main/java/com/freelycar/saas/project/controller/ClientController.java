@@ -118,7 +118,7 @@ public class ClientController {
         if (StringUtils.hasText(StringUtils.trimWhitespace(phone))) {
             params.put("licensePlate", licensePlate);
         }
-        return ResultJsonObject.getDefaultResult(clientService.list(storeId, currentPage, pageSize, params));
+        return clientService.list(storeId, currentPage, pageSize, params);
     }
 
     @GetMapping(value = "/memberStatistics")
