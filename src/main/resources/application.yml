@@ -27,16 +27,5 @@ spring:
     ansi:
       enabled: always
 
-logging:
-  path: ${project.name}-log
-  level:
-    root: info
-    org:
-      springframework:
-        web: info
-        security: info
-      hibernate: info
-
-
 #package:
 #    type: war
