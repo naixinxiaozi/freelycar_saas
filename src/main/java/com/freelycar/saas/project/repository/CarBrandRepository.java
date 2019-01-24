@@ -12,4 +12,6 @@ import java.util.List;
  */
 public interface CarBrandRepository extends JpaRepository<CarBrand, Integer> {
     List<CarBrand> findAllByPinyin(String pinyin);
+
+    List<CarBrand> findAllByBrandContaining(String brand);
 }

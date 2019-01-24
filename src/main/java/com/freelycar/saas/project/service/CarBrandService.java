@@ -147,4 +147,14 @@ public class CarBrandService {
     public List<CarModel> getCarModelByCarTypeId(Integer carTypeId) {
         return carModelRepository.findAllByCarTypeId(carTypeId);
     }
+
+    /**
+     * 根据关键字获取车系
+     *
+     * @param keyword
+     * @return
+     */
+    public List<CarBrand> getCarBrandByKeyword(String keyword) {
+        return carBrandRepository.findAllByBrandContaining(keyword);
+    }
 }

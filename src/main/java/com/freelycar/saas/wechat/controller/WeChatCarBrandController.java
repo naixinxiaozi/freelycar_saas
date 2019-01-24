@@ -58,4 +58,13 @@ public class WeChatCarBrandController {
         }
         return ResultJsonObject.getDefaultResult(carBrandService.getCarModelByCarTypeId(carTypeId));
     }
+
+
+    @GetMapping("/getCarBrandByKeyword")
+    public ResultJsonObject getCarBrandByKeyword(@RequestParam String keyword) {
+        if (StringUtils.isEmpty(keyword)) {
+            return ResultJsonObject.getErrorResult(null);
+        }
+        return ResultJsonObject.getDefaultResult(carBrandService.getCarBrandByKeyword(keyword));
+    }
 }
