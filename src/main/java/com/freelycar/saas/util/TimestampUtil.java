@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class TimestampUtil {
 
-    static final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
     static final SimpleDateFormat sdfTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**

@@ -1,6 +1,7 @@
 package com.freelycar.saas.project.controller;
 
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.model.OrderListParam;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
@@ -77,22 +78,22 @@ public class ConsumerOrderController {
     /**
      * 完工
      *
-     * @param id
+     * @param consumerOrder
      * @return
      */
-    @GetMapping("/serviceFinish")
-    public ResultJsonObject serviceFinish(@RequestParam String id) {
-        return consumerOrderService.serviceFinish(id);
+    @PostMapping("/serviceFinish")
+    public ResultJsonObject serviceFinish(@RequestBody ConsumerOrder consumerOrder) {
+        return consumerOrderService.serviceFinish(consumerOrder);
     }
 
     /**
      * 交车
      *
-     * @param id
+     * @param consumerOrder
      * @return
      */
-    @GetMapping("/handOver")
-    public ResultJsonObject handOver(@RequestParam String id) {
-        return consumerOrderService.handOver(id);
+    @PostMapping("/handOver")
+    public ResultJsonObject handOver(@RequestBody ConsumerOrder consumerOrder) {
+        return consumerOrderService.handOver(consumerOrder);
     }
 }

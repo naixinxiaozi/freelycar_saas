@@ -432,18 +432,21 @@ public class ConsumerOrderService {
     /**
      * 完工
      *
-     * @param orderId
+     * @param consumerOrder
      * @return
      */
-    public ResultJsonObject serviceFinish(String orderId) {
-        if (StringUtils.isEmpty(orderId)) {
-            return ResultJsonObject.getErrorResult(orderId, "参数orderId为空值，完工操作失败");
+    public ResultJsonObject serviceFinish(ConsumerOrder consumerOrder) {
+        if (StringUtils.isEmpty(consumerOrder)) {
+            return ResultJsonObject.getErrorResult(consumerOrder, "参数consumerOrder为NULL，完工操作失败");
         }
-        ConsumerOrder consumerOrder = consumerOrderRepository.getOne(orderId);
-        consumerOrder.setFinishTime(new Timestamp(System.currentTimeMillis()));
-        consumerOrder.setState(Constants.OrderState.SERVICE_FINISH.getValue());
+        String orderId = consumerOrder.getId();
+        Timestamp finishTime = consumerOrder.getFinishTime() == null ? new Timestamp(System.currentTimeMillis()) : consumerOrder.getFinishTime();
+        ConsumerOrder source = consumerOrderRepository.getOne(orderId);
+        source.setFinishTime(finishTime);
+        source.setParkingLocation(consumerOrder.getParkingLocation());
+        source.setState(Constants.OrderState.SERVICE_FINISH.getValue());
 
-        this.saveOrUpdate(consumerOrder);
+        this.saveOrUpdate(source);
         return ResultJsonObject.getDefaultResult(orderId);
     }
 
@@ -451,18 +454,20 @@ public class ConsumerOrderService {
     /**
      * 交车
      *
-     * @param orderId
+     * @param consumerOrder
      * @return
      */
-    public ResultJsonObject handOver(String orderId) {
-        if (StringUtils.isEmpty(orderId)) {
-            return ResultJsonObject.getErrorResult(orderId, "参数orderId为空值，交车操作失败");
+    public ResultJsonObject handOver(ConsumerOrder consumerOrder) {
+        if (StringUtils.isEmpty(consumerOrder)) {
+            return ResultJsonObject.getErrorResult(consumerOrder, "参数consumerOrder为NULL，交车操作失败");
         }
-        ConsumerOrder consumerOrder = consumerOrderRepository.getOne(orderId);
-        consumerOrder.setDeliverTime(new Timestamp(System.currentTimeMillis()));
-        consumerOrder.setState(Constants.OrderState.HAND_OVER.getValue());
+        String orderId = consumerOrder.getId();
+        Timestamp deliverTime = consumerOrder.getDeliverTime() == null ? new Timestamp(System.currentTimeMillis()) : consumerOrder.getDeliverTime();
+        ConsumerOrder source = consumerOrderRepository.getOne(orderId);
+        source.setDeliverTime(deliverTime);
+        source.setState(Constants.OrderState.HAND_OVER.getValue());
 
-        this.saveOrUpdate(consumerOrder);
+        this.saveOrUpdate(source);
         return ResultJsonObject.getDefaultResult(orderId);
     }
 }
