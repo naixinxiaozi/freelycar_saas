@@ -157,4 +157,14 @@ public class CarBrandService {
     public List<CarBrand> getCarBrandByKeyword(String keyword) {
         return carBrandRepository.findAllByBrandContaining(keyword);
     }
+
+    /**
+     * 查找热门品牌
+     *
+     * @return
+     */
+    public List<CarBrand> getHotCarBrand() {
+        return carBrandRepository.findByHot(true);
+    }
+
 }

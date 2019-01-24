@@ -67,4 +67,9 @@ public class WeChatCarBrandController {
         }
         return ResultJsonObject.getDefaultResult(carBrandService.getCarBrandByKeyword(keyword));
     }
+
+    @GetMapping("/getHotCarBrand")
+    public ResultJsonObject getHotCarBrand() {
+        return ResultJsonObject.getDefaultResult(carBrandService.getHotCarBrand());
+    }
 }

@@ -32,6 +32,9 @@ public class CarBrand implements Serializable {
     @Column
     private String pinyin;
 
+    @Column(columnDefinition = "bit default 0")
+    private Boolean hot;
+
     public CarBrand() {
     }
 
@@ -57,6 +60,14 @@ public class CarBrand implements Serializable {
 
     public void setPinyin(String pinyin) {
         this.pinyin = pinyin;
+    }
+
+    public Boolean getHot() {
+        return hot;
+    }
+
+    public void setHot(Boolean hot) {
+        this.hot = hot;
     }
 
     @Override
