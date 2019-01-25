@@ -152,7 +152,7 @@ public class AutoParts implements Serializable {
     }
 
     public void setConsumerOrderId(String consumerOrderId) {
-        consumerOrderId = consumerOrderId;
+        this.consumerOrderId = consumerOrderId;
     }
 
     @Override
