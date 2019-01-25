@@ -500,17 +500,24 @@ public class ConsumerOrderService {
      */
     //TODO 回头来修改
     public ResultJsonObject arkHandleOrder(OrderObject orderObject) {
+        //获取提交过来的数据
         ConsumerOrder consumerOrder = orderObject.getConsumerOrder();
         List<ConsumerProjectInfo> consumerProjectInfos = orderObject.getConsumerProjectInfos();
+
+        //获取车辆信息
+        //获取客户信息
+
+
+
+
 
         //TODO 订单号生成规则：门店（3位）+ 日期（6位）+ 订单类型编号（1位）+ 每日递增（4位）
         //设置order的额外信息
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-        consumerOrder.setOrderType(Constants.OrderType.SERVICE.getValue());
+        consumerOrder.setOrderType(Constants.OrderType.ARK.getValue());
         consumerOrder.setPayState(Constants.PayState.NOT_PAY.getValue());
-        //快速开单时订单状态直接为接车状态（不需要预约）
-        consumerOrder.setState(Constants.OrderState.RECEIVE_CAR.getValue());
-        consumerOrder.setPickTime(currentTime);
+        //设置订单状态为“预约”
+        consumerOrder.setState(Constants.OrderState.RESERVATION.getValue());
 
         ConsumerOrder consumerOrderRes = this.saveOrUpdate(consumerOrder);
         if (null == consumerOrderRes) {

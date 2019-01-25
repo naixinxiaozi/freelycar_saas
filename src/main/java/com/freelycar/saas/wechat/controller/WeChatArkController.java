@@ -1,12 +1,10 @@
 package com.freelycar.saas.wechat.controller;
 
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.service.ConsumerOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author tangwei - Toby
@@ -23,6 +21,11 @@ public class WeChatArkController {
     @GetMapping("/getActiveOrder")
     public ResultJsonObject getActiveOrder(@RequestParam String clientId) {
         return consumerOrderService.getActiveOrder(clientId);
+    }
+
+    @PostMapping("/orderService")
+    public ResultJsonObject orderService(@RequestBody OrderObject orderObject) {
+        return consumerOrderService.arkHandleOrder(orderObject);
     }
 
 
