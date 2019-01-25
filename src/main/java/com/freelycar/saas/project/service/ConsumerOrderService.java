@@ -507,6 +507,9 @@ public class ConsumerOrderService {
         //获取车辆信息
         //获取客户信息
 
+        //备注
+
+
 
         //TODO 订单号生成规则：门店（3位）+ 日期（6位）+ 订单类型编号（1位）+ 每日递增（4位）
         //设置order的额外信息
