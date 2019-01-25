@@ -41,6 +41,11 @@ public class WeChatWxUserInfoController {
         return wxUserInfoService.chooseDefaultStore(wxUserInfo);
     }
 
+    @PostMapping("/saveUserInfo")
+    public ResultJsonObject saveUserInfo(@RequestBody WxUserInfo wxUserInfo) {
+        return wxUserInfoService.saveUserInfo(wxUserInfo);
+    }
+
     @GetMapping("/getMyCoupons")
     public ResultJsonObject getMyCoupons(
             @RequestParam String id,

@@ -33,6 +33,8 @@ public interface ClientRepository extends JpaRepository<Client,String> {
 
     List<Client> findByPhoneAndStoreIdAndDelStatusOrderByCreateTimeAsc(String phone, String storeId, boolean delStatus);
 
+    List<Client> findByPhoneAndDelStatusOrderByCreateTimeAsc(String phone, boolean delStatus);
+
     Client findTopByPhoneAndStoreIdAndDelStatusOrderByCreateTimeAsc(String phone, String storeId, boolean delStatus);
 
     Client findTopByPhoneAndDelStatusOrderByCreateTimeAsc(String phone, boolean delStatus);

@@ -208,4 +208,40 @@ public class WxUserInfoService {
         }
         return ResultJsonObject.getDefaultResult(wxUserInfo);
     }
+
+    /**
+     * 更改个人信息
+     *
+     * @param wxUserInfo
+     * @return
+     */
+    public ResultJsonObject saveUserInfo(WxUserInfo wxUserInfo) {
+        String id = wxUserInfo.getId();
+        if (StringUtils.isEmpty(id)) {
+            return ResultJsonObject.getErrorResult(null, "保存失败：参数中id为空值");
+        }
+        WxUserInfo res = this.modify(wxUserInfo);
+        if (null == res) {
+            return ResultJsonObject.getErrorResult(null);
+        }
+
+        String phone = wxUserInfo.getPhone();
+        if (StringUtils.isEmpty(phone)) {
+            return ResultJsonObject.getErrorResult(null, "WxUserInfo表中，id为：" + id + "的数据内没有有效的手机号码（phone）信息");
+        }
+
+        String trueName = wxUserInfo.getTrueName();
+        String nickName = wxUserInfo.getNickName();
+        String gender = wxUserInfo.getGender();
+
+        List<Client> clients = clientRepository.findByPhoneAndDelStatusOrderByCreateTimeAsc(phone, Constants.DelStatus.NORMAL.isValue());
+        for (Client client : clients) {
+            client.setTrueName(trueName);
+            client.setNickName(nickName);
+            client.setGender(gender);
+            clientRepository.save(client);
+        }
+
+        return ResultJsonObject.getDefaultResult(res);
+    }
 }
