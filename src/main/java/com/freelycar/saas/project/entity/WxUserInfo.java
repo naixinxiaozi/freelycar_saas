@@ -89,6 +89,12 @@ public class WxUserInfo implements Serializable {
     @Column
     private String defaultStoreId;
 
+    /**
+     * 默认门店对应的clientId
+     */
+    @Column
+    private String defaultClientId;
+
     public WxUserInfo() {
     }
 
@@ -117,6 +123,8 @@ public class WxUserInfo implements Serializable {
                 .append(delStatus);
         sb.append(",\"defaultStoreId\":\"")
                 .append(defaultStoreId).append('\"');
+        sb.append(",\"defaultClientId\":\"")
+                .append(defaultClientId).append('\"');
         sb.append('}');
         return sb.toString();
     }
@@ -207,5 +215,13 @@ public class WxUserInfo implements Serializable {
 
     public void setDefaultStoreId(String defaultStoreId) {
         this.defaultStoreId = defaultStoreId;
+    }
+
+    public String getDefaultClientId() {
+        return defaultClientId;
+    }
+
+    public void setDefaultClientId(String defaultClientId) {
+        this.defaultClientId = defaultClientId;
     }
 }

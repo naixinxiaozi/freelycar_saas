@@ -22,7 +22,7 @@ public class OrderListParam {
 
     private Integer orderState;
 
-    private Integer OrderType;
+    private Integer orderType;
 
 
     public OrderListParam() {
@@ -37,7 +37,7 @@ public class OrderListParam {
         this.startTime = startTime;
         this.endTime = endTime;
         this.orderState = orderState;
-        OrderType = orderType;
+        this.orderType = orderType;
     }
 
     @Override
@@ -59,8 +59,8 @@ public class OrderListParam {
                 .append(endTime).append('\"');
         sb.append(",\"orderState\":")
                 .append(orderState);
-        sb.append(",\"OrderType\":")
-                .append(OrderType);
+        sb.append(",\"orderType\":")
+                .append(orderType);
         sb.append('}');
         return sb.toString();
     }
@@ -130,10 +130,10 @@ public class OrderListParam {
     }
 
     public Integer getOrderType() {
-        return OrderType;
+        return orderType;
     }
 
     public void setOrderType(Integer orderType) {
-        OrderType = orderType;
+        this.orderType = orderType;
     }
 }

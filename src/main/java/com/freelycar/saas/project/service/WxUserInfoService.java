@@ -12,6 +12,8 @@ import com.freelycar.saas.project.repository.WxUserInfoRepository;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
 import com.freelycar.saas.wechat.model.PersonalInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,8 @@ import java.util.Optional;
 @Transactional
 public class WxUserInfoService {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private WxUserInfoRepository wxUserInfoRepository;
 
@@ -41,6 +45,9 @@ public class WxUserInfoService {
 
     @Autowired
     private ClientRepository clientRepository;
+
+    @Autowired
+    private ClientService clientService;
 
     /**
      * 查找微信用户对象
@@ -112,6 +119,50 @@ public class WxUserInfoService {
      * @return
      */
     public ResultJsonObject chooseDefaultStore(WxUserInfo wxUserInfo) {
+        String wxUserId = wxUserInfo.getId();
+        String defaultStoreId = wxUserInfo.getDefaultStoreId();
+
+        //查找对应的wxUserInfo对象
+        Optional<WxUserInfo> optionalWxUserInfo = wxUserInfoRepository.findById(wxUserId);
+        if (!optionalWxUserInfo.isPresent()) {
+            return ResultJsonObject.getErrorResult(null, "未找到WxUserInfo表中，id为：" + wxUserId + "的数据");
+        }
+        WxUserInfo source = optionalWxUserInfo.get();
+        //获取手机号码
+        String phone = source.getPhone();
+        if (StringUtils.isEmpty(phone)) {
+            return ResultJsonObject.getErrorResult(null, "WxUserInfo表中，id为：" + wxUserId + "的数据内没有有效的手机号码（phone）信息");
+        }
+
+        //根据手机号码和选择的门店ID查询出用户Client信息
+        Client client = clientRepository.findTopByPhoneAndStoreIdAndDelStatusOrderByCreateTimeAsc(phone, defaultStoreId, Constants.DelStatus.NORMAL.isValue());
+        if (null == client) {
+            //若没有找到，说明该门店下没有该用户信息，自动拷贝相关信息
+
+            //查询其他门店的client信息
+            Client otherStoreClient = clientRepository.findTopByPhoneAndDelStatusOrderByCreateTimeAsc(phone, Constants.DelStatus.NORMAL.isValue());
+            if (null == otherStoreClient) {
+                //其他门店也没有信息的话就按照微信用户信息生成一条
+                Client newClient = new Client();
+                newClient.setBirthday(wxUserInfo.getBirthday());
+                newClient.setName(wxUserInfo.getNickName());
+                newClient.setNickName(wxUserInfo.getNickName());
+                newClient.setTrueName(wxUserInfo.getTrueName());
+                newClient.setPhone(wxUserInfo.getPhone());
+                newClient.setStoreId(defaultStoreId);
+                client = clientService.saveOrUpdate(newClient);
+            } else {
+                //其他门店有的话，产生一条除“所属门店”外一样的信息
+                otherStoreClient.setStoreId(defaultStoreId);
+                otherStoreClient.setId(null);
+                client = clientService.saveOrUpdate(otherStoreClient);
+                //TODO 同步车辆
+            }
+        }
+
+        String clientId = client.getId();
+        wxUserInfo.setDefaultClientId(clientId);
+
         WxUserInfo res = this.modify(wxUserInfo);
         if (null == res) {
             return ResultJsonObject.getErrorResult(null);

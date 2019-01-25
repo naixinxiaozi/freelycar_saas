@@ -95,7 +95,7 @@ public class ConsumerOrderService {
         List<ConsumerProjectInfo> consumerProjectInfos = orderObject.getConsumerProjectInfos();
         List<AutoParts> autoParts = orderObject.getAutoParts();
 
-        //TODO 订单号生成规则：门店（3位）+ 日期（6位）+ 每日递增（4位）
+        //TODO 订单号生成规则：门店（3位）+ 日期（6位）+ 订单类型编号（1位）+ 每日递增（4位）
         //设置order的额外信息
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         consumerOrder.setOrderType(Constants.OrderType.SERVICE.getValue());
@@ -359,7 +359,7 @@ public class ConsumerOrderService {
             }
             //订单状态条件查询
             if (null != orderState) {
-                predicates.add(criteriaBuilder.equal(root.get("orderState"), orderState));
+                predicates.add(criteriaBuilder.equal(root.get("state"), orderState));
             }
             //订单类型条件查询（如果没传，默认是查询出非办卡类的）
             if (null != orderType) {
@@ -490,5 +490,43 @@ public class ConsumerOrderService {
         logger.info("res:", res);
 
         return ResultJsonObject.getDefaultResult(res);
+    }
+
+    /**
+     * 智能柜开单
+     *
+     * @param orderObject
+     * @return
+     */
+    //TODO 回头来修改
+    public ResultJsonObject arkHandleOrder(OrderObject orderObject) {
+        ConsumerOrder consumerOrder = orderObject.getConsumerOrder();
+        List<ConsumerProjectInfo> consumerProjectInfos = orderObject.getConsumerProjectInfos();
+
+        //TODO 订单号生成规则：门店（3位）+ 日期（6位）+ 订单类型编号（1位）+ 每日递增（4位）
+        //设置order的额外信息
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        consumerOrder.setOrderType(Constants.OrderType.SERVICE.getValue());
+        consumerOrder.setPayState(Constants.PayState.NOT_PAY.getValue());
+        //快速开单时订单状态直接为接车状态（不需要预约）
+        consumerOrder.setState(Constants.OrderState.RECEIVE_CAR.getValue());
+        consumerOrder.setPickTime(currentTime);
+
+        ConsumerOrder consumerOrderRes = this.saveOrUpdate(consumerOrder);
+        if (null == consumerOrderRes) {
+            return ResultJsonObject.getErrorResult(null, "开单失败！保存订单信息失败。如有疑问，请联系管理员！");
+        }
+
+        String orderId = consumerOrder.getId();
+
+        //保存订单项目信息
+        if (null != consumerProjectInfos && !consumerProjectInfos.isEmpty()) {
+            for (ConsumerProjectInfo consumerProjectInfo : consumerProjectInfos) {
+                consumerProjectInfo.setConsumerOrderId(orderId);
+                consumerProjectInfoService.saveOrUpdate(consumerProjectInfo);
+            }
+        }
+
+        return ResultJsonObject.getDefaultResult(consumerOrderRes.getId(), "订单生成成功！");
     }
 }
