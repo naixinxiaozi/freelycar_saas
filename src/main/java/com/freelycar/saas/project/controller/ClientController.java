@@ -22,7 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/client")
 public class ClientController {
-    private static Logger logger = LoggerFactory.getLogger(ClientController.class);
+    private Logger logger = LoggerFactory.getLogger(ClientController.class);
 
     @Autowired
     private ClientService clientService;

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/staff")
 public class StaffController {
-    private static Logger logger = LoggerFactory.getLogger(StaffController.class);
+    private Logger logger = LoggerFactory.getLogger(StaffController.class);
     @Autowired
     StaffService staffService;
     private String errorMsg;

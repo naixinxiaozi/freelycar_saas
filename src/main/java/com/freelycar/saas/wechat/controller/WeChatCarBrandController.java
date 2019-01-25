@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/wechat/carBrand")
 public class WeChatCarBrandController {
-    private static Logger logger = LoggerFactory.getLogger(WeChatCarBrandController.class);
+    private Logger logger = LoggerFactory.getLogger(WeChatCarBrandController.class);
 
     @Autowired
     private CarBrandService carBrandService;

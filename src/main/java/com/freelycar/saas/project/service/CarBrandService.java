@@ -27,7 +27,7 @@ import java.util.List;
 @Service
 @Transactional
 public class CarBrandService {
-    private static Logger logger = LoggerFactory.getLogger(CarBrandService.class);
+    private Logger logger = LoggerFactory.getLogger(CarBrandService.class);
 
     @Autowired
     private CarBrandRepository carBrandRepository;

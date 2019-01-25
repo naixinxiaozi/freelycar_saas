@@ -23,7 +23,7 @@ import static com.freelycar.saas.basic.wrapper.ResultCode.RESULT_DATA_NONE;
 
 @Service
 public class CardServiceService {
-    private static Logger logger = LoggerFactory.getLogger(CardServiceService.class);
+    private Logger logger = LoggerFactory.getLogger(CardServiceService.class);
 
     @Autowired
     private CardServiceRepository cardServiceRepository;

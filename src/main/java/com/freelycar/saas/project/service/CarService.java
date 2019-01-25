@@ -26,7 +26,7 @@ import static com.freelycar.saas.basic.wrapper.ResultCode.RESULT_DATA_NONE;
 @Service
 @Transactional
 public class CarService {
-    private static Logger logger = LoggerFactory.getLogger(CarService.class);
+    private Logger logger = LoggerFactory.getLogger(CarService.class);
 
     @Autowired
     private CarRepository carRepository;

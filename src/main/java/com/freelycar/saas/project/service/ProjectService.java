@@ -24,7 +24,7 @@ import static com.freelycar.saas.basic.wrapper.ResultCode.RESULT_DATA_NONE;
 
 @Service
 public class ProjectService {
-    private static Logger logger = LoggerFactory.getLogger(ProjectService.class);
+    private Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
     @Autowired
     private ProjectRepository projectRepository;

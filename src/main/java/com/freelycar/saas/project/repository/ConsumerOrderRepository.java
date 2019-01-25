@@ -19,4 +19,6 @@ public interface ConsumerOrderRepository extends JpaRepository<ConsumerOrder, St
     List<ConsumerOrder> findAllByClientIdAndDelStatusAndOrderTypeOrderByCreateTimeDesc(String clientId, boolean delStatus, Integer orderType);
 
     Page<ConsumerOrder> findAll(Specification specification, Pageable pageable);
+
+    ConsumerOrder findTopByClientIdAndOrderTypeAndDelStatusAndStateLessThan(String clientId, int orderType, boolean delStatus, int state);
 }

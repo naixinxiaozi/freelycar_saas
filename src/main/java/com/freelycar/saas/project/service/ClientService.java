@@ -44,7 +44,7 @@ import java.util.*;
 @Service
 @Transactional
 public class ClientService {
-    private static Logger logger = LoggerFactory.getLogger(ClientService.class);
+    private Logger logger = LoggerFactory.getLogger(ClientService.class);
     @Autowired
     private ClientRepository clientRepository;
     @Autowired

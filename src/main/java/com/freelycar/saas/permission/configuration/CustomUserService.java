@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  */
 public class CustomUserService implements UserDetailsService {
 
-    private static Logger logger = LoggerFactory.getLogger(CustomUserService.class);
+    private Logger logger = LoggerFactory.getLogger(CustomUserService.class);
 
     @Autowired
     SysUserRepository userRepository;

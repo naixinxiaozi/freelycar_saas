@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/car")
 public class CarController {
-    private static Logger logger = LoggerFactory.getLogger(CarController.class);
+    private Logger logger = LoggerFactory.getLogger(CarController.class);
 
     @Autowired
     private CarService carService;

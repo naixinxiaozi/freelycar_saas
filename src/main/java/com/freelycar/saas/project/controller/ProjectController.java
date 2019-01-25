@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/project")
 public class ProjectController {
-    private static Logger logger = LoggerFactory.getLogger(ProjectController.class);
+    private Logger logger = LoggerFactory.getLogger(ProjectController.class);
     @Autowired
     ProjectService projectService;
     private String errorMsg;

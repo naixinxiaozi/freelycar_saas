@@ -23,7 +23,7 @@ import static com.freelycar.saas.basic.wrapper.ResultCode.RESULT_DATA_NONE;
 
 @Service
 public class CouponServiceService {
-    private static Logger logger = LoggerFactory.getLogger(CouponServiceService.class);
+    private Logger logger = LoggerFactory.getLogger(CouponServiceService.class);
 
     @Autowired
     private CouponServiceRepository couponServiceRepository;

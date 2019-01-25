@@ -23,7 +23,7 @@ import static com.freelycar.saas.basic.wrapper.ResultCode.RESULT_DATA_NONE;
 
 @Service
 public class StaffService {
-    private static Logger logger = LoggerFactory.getLogger(StaffService.class);
+    private Logger logger = LoggerFactory.getLogger(StaffService.class);
 
     @Autowired
     private StaffRepository staffRepository;

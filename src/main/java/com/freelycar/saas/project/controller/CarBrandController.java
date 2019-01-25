@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/carBrand")
 public class CarBrandController {
-    private static Logger logger = LoggerFactory.getLogger(CarBrandController.class);
+    private Logger logger = LoggerFactory.getLogger(CarBrandController.class);
 
     @Autowired
     private CarBrandService carBrandService;

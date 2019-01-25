@@ -14,6 +14,8 @@ import com.freelycar.saas.project.model.PayOrder;
 import com.freelycar.saas.project.repository.ConsumerOrderRepository;
 import com.freelycar.saas.util.UpdateTool;
 import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
@@ -37,6 +39,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class ConsumerOrderService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private ConsumerOrderRepository consumerOrderRepository;
 
@@ -469,5 +473,22 @@ public class ConsumerOrderService {
 
         this.saveOrUpdate(source);
         return ResultJsonObject.getDefaultResult(orderId);
+    }
+
+
+    /**
+     * 获取当前用户，当前活跃的智能柜订单
+     *
+     * @param clientId
+     * @return
+     */
+    public ResultJsonObject getActiveOrder(String clientId) {
+        if (StringUtils.isEmpty(clientId)) {
+            return ResultJsonObject.getErrorResult(clientId, "参数clientId为空值");
+        }
+        ConsumerOrder res = consumerOrderRepository.findTopByClientIdAndOrderTypeAndDelStatusAndStateLessThan(clientId, Constants.OrderType.ARK.getValue(), Constants.DelStatus.NORMAL.isValue(), Constants.OrderState.HAND_OVER.getValue());
+        logger.info("res:", res);
+
+        return ResultJsonObject.getDefaultResult(res);
     }
 }

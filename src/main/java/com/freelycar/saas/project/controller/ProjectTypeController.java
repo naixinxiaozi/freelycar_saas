@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/projectType")
 public class ProjectTypeController {
-    private static Logger logger = LoggerFactory.getLogger(ProjectTypeController.class);
+    private Logger logger = LoggerFactory.getLogger(ProjectTypeController.class);
     @Autowired
     ProjectTypeService projectTypeService;
     private String errorMsg;

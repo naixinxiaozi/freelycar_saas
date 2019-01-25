@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/couponService")
 public class CouponServiceController {
-    private static Logger logger = LoggerFactory.getLogger(CouponServiceController.class);
+    private Logger logger = LoggerFactory.getLogger(CouponServiceController.class);
     @Autowired
     CouponServiceService couponServiceService;
     private String errorMsg;
