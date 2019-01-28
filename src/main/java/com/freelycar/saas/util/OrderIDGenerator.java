@@ -28,7 +28,7 @@ public class OrderIDGenerator {
     @Autowired
     private OrderSnRepository orderSnRepository;
 
-    public String generate(String storeId, int orderType) throws Exception {
+    synchronized public String generate(String storeId, int orderType) throws Exception {
         if (StringUtils.isEmpty(storeId)) {
             throw new Exception("门店ID为空值，无法生成单据ID");
         }
