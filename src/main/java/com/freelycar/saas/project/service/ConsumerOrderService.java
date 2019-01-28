@@ -95,7 +95,7 @@ public class ConsumerOrderService {
         List<ConsumerProjectInfo> consumerProjectInfos = orderObject.getConsumerProjectInfos();
         List<AutoParts> autoParts = orderObject.getAutoParts();
 
-        //TODO 订单号生成规则：门店（3位）+ 日期（6位）+ 订单类型编号（1位）+ 每日递增（4位）
+        //TODO 订单号生成规则：订单类型编号（1位）+ 门店（3位）+ 日期（6位）+ 每日递增（4位）
         //设置order的额外信息
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         consumerOrder.setOrderType(Constants.OrderType.SERVICE.getValue());
@@ -498,7 +498,7 @@ public class ConsumerOrderService {
      * @param orderObject
      * @return
      */
-    //TODO 回头来修改
+    //TODO 智能柜开单
     public ResultJsonObject arkHandleOrder(OrderObject orderObject) {
         //获取提交过来的数据
         ConsumerOrder consumerOrder = orderObject.getConsumerOrder();
@@ -508,7 +508,7 @@ public class ConsumerOrderService {
         //获取客户信息
 
 
-        //TODO 订单号生成规则：门店（3位）+ 日期（6位）+ 订单类型编号（1位）+ 每日递增（4位）
+        //TODO 订单号生成规则：订单类型编号（1位）+ 门店（3位）+ 日期（6位）+ 每日递增（4位）
         //设置order的额外信息
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         consumerOrder.setOrderType(Constants.OrderType.ARK.getValue());

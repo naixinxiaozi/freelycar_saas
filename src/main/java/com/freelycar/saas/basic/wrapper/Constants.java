@@ -51,6 +51,29 @@ public class Constants {
     }
 
     /**
+     * 订单ID的类型首字母
+     */
+    public enum OrderIdSn {
+        SERVICE(1, "S"), ARK(2, "A"), CARD(3, "C");
+
+        private final Integer value;
+        private final String name;
+
+        OrderIdSn(Integer value, String name) {
+            this.value = value;
+            this.name = name;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    /**
      * 订单状态
      */
     public enum OrderState {
