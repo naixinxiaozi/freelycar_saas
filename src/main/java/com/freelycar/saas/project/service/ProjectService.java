@@ -1,9 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.Constants;
-import com.freelycar.saas.basic.wrapper.PageableTools;
-import com.freelycar.saas.basic.wrapper.PaginationRJO;
-import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.project.entity.Project;
 import com.freelycar.saas.project.repository.ProjectRepository;
 import com.freelycar.saas.util.UpdateTool;
@@ -206,5 +203,22 @@ public class ProjectService {
             return ResultJsonObject.getErrorResult(id, "下架失败，下架操作出现异常");
         }
         return ResultJsonObject.getDefaultResult(id, "下架成功");
+    }
+
+    /**
+     * 批量删除
+     *
+     * @param ids
+     * @return
+     */
+    public ResultJsonObject delByIds(String ids) {
+        if (StringUtils.isEmpty(ids)) {
+            return ResultJsonObject.getErrorResult(null, "删除失败：ids" + ResultCode.PARAM_NOT_COMPLETE.message());
+        }
+        String[] idsList = ids.split(",");
+        for (String id : idsList) {
+            projectRepository.delById(id);
+        }
+        return ResultJsonObject.getDefaultResult(null);
     }
 }

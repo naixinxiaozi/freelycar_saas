@@ -1,9 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.Constants;
-import com.freelycar.saas.basic.wrapper.PageableTools;
-import com.freelycar.saas.basic.wrapper.PaginationRJO;
-import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.project.entity.CouponService;
 import com.freelycar.saas.project.repository.CouponServiceRepository;
 import com.freelycar.saas.util.UpdateTool;
@@ -126,6 +123,24 @@ public class CouponServiceService {
         return ResultJsonObject.getDefaultResult(id, "删除成功");
     }
 
+
+    /**
+     * 批量删除
+     *
+     * @param ids
+     * @return
+     */
+    public ResultJsonObject delByIds(String ids) {
+        if (StringUtils.isEmpty(ids)) {
+            return ResultJsonObject.getErrorResult(null, "删除失败：ids" + ResultCode.PARAM_NOT_COMPLETE.message());
+        }
+        String[] idsList = ids.split(",");
+        for (String id : idsList) {
+            couponServiceRepository.delById(id);
+        }
+        return ResultJsonObject.getDefaultResult(null);
+    }
+
     /**
      * 上架
      *
@@ -163,5 +178,4 @@ public class CouponServiceService {
         }
         return ResultJsonObject.getDefaultResult(id, "下架成功");
     }
-
 }
