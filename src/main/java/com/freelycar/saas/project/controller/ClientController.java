@@ -21,7 +21,7 @@ import java.util.Map;
  * @date 2018-12-25
  * @email toby911115@gmail.com
  */
-@Api(value = "门店员工管理", description = "门店员工管理接口", tags = "门店员工管理接口")
+@Api(value = "门店客户管理", description = "门店客户管理接口", tags = "门店客户管理接口")
 @RestController
 @RequestMapping("/client")
 public class ClientController {
