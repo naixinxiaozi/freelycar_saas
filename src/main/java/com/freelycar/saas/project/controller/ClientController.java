@@ -30,8 +30,6 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    private String errorMsg;
-
     @ApiOperation(value = "新增客户（提交数据中包含车辆和客户信息）", produces = "application/json")
     @PostMapping("/addClientAndCar")
     @LoggerManage(description = "新增客户（提交数据中包含车辆和客户信息）")
