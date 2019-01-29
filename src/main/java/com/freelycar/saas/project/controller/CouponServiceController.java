@@ -85,7 +85,7 @@ public class CouponServiceController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "删除卡类信息", produces = "application/json")
+    @ApiOperation(value = "删除抵用券信息", produces = "application/json")
     @GetMapping(value = "/delete")
     @LoggerManage(description = "调用方法：删除抵用券信息")
     public ResultJsonObject delete(@RequestParam String id) {
