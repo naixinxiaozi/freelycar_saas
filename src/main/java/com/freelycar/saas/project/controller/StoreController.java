@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * @date 2019-01-07
  * @email toby911115@gmail.com
  */
-@Api(value = "门店信息", description = "门店信息服务接口", tags = "管理端")
+@Api(value = "门店信息", description = "门店信息服务接口", tags = "门店信息服务接口")
 @RestController
 @RequestMapping("/store")
 public class StoreController {

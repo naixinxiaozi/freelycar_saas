@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-@Api(value = "门店优惠券服务", description = "门店优惠券服务接口", tags = "门店端")
+@Api(value = "门店优惠券服务", description = "门店优惠券服务接口", tags = "门店优惠券服务接口")
 @RestController
 @RequestMapping("/couponService")
 public class CouponServiceController {

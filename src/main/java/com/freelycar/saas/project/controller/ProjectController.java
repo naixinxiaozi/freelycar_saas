@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-@Api(value = "门店项目管理", description = "门店项目管理接口", tags = "门店端")
+@Api(value = "门店项目管理", description = "门店项目管理接口", tags = "门店项目管理接口")
 @RestController
 @RequestMapping("/project")
 public class ProjectController {

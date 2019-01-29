@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-@Api(value = "门店员工管理", description = "门店员工管理接口", tags = "门店端")
+@Api(value = "门店员工管理", description = "门店员工管理接口", tags = "门店员工管理接口")
 @RestController
 @RequestMapping("/staff")
 public class StaffController {
