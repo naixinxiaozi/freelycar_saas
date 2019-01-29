@@ -20,7 +20,6 @@ public class StaffController {
     private Logger logger = LoggerFactory.getLogger(StaffController.class);
     @Autowired
     StaffService staffService;
-    private String errorMsg;
 
     /**
      * 新增/修改员工
@@ -33,7 +32,7 @@ public class StaffController {
     @LoggerManage(description = "调用方法：新增/修改员工信息")
     public ResultJsonObject saveOrUpdate(@RequestBody Staff staff) {
         if (null == staff) {
-            errorMsg = "接收到的参数：员工为NULL";
+            String errorMsg = "接收到的参数：员工为NULL";
             logger.error(errorMsg);
             return ResultJsonObject.getErrorResult(null, errorMsg);
         }
@@ -50,11 +49,6 @@ public class StaffController {
     @GetMapping(value = "/detail")
     @LoggerManage(description = "调用方法：获取员工详情")
     public ResultJsonObject detail(@RequestParam String id) {
-        if (null == id) {
-            errorMsg = "接收到的参数：id为NULL";
-            logger.error(errorMsg);
-            return ResultJsonObject.getErrorResult(null, errorMsg);
-        }
         return staffService.getDetail(id);
     }
 

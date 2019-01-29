@@ -20,7 +20,6 @@ public class CouponServiceController {
     private Logger logger = LoggerFactory.getLogger(CouponServiceController.class);
     @Autowired
     CouponServiceService couponServiceService;
-    private String errorMsg;
 
     /**
      * 新增/修改抵用券
@@ -33,7 +32,7 @@ public class CouponServiceController {
     @LoggerManage(description = "调用方法：抵用券新增/修改")
     public ResultJsonObject saveOrUpdate(@RequestBody CouponService couponService) {
         if (null == couponService) {
-            errorMsg = "接收到的参数：couponService为NULL";
+            String errorMsg = "接收到的参数：couponService为NULL";
             logger.error(errorMsg);
             return ResultJsonObject.getErrorResult(null, errorMsg);
         }
@@ -50,11 +49,6 @@ public class CouponServiceController {
     @GetMapping(value = "/detail")
     @LoggerManage(description = "调用方法：获取抵用券详情")
     public ResultJsonObject detail(@RequestParam String id) {
-        if (null == id) {
-            errorMsg = "接收到的参数：id为NULL";
-            logger.error(errorMsg);
-            return ResultJsonObject.getErrorResult(null, errorMsg);
-        }
         return couponServiceService.getDetail(id);
     }
 
