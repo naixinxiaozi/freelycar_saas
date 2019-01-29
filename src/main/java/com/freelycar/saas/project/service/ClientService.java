@@ -1,9 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.Constants;
-import com.freelycar.saas.basic.wrapper.PageableTools;
-import com.freelycar.saas.basic.wrapper.PaginationRJO;
-import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.project.entity.Car;
 import com.freelycar.saas.project.entity.Card;
 import com.freelycar.saas.project.entity.Client;
@@ -297,5 +294,22 @@ public class ClientService {
         double consumeAmount = client.getConsumeAmount() == null ? 0 : client.getConsumeAmount();
         client.setConsumeAmount(consumeAmount + amount);
         return clientRepository.saveAndFlush(client);
+    }
+
+    /**
+     * 根据ID删除客户信息
+     *
+     * @param id
+     * @return
+     */
+    public ResultJsonObject delete(String id) {
+        if (StringUtils.isEmpty(id)) {
+            return ResultJsonObject.getErrorResult(null, "删除失败：id" + ResultCode.PARAM_NOT_COMPLETE.message());
+        }
+        int res = clientRepository.delById(id);
+        if (res == 1) {
+            return ResultJsonObject.getDefaultResult(id);
+        }
+        return ResultJsonObject.getErrorResult(null, ResultCode.RESULT_DATA_NONE.message());
     }
 }

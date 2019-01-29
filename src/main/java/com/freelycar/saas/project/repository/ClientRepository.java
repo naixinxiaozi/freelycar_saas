@@ -42,4 +42,7 @@ public interface ClientRepository extends JpaRepository<Client,String> {
     int countByDelStatusAndStoreIdAndIsMember(boolean delStatus, String storeId, boolean isMember);
 
     int countByDelStatusAndStoreIdAndIsMemberAndMemberDateBetween(boolean delStatus, String storeId, boolean isMember, Timestamp memberDateStart, Timestamp memberDateEnd);
+
+    @Query(value = "UPDATE client SET del_status=1 WHERE id=:id", nativeQuery = true)
+    int delById(String id);
 }

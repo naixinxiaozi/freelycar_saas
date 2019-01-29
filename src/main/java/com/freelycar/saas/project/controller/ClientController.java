@@ -5,6 +5,8 @@ import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.Client;
 import com.freelycar.saas.project.model.NewClientInfo;
 import com.freelycar.saas.project.service.ClientService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import java.util.Map;
  * @date 2018-12-25
  * @email toby911115@gmail.com
  */
+@Api(value = "门店员工管理", description = "门店员工管理接口", tags = "门店员工管理接口")
 @RestController
 @RequestMapping("/client")
 public class ClientController {
@@ -29,7 +32,9 @@ public class ClientController {
 
     private String errorMsg;
 
+    @ApiOperation(value = "新增客户（提交数据中包含车辆和客户信息）", produces = "application/json")
     @PostMapping("/addClientAndCar")
+    @LoggerManage(description = "新增客户（提交数据中包含车辆和客户信息）")
     public ResultJsonObject addClientAndCar(@RequestBody NewClientInfo newClientInfo) {
         return clientService.addClientAndCar(newClientInfo.getClient(), newClientInfo.getCar());
     }
@@ -40,7 +45,9 @@ public class ClientController {
      * @param client
      * @return
      */
+    @ApiOperation(value = "新增/修改客户", produces = "application/json")
     @PostMapping("/modify")
+    @LoggerManage(description = "新增/修改客户")
     public ResultJsonObject modify(@RequestBody Client client) {
         Client clientRes = clientService.saveOrUpdate(client);
         if (null != clientRes) {
@@ -56,30 +63,20 @@ public class ClientController {
      * @param id
      * @return
      */
+    @ApiOperation(value = "获取客户基本信息（不包含会员卡、车辆等）", produces = "application/json")
     @GetMapping(value = "/detail")
     @LoggerManage(description = "调用方法：获取客户基本信息（不包含会员卡、车辆等）")
     public ResultJsonObject detail(@RequestParam String id) {
-
-        if (null == id) {
-            errorMsg = "接收到的参数：id为NULL";
-            logger.error(errorMsg);
-            return ResultJsonObject.getErrorResult(null, errorMsg);
-        }
         return clientService.getDetail(id);
     }
 
     /**
      * 获取客户基本信息（包含会员卡、车辆等）
      */
+    @ApiOperation(value = "获取客户基本信息（包含会员卡、车辆）", produces = "application/json")
     @GetMapping(value = "/getCustomerInfo")
     @LoggerManage(description = "调用方法：获取客户基本信息（包含会员卡、车辆）")
     public ResultJsonObject getCustomerInfo(@RequestParam String id) {
-
-        if (null == id) {
-            errorMsg = "接收到的参数：id为NULL";
-            logger.error(errorMsg);
-            return ResultJsonObject.getErrorResult(null, errorMsg);
-        }
         return clientService.getCustomerInfo(id);
     }
 
@@ -93,6 +90,7 @@ public class ClientController {
      * @param phone
      * @return
      */
+    @ApiOperation(value = "获取客户列表（分页）", produces = "application/json")
     @GetMapping(value = "/list")
     @LoggerManage(description = "调用方法：获取客户列表")
     public ResultJsonObject list(
@@ -121,12 +119,20 @@ public class ClientController {
         return clientService.list(storeId, currentPage, pageSize, params);
     }
 
+    @ApiOperation(value = "会员统计", produces = "application/json")
     @GetMapping(value = "/memberStatistics")
     @LoggerManage(description = "调用方法：会员统计")
     public ResultJsonObject memberStatistics(
             @RequestParam String storeId
     ) {
         return ResultJsonObject.getDefaultResult(clientService.memberStatistics(storeId));
+    }
+
+    @ApiOperation(value = "删除单个客户信息", produces = "application/json")
+    @GetMapping(value = "/delete")
+    @LoggerManage(description = "删除单个客户信息")
+    public ResultJsonObject delete(@RequestParam String id) {
+        return clientService.delete(id);
     }
 
 }
