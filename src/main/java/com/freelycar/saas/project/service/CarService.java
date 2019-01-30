@@ -107,9 +107,10 @@ public class CarService {
 
     /**
      * 新增/修改车辆
+     *
      * @param car
      * @return
-     * */
+     */
 
     public ResultJsonObject modify(Car car) {
         try {
@@ -133,7 +134,7 @@ public class CarService {
      *
      * @param car
      * @return
-     * */
+     */
     private boolean checkRepeatName(Car car) {
         List<Car> carList;
         if (null != car.getId()) {
@@ -142,6 +143,23 @@ public class CarService {
             carList = carRepository.checkRepeatName(car.getLicensePlate(), car.getStoreId());
         }
         return carList.size() != 0;
+    }
+
+
+    /**
+     * 根据车牌号和门店ID查询对应车辆信息
+     *
+     * @param licensePlate
+     * @param storeId
+     * @return
+     */
+    public Car findCarByLicensePlateAndStoreId(String licensePlate, String storeId) {
+        if (StringUtils.isEmpty(licensePlate) || StringUtils.isEmpty(storeId)) {
+            return null;
+        }
+        //车牌号全部转换成大写
+        licensePlate = licensePlate.toUpperCase();
+        return carRepository.findTopByLicensePlateAndStoreIdAndAndDelStatusOrderByCreateTimeDesc(licensePlate, storeId, Constants.DelStatus.NORMAL.isValue());
     }
 
 }

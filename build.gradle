@@ -62,6 +62,12 @@ dependencies {
     // https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 
+    // lombok
+    annotationProcessor 'org.projectlombok:lombok:1.18.4'
+    compileOnly 'org.projectlombok:lombok:1.18.4'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.4'
+    testCompileOnly 'org.projectlombok:lombok:1.18.4'
+
     //devtools
     compile('org.springframework.boot:spring-boot-devtools')
 

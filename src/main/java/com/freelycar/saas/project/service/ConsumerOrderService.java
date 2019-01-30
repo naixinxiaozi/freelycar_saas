@@ -4,14 +4,14 @@ import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.PageableTools;
 import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
-import com.freelycar.saas.project.entity.AutoParts;
-import com.freelycar.saas.project.entity.ConsumerOrder;
-import com.freelycar.saas.project.entity.ConsumerProjectInfo;
-import com.freelycar.saas.project.entity.Coupon;
+import com.freelycar.saas.project.entity.*;
+import com.freelycar.saas.project.model.OrderClientInfo;
 import com.freelycar.saas.project.model.OrderListParam;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
+import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.ConsumerOrderRepository;
+import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -57,7 +58,13 @@ public class ConsumerOrderService {
     private CardService cardService;
 
     @Autowired
+    private CardRepository cardRepository;
+
+    @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private CarService carService;
 
     /**
      * 保存和修改
@@ -83,6 +90,7 @@ public class ConsumerOrderService {
         }
         return consumerOrderRepository.saveAndFlush(consumerOrder);
     }
+
 
     /**
      * 快速开单
@@ -532,5 +540,63 @@ public class ConsumerOrderService {
         }
 
         return ResultJsonObject.getDefaultResult(consumerOrderRes.getId(), "订单生成成功！");
+    }
+
+
+    /**
+     * 根据车牌号和门店ID查询客户开单时所需的信息
+     *
+     * @param licensePlate
+     * @param storeId
+     * @return
+     */
+    public ResultJsonObject loadClientInfoByLicensePlate(String licensePlate, String storeId) {
+        //查找车辆
+        Car car = carService.findCarByLicensePlateAndStoreId(licensePlate, storeId);
+        if (null == car) {
+            return ResultJsonObject.getErrorResult(null, "未找到对应车辆信息");
+        }
+        String clientId = car.getClientId();
+        if (StringUtils.isEmpty(clientId)) {
+            return ResultJsonObject.getErrorResult(null, "未找到该车牌绑定的客户信息");
+        }
+        Client client = (Client) clientService.getDetail(clientId).getData();
+        if (null == client) {
+            return ResultJsonObject.getErrorResult(null, "未找到该车牌绑定的客户信息");
+        }
+        if (client.getDelStatus()) {
+            return ResultJsonObject.getErrorResult(null, "未找到该车牌绑定的客户信息");
+        }
+
+        Double carBalance = null;
+        Float balance = cardRepository.sumBalanceByClientId(clientId);
+        if (null != balance) {
+            //格式化精度
+            carBalance = RoundTool.round(balance.doubleValue(), 2, BigDecimal.ROUND_DOWN);
+        } else {
+            carBalance = 0.0;
+        }
+
+        Double consumeAmount = client.getConsumeAmount() == null ? 0.0 : client.getConsumeAmount();
+
+        OrderClientInfo orderClientInfo = new OrderClientInfo();
+
+        orderClientInfo.setCarId(car.getId());
+        orderClientInfo.setLicensePlate(car.getLicensePlate());
+        orderClientInfo.setCarBrand(car.getCarBrand());
+        orderClientInfo.setCarType(car.getCarType());
+        orderClientInfo.setStoreId(car.getStoreId());
+        orderClientInfo.setLastMiles(String.valueOf(car.getLastMiles()));
+
+        orderClientInfo.setClientId(client.getId());
+        orderClientInfo.setClientName(client.getName());
+        orderClientInfo.setPhone(client.getPhone());
+        orderClientInfo.setIsMember(client.getMember());
+        orderClientInfo.setHistoryConsumption(RoundTool.round(consumeAmount, 2, BigDecimal.ROUND_DOWN));
+
+        orderClientInfo.setBalance(carBalance);
+
+
+        return ResultJsonObject.getDefaultResult(orderClientInfo);
     }
 }

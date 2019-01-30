@@ -32,4 +32,6 @@ public interface CarRepository extends JpaRepository<Car, String> {
 
     @Query(value = "SELECT car.* FROM car LEFT JOIN client c ON c.id = car.client_id WHERE c.store_id=:storeId AND c.phone = :phone AND car.del_status = 0 ORDER BY car.default_car DESC, car.create_time ASC", nativeQuery = true)
     List<Car> listCarsByStoreIdAndPhone(String storeId, String phone);
+
+    Car findTopByLicensePlateAndStoreIdAndAndDelStatusOrderByCreateTimeDesc(String licensePlate, String storeId, boolean delStatus);
 }

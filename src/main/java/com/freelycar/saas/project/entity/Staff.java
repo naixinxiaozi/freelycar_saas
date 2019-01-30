@@ -54,6 +54,9 @@ public class Staff implements Serializable {
     @Column
     private String position;
 
+    @Column
+    private String staffNumber;
+
     @Column(nullable = false, columnDefinition = "bit default 0")
     private Boolean isArk;
 
@@ -172,20 +175,34 @@ public class Staff implements Serializable {
 
     @Override
     public String toString() {
-        return "Staff{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", storeId='" + storeId + '\'' +
-                ", comment='" + comment + '\'' +
-                ", gender='" + gender + '\'' +
-                ", level='" + level + '\'' +
-                ", name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", position='" + position + '\'' +
-                ", isArk=" + isArk +
-                ", account='" + account + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append(",\"comment\":\"")
+                .append(comment).append('\"');
+        sb.append(",\"gender\":\"")
+                .append(gender).append('\"');
+        sb.append(",\"level\":\"")
+                .append(level).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"phone\":\"")
+                .append(phone).append('\"');
+        sb.append(",\"position\":\"")
+                .append(position).append('\"');
+        sb.append(",\"isArk\":")
+                .append(isArk);
+        sb.append(",\"account\":\"")
+                .append(account).append('\"');
+        sb.append(",\"password\":\"")
+                .append(password).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 }

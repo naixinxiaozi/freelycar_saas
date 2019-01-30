@@ -129,7 +129,7 @@ public class ClientService {
      * @return
      */
     public ResultJsonObject getDetail(String id) {
-        return ResultJsonObject.getDefaultResult(clientRepository.findById(id));
+        return ResultJsonObject.getDefaultResult(clientRepository.findById(id).get());
     }
 
     /**
