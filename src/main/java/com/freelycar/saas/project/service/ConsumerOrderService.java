@@ -11,6 +11,7 @@ import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
 import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.ConsumerOrderRepository;
+import com.freelycar.saas.util.OrderIDGenerator;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
 import org.apache.commons.lang3.time.DateUtils;
@@ -66,28 +67,44 @@ public class ConsumerOrderService {
     @Autowired
     private CarService carService;
 
+    @Autowired
+    private OrderIDGenerator orderIDGenerator;
+
     /**
      * 保存和修改
      *
      * @param consumerOrder
      * @return
      */
-    public ConsumerOrder saveOrUpdate(ConsumerOrder consumerOrder) {
+    public ConsumerOrder saveOrUpdate(ConsumerOrder consumerOrder) throws Exception {
         if (null == consumerOrder) {
             return null;
         }
         String id = consumerOrder.getId();
         if (StringUtils.isEmpty(id)) {
+            //订单号生成规则：订单类型编号（1位）+ 门店（3位）+ 日期（6位）+ 每日递增（4位）
+            consumerOrder.setId(orderIDGenerator.generate(consumerOrder.getStoreId(), consumerOrder.getOrderType()));
             consumerOrder.setDelStatus(Constants.DelStatus.NORMAL.isValue());
             consumerOrder.setCreateTime(new Timestamp(System.currentTimeMillis()));
-        } else {
-            Optional<ConsumerOrder> consumerOrderOptional = consumerOrderRepository.findById(id);
-            if (!consumerOrderOptional.isPresent()) {
-                return null;
-            }
-            ConsumerOrder source = consumerOrderOptional.get();
-            UpdateTool.copyNullProperties(source, consumerOrder);
+            return consumerOrderRepository.saveAndFlush(consumerOrder);
         }
+        return this.updateOrder(consumerOrder);
+    }
+
+    /**
+     * 更新order信息
+     *
+     * @param consumerOrder
+     * @return
+     */
+    public ConsumerOrder updateOrder(ConsumerOrder consumerOrder) {
+        String id = consumerOrder.getId();
+        Optional<ConsumerOrder> consumerOrderOptional = consumerOrderRepository.findById(id);
+        if (!consumerOrderOptional.isPresent()) {
+            return null;
+        }
+        ConsumerOrder source = consumerOrderOptional.get();
+        UpdateTool.copyNullProperties(source, consumerOrder);
         return consumerOrderRepository.saveAndFlush(consumerOrder);
     }
 
@@ -103,7 +120,6 @@ public class ConsumerOrderService {
         List<ConsumerProjectInfo> consumerProjectInfos = orderObject.getConsumerProjectInfos();
         List<AutoParts> autoParts = orderObject.getAutoParts();
 
-        //TODO 订单号生成规则：订单类型编号（1位）+ 门店（3位）+ 日期（6位）+ 每日递增（4位）
         //设置order的额外信息
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         consumerOrder.setOrderType(Constants.OrderType.SERVICE.getValue());
@@ -112,7 +128,14 @@ public class ConsumerOrderService {
         consumerOrder.setState(Constants.OrderState.RECEIVE_CAR.getValue());
         consumerOrder.setPickTime(currentTime);
 
-        ConsumerOrder consumerOrderRes = this.saveOrUpdate(consumerOrder);
+        ConsumerOrder consumerOrderRes = null;
+        try {
+            consumerOrderRes = this.saveOrUpdate(consumerOrder);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, "开单失败！" + e.getMessage());
+        }
         if (null == consumerOrderRes) {
             return ResultJsonObject.getErrorResult(null, "开单失败！保存订单信息失败。如有疑问，请联系管理员！");
         }
@@ -283,7 +306,7 @@ public class ConsumerOrderService {
         if (null == consumerOrder) {
             return ResultJsonObject.getErrorResult(null, "consumerOrder对象为NULL！");
         }
-        consumerOrder = this.saveOrUpdate(consumerOrder);
+        consumerOrder = this.updateOrder(consumerOrder);
         if (null == consumerOrder) {
             return ResultJsonObject.getErrorResult(null, "挂单操作失败：数据保存错误！");
         }
@@ -458,7 +481,7 @@ public class ConsumerOrderService {
         source.setParkingLocation(consumerOrder.getParkingLocation());
         source.setState(Constants.OrderState.SERVICE_FINISH.getValue());
 
-        this.saveOrUpdate(source);
+        this.updateOrder(source);
         return ResultJsonObject.getDefaultResult(orderId);
     }
 
@@ -479,7 +502,7 @@ public class ConsumerOrderService {
         source.setDeliverTime(deliverTime);
         source.setState(Constants.OrderState.HAND_OVER.getValue());
 
-        this.saveOrUpdate(source);
+        this.updateOrder(source);
         return ResultJsonObject.getDefaultResult(orderId);
     }
 
@@ -516,7 +539,6 @@ public class ConsumerOrderService {
         //获取客户信息
 
 
-        //TODO 订单号生成规则：订单类型编号（1位）+ 门店（3位）+ 日期（6位）+ 每日递增（4位）
         //设置order的额外信息
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         consumerOrder.setOrderType(Constants.OrderType.ARK.getValue());
@@ -524,9 +546,16 @@ public class ConsumerOrderService {
         //设置订单状态为“预约”
         consumerOrder.setState(Constants.OrderState.RESERVATION.getValue());
 
-        ConsumerOrder consumerOrderRes = this.saveOrUpdate(consumerOrder);
+        ConsumerOrder consumerOrderRes = null;
+        try {
+            consumerOrderRes = this.saveOrUpdate(consumerOrder);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, "智能柜开单失败！" + e.getMessage());
+        }
         if (null == consumerOrderRes) {
-            return ResultJsonObject.getErrorResult(null, "开单失败！保存订单信息失败。如有疑问，请联系管理员！");
+            return ResultJsonObject.getErrorResult(null, "智能柜开单失败！保存订单信息失败。如有疑问，请联系管理员！");
         }
 
         String orderId = consumerOrder.getId();

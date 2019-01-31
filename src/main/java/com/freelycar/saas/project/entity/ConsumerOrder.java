@@ -2,10 +2,11 @@ package com.freelycar.saas.project.entity;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -22,9 +23,6 @@ public class ConsumerOrder implements Serializable {
     private static final long serialVersionUID = 11L;
 
     @Id
-    @GenericGenerator(name = "uuid", strategy = "uuid")
-    @GeneratedValue(generator = "uuid")
-    @NotNull
     private String id;
 
     @Column(nullable = false, columnDefinition = "bit default 0")
