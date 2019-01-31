@@ -21,6 +21,13 @@ import java.util.UUID;
 public class WeChatConfigController {
     private Logger logger = LoggerFactory.getLogger(WeChatConfigController.class);
 
+
+    /**
+     * 为微信前端提供调用JS-SDK所需的信息
+     *
+     * @param targetUrl
+     * @return
+     */
     @GetMapping(value = "/getJSSDKConfig")
     public String getJsSDKConfig(String targetUrl) {
         logger.debug("JSSDK Url:" + targetUrl);
@@ -51,6 +58,5 @@ public class WeChatConfigController {
         jsSDKConfig.put("timestamp", timestamp);
         jsSDKConfig.put("signature", signature);
         return jsSDKConfig.toString();
-
     }
 }
