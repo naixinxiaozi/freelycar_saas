@@ -568,7 +568,7 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(null, "未找到该车牌绑定的客户信息");
         }
 
-        Double carBalance = null;
+        double carBalance;
         Float balance = cardRepository.sumBalanceByClientId(clientId);
         if (null != balance) {
             //格式化精度
@@ -577,7 +577,7 @@ public class ConsumerOrderService {
             carBalance = 0.0;
         }
 
-        Double consumeAmount = client.getConsumeAmount() == null ? 0.0 : client.getConsumeAmount();
+        double consumeAmount = client.getConsumeAmount() == null ? 0.0 : client.getConsumeAmount();
 
         OrderClientInfo orderClientInfo = new OrderClientInfo();
 
