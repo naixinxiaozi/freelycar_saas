@@ -3,9 +3,8 @@ package com.freelycar.saas.project.controller;
 import com.freelycar.saas.project.service.DemoService;
 import com.freelycar.saas.project.service.DemoUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -19,7 +18,7 @@ public class DemoController {
     @Autowired
     private DemoUserService demoCommonService;
 
-    @RequestMapping("/superadmin/index")
+    @GetMapping("/superadmin/index")
     public Map<String,Object> index() {
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("status","success");
@@ -27,7 +26,7 @@ public class DemoController {
         return resultMap;
     }
 
-    @RequestMapping(value = "/mobile/{mobile:.+}", method = RequestMethod.GET)
+    @GetMapping(value = "/mobile/{mobile:.+}")
     public Object getSingleLoanItem(@PathVariable("mobile") String mobile) {
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("status","success");

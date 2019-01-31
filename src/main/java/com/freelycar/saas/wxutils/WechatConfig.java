@@ -17,26 +17,21 @@ import java.util.concurrent.ConcurrentHashMap;
 public class WechatConfig {
 
     //自定义的token
-    public static final String TOKEN = "freelycar20170901";
-    public static final String APP_ID = "wx89ac1808e298928d";
+    public static final String TOKEN = "freelycar-saas";
 
-    //public static final String APP_ID = "wxfd188f8284ee297b";  //appId  原小易爱车公众号APPID
-    public static final String MCH_ID = "1493352962";
+    //公众号-开发者ID
+    public static final String APP_ID = "wxd8d323b6abbe02b2";
 
-    //测试公众号appid
-//	public static final String APP_ID = "wxc76204e3e26b14b1";
+    //公众号-开发者密码
+    public static final String APP_SECRET = "106afe368ca1b58e3f0a894e48eb78ae";
 
-    //public static final String MCH_ID = "1234616002";   //商户号，微信商户平台里面获取  原小易爱车公众号
-    public static final String APP_SECRET = "1a809edcde16ab876245a1189e9f099b";
+    //商户号-商户ID
+    public static final String MCH_ID = "1500603051";
 
-    //public static final String APP_SECRET = "70b5522f3ea3ab0071441efe33f37e6f";    // 原小易爱车 appserect
-    public static final String APP_DOMAIN = "www.freelycar.com/freelycar_wechat";//url域名
+    public static final String APP_DOMAIN = "www.pwai.net.cn/SaaS";//url域名
 
-    //测试公众号appsecret
-//	public static final String APP_SECRET = "85770a016626a666fa0e36d81f0f7661";
-    public static final String KEY = "3E0JZPZTEZQHKC96GMQZJ0EVBT92JBIF"; //签名秘钥，在微信商户平台里面设置z`z`
+    public static final String KEY = "HKzuTu1FrT5wRR9EXb8MRzloIgMophix"; //签名秘钥，在微信商户平台里面设置z`z`
 
-    //public static final String KEY = "F8B4D84CE5B3FF39A9695FA99B5BC9C3"; //签名秘钥，在微信商户平台里面设置z`z`  原小易爱车
     public static final String ORDER_URL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
     public final static String REFUND_URL = "https://api.mch.weixin.qq.com/secapi/pay/refund";
     public final static String WECHAT_TEMPLATE_MESSAGE_URL = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=";
