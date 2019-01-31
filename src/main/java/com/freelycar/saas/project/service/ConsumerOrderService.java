@@ -234,6 +234,11 @@ public class ConsumerOrderService {
 
         String orderId = consumerOrder.getId();
 
+        consumerOrder.setPayState(Constants.PayState.FINISH_PAY.getValue());
+        consumerOrder.setState(Constants.OrderState.HAND_OVER.getValue());
+
+
+
         /*
         处理抵用券的结算
          */
@@ -287,7 +292,8 @@ public class ConsumerOrderService {
         }
 
         //保存订单信息（结算）
-        consumerOrderRepository.saveAndFlush(consumerOrder);
+
+        this.updateOrder(consumerOrder);
 
         // 处理其他逻辑，比如推送消息和消费金额叠加之类的
         clientService.updateClientAcount(consumerOrder.getClientId(), consumerOrder.getActualPrice());
@@ -306,12 +312,14 @@ public class ConsumerOrderService {
         if (null == consumerOrder) {
             return ResultJsonObject.getErrorResult(null, "consumerOrder对象为NULL！");
         }
+
+        String orderId = consumerOrder.getId();
+
         consumerOrder = this.updateOrder(consumerOrder);
         if (null == consumerOrder) {
             return ResultJsonObject.getErrorResult(null, "挂单操作失败：数据保存错误！");
         }
 
-        String orderId = consumerOrder.getId();
 
         //查询所有关联的抵用券，并将所有orderId和status初始化
         couponService.initCouponByOrderId(orderId);
