@@ -36,7 +36,7 @@ public interface StaffRepository extends JpaRepository<Staff,String> {
     @Query(value = "select * from staff where account=:account",nativeQuery = true)
     List<Staff> checkRepeatAccount(String account);
 
-
+    Staff findTopByAccountAndPasswordAndDelStatus(String account, String password, boolean delStatus);
 
 
 

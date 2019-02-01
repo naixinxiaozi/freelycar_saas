@@ -132,8 +132,8 @@ public class StaffService {
 
     public ResultJsonObject openArk(String id, String account, String password) {
         ResultJsonObject.getDefaultResult(staffRepository.findById(id));
-        Optional<Staff> optionalStaff=staffRepository.findById(id);
-        if (optionalStaff.isPresent()){
+        Optional<Staff> optionalStaff = staffRepository.findById(id);
+        if (optionalStaff.isPresent()) {
             Staff staff = optionalStaff.get();
             staff.setAccount(account);
             staff.setPassword(password);
@@ -142,9 +142,9 @@ public class StaffService {
                 return ResultJsonObject.getErrorResult(null, "已包含名称为：“" + staff.getAccount() + "”的账户，不能重复添加。");
             }
 
-                return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
+            return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
         }
-        return ResultJsonObject.getErrorResult(null,"id:"+id+"不存在！");
+        return ResultJsonObject.getErrorResult(null, "id:" + id + "不存在！");
 
 
     }
@@ -152,6 +152,7 @@ public class StaffService {
     /**
      * 验证账户是否重复
      * true：重复，false：不重复
+     *
      * @param staff
      * @return
      */
@@ -162,7 +163,7 @@ public class StaffService {
             staffList = staffRepository.checkRepeatAccount(staff.getAccount());
         } else {
 
-            staffList = staffRepository.checkRepeatAccount(staff.getId(),staff.getAccount());
+            staffList = staffRepository.checkRepeatAccount(staff.getId(), staff.getAccount());
         }
         return staffList.size() != 0;
     }
@@ -177,7 +178,7 @@ public class StaffService {
     public ResultJsonObject closeArk(String id) {
 
         Optional<Staff> optionalStaff = staffRepository.findById(id);
-        if (optionalStaff.isPresent()){
+        if (optionalStaff.isPresent()) {
             Staff staff = optionalStaff.get();
             staff.setAccount(null);
             staff.setPassword(null);
@@ -185,7 +186,7 @@ public class StaffService {
 
             return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
         }
-        return ResultJsonObject.getErrorResult(null,"id:"+id+"不存在！");
+        return ResultJsonObject.getErrorResult(null, "id:" + id + "不存在！");
 
     }
 
@@ -204,5 +205,29 @@ public class StaffService {
             staffRepository.delById(id);
         }
         return ResultJsonObject.getDefaultResult(null);
+    }
+
+
+    /**
+     * 技师端登录
+     *
+     * @param account
+     * @param password
+     * @return
+     */
+    public ResultJsonObject login(String account, String password) {
+        if (StringUtils.isEmpty(account)) {
+            logger.error("登录失败，参数account为空！");
+            return ResultJsonObject.getErrorResult(null, "登录失败，参数account为空！");
+        }
+        if (StringUtils.isEmpty(password)) {
+            logger.error("登录失败，参数password为空！");
+            return ResultJsonObject.getErrorResult(null, "登录失败，参数password为空！");
+        }
+        Staff staff = staffRepository.findTopByAccountAndPasswordAndDelStatus(account, password, Constants.DelStatus.NORMAL.isValue());
+        if (null != staff) {
+            return ResultJsonObject.getDefaultResult(staff);
+        }
+        return ResultJsonObject.getErrorResult(null, ResultCode.USER_LOGIN_ERROR.message());
     }
 }
