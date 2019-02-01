@@ -57,6 +57,11 @@ public class ClientService {
     @Autowired
     private LocalContainerEntityManagerFactoryBean entityManagerFactory;
 
+    public Client findById(String id) {
+
+        return clientRepository.findById(id).orElse(null);
+    }
+
     /**
      * 同时保存客户信息和车辆信息
      *

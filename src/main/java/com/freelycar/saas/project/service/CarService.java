@@ -31,6 +31,11 @@ public class CarService {
     @Autowired
     private CarRepository carRepository;
 
+
+    public Car findById(String id) {
+        return carRepository.findById(id).orElse(null);
+    }
+
     /**
      * 保存车辆信息
      *
@@ -161,5 +166,4 @@ public class CarService {
         licensePlate = licensePlate.toUpperCase();
         return carRepository.findTopByLicensePlateAndStoreIdAndAndDelStatusOrderByCreateTimeDesc(licensePlate, storeId, Constants.DelStatus.NORMAL.isValue());
     }
-
 }

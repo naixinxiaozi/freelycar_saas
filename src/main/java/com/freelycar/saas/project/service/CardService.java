@@ -175,7 +175,7 @@ public class CardService {
 
         cardOrder.setClientName(client.getName());
         cardOrder.setPhone(client.getPhone());
-        cardOrder.setMember(client.getMember());
+        cardOrder.setIsMember(client.getMember());
         cardOrder.setGender(client.getGender());
         cardOrder.setStoreId(client.getStoreId());
 

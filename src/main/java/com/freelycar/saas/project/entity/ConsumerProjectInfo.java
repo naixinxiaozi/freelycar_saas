@@ -1,5 +1,6 @@
 package com.freelycar.saas.project.entity;
 
+import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
@@ -19,6 +20,7 @@ import java.sql.Timestamp;
 @Table
 @DynamicInsert
 @DynamicUpdate
+@Data
 public class ConsumerProjectInfo implements Serializable {
     private static final long serialVersionUID = 16L;
 
@@ -97,8 +99,8 @@ public class ConsumerProjectInfo implements Serializable {
     /**
      * 金额
      */
-    @Column
-    private Double Price;
+    @Column(columnDefinition = "double default 0")
+    private Double price;
 
     /**
      * 工时单价
@@ -124,174 +126,4 @@ public class ConsumerProjectInfo implements Serializable {
     @Column
     private String staffName;
 
-    public ConsumerProjectInfo() {
-    }
-
-    @Override
-    public String toString() {
-        return "ConsumerProjectInfo{" +
-                "id='" + id + '\'' +
-                ", delStatus=" + delStatus +
-                ", createTime=" + createTime +
-                ", consumerOrderId='" + consumerOrderId + '\'' +
-                ", projectId='" + projectId + '\'' +
-                ", projectName='" + projectName + '\'' +
-                ", payMethod='" + payMethod + '\'' +
-                ", cardId='" + cardId + '\'' +
-                ", cardName='" + cardName + '\'' +
-                ", cardNumber='" + cardNumber + '\'' +
-                ", payCardTimes=" + payCardTimes +
-                ", couponId='" + couponId + '\'' +
-                ", couponName='" + couponName + '\'' +
-                ", Price=" + Price +
-                ", pricePerUnit=" + pricePerUnit +
-                ", referWorkTime=" + referWorkTime +
-                ", staffId='" + staffId + '\'' +
-                ", staffName='" + staffName + '\'' +
-                '}';
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Boolean getDelStatus() {
-        return delStatus;
-    }
-
-    public void setDelStatus(Boolean delStatus) {
-        this.delStatus = delStatus;
-    }
-
-    public Timestamp getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Timestamp createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getConsumerOrderId() {
-        return consumerOrderId;
-    }
-
-    public void setConsumerOrderId(String consumerOrderId) {
-        this.consumerOrderId = consumerOrderId;
-    }
-
-    public String getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
-    public String getPayMethod() {
-        return payMethod;
-    }
-
-    public void setPayMethod(String payMethod) {
-        this.payMethod = payMethod;
-    }
-
-    public String getCardId() {
-        return cardId;
-    }
-
-    public void setCardId(String cardId) {
-        this.cardId = cardId;
-    }
-
-    public String getCardName() {
-        return cardName;
-    }
-
-    public void setCardName(String cardName) {
-        this.cardName = cardName;
-    }
-
-    public String getCardNumber() {
-        return cardNumber;
-    }
-
-    public void setCardNumber(String cardNumber) {
-        this.cardNumber = cardNumber;
-    }
-
-    public Integer getPayCardTimes() {
-        return payCardTimes;
-    }
-
-    public void setPayCardTimes(Integer payCardTimes) {
-        this.payCardTimes = payCardTimes;
-    }
-
-    public String getCouponId() {
-        return couponId;
-    }
-
-    public void setCouponId(String couponId) {
-        this.couponId = couponId;
-    }
-
-    public String getCouponName() {
-        return couponName;
-    }
-
-    public void setCouponName(String couponName) {
-        this.couponName = couponName;
-    }
-
-    public Double getPrice() {
-        return Price;
-    }
-
-    public void setPrice(Double price) {
-        Price = price;
-    }
-
-    public Double getPricePerUnit() {
-        return pricePerUnit;
-    }
-
-    public void setPricePerUnit(Double pricePerUnit) {
-        this.pricePerUnit = pricePerUnit;
-    }
-
-    public Float getReferWorkTime() {
-        return referWorkTime;
-    }
-
-    public void setReferWorkTime(Float referWorkTime) {
-        this.referWorkTime = referWorkTime;
-    }
-
-    public String getStaffId() {
-        return staffId;
-    }
-
-    public void setStaffId(String staffId) {
-        this.staffId = staffId;
-    }
-
-    public String getStaffName() {
-        return staffName;
-    }
-
-    public void setStaffName(String staffName) {
-        this.staffName = staffName;
-    }
 }

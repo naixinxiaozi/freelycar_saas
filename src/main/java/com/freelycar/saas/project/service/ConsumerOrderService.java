@@ -127,8 +127,10 @@ public class ConsumerOrderService {
         //快速开单时订单状态直接为接车状态（不需要预约）
         consumerOrder.setState(Constants.OrderState.RECEIVE_CAR.getValue());
         consumerOrder.setPickTime(currentTime);
+        //应付金额等于整单金额
+        consumerOrder.setActualPrice(consumerOrder.getTotalPrice());
 
-        ConsumerOrder consumerOrderRes = null;
+        ConsumerOrder consumerOrderRes;
         try {
             consumerOrderRes = this.saveOrUpdate(consumerOrder);
         } catch (Exception e) {
@@ -543,18 +545,56 @@ public class ConsumerOrderService {
         ConsumerOrder consumerOrder = orderObject.getConsumerOrder();
         List<ConsumerProjectInfo> consumerProjectInfos = orderObject.getConsumerProjectInfos();
 
+        if (null == consumerOrder) {
+            logger.error("智能柜开单失败：参数中的consumerOrder对象为空");
+            return ResultJsonObject.getErrorResult(null, "智能柜开单失败：参数中的consumerOrder对象为空");
+        }
+
+        String carId = consumerOrder.getCarId();
+        String clientId = consumerOrder.getClientId();
+
         //获取车辆信息
+        Car carInfo = carService.findById(carId);
+        if (null == carInfo) {
+            logger.error("智能柜开单失败：未找到对应的车辆信息 " + carId);
+            return ResultJsonObject.getErrorResult(null, "智能柜开单失败：未找到对应的车辆信息");
+        }
+
         //获取客户信息
+        Client clientInfo = clientService.findById(clientId);
+        if (null == clientInfo) {
+            logger.error("智能柜开单失败：未找到对应的车主信息 " + clientId);
+            return ResultJsonObject.getErrorResult(null, "智能柜开单失败：未找到对应的车主信息");
+        }
 
+        //设置order中的车辆信息
+        consumerOrder.setCarId(carId);
+        consumerOrder.setLicensePlate(carInfo.getLicensePlate());
+        consumerOrder.setCarBrand(carInfo.getCarBrand());
+        consumerOrder.setCarType(carInfo.getCarType());
+        consumerOrder.setLastMiles(carInfo.getLastMiles());
+        consumerOrder.setMiles(carInfo.getMiles());
 
-        //设置order的额外信息
-        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        //设置车主信息
+        consumerOrder.setClientId(clientId);
+        consumerOrder.setClientName(clientInfo.getTrueName());
+        consumerOrder.setPhone(clientInfo.getPhone());
+        consumerOrder.setIsMember(clientInfo.getMember());
+        consumerOrder.setStoreId(clientInfo.getStoreId());
+
+        //设置order的其他信息
+//        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         consumerOrder.setOrderType(Constants.OrderType.ARK.getValue());
         consumerOrder.setPayState(Constants.PayState.NOT_PAY.getValue());
         //设置订单状态为“预约”
         consumerOrder.setState(Constants.OrderState.RESERVATION.getValue());
 
-        ConsumerOrder consumerOrderRes = null;
+        //计算项目金额
+        double totalPrice = consumerProjectInfoService.sumAllProjectPrice(consumerProjectInfos);
+        consumerOrder.setTotalPrice(totalPrice);
+        consumerOrder.setActualPrice(totalPrice);
+
+        ConsumerOrder consumerOrderRes;
         try {
             consumerOrderRes = this.saveOrUpdate(consumerOrder);
         } catch (Exception e) {

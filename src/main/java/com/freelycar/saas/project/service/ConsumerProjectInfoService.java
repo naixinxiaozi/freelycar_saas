@@ -59,4 +59,25 @@ public class ConsumerProjectInfoService {
     public List<ConsumerProjectInfo> getAllProjectInfoByOrderId(String orderId) {
         return consumerProjectInfoRepository.findAllByDelStatusAndConsumerOrderIdOrderByCreateTimeAsc(Constants.DelStatus.NORMAL.isValue(), orderId);
     }
+
+    /**
+     * 计算项目列表的总金额
+     *
+     * @param consumerProjectInfos
+     * @return
+     */
+    public double sumAllProjectPrice(List<ConsumerProjectInfo> consumerProjectInfos) {
+        if (null == consumerProjectInfos) {
+            return 0;
+        }
+        double totalPrice = 0;
+        for (ConsumerProjectInfo consumerProjectInfo : consumerProjectInfos) {
+            Double price = consumerProjectInfo.getPrice();
+            if (null == price) {
+                price = (double) 0;
+            }
+            totalPrice += price;
+        }
+        return totalPrice;
+    }
 }
