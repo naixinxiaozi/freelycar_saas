@@ -28,5 +28,11 @@ public class WeChatArkController {
         return consumerOrderService.arkHandleOrder(orderObject);
     }
 
+    @GetMapping("/cancelOrderService")
+    public ResultJsonObject cancelOrderService(@RequestParam String id) {
+        return consumerOrderService.cancelOrder(id);
+    }
+
+
 
 }

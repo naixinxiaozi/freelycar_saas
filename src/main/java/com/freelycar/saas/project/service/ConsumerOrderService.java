@@ -539,7 +539,6 @@ public class ConsumerOrderService {
      * @param orderObject
      * @return
      */
-    //TODO 智能柜开单
     public ResultJsonObject arkHandleOrder(OrderObject orderObject) {
         //获取提交过来的数据
         ConsumerOrder consumerOrder = orderObject.getConsumerOrder();
@@ -617,6 +616,22 @@ public class ConsumerOrderService {
         }
 
         return ResultJsonObject.getDefaultResult(consumerOrderRes.getId(), "订单生成成功！");
+    }
+
+    /**
+     * 设置订单为取消状态
+     *
+     * @param orderId
+     * @return
+     */
+    public ResultJsonObject cancelOrder(String orderId) {
+        ConsumerOrder consumerOrder = consumerOrderRepository.findById(orderId).orElse(null);
+        if (null == consumerOrder) {
+            return ResultJsonObject.getErrorResult(null, "未找到id为：" + orderId + " 的订单");
+        }
+        consumerOrder.setState(Constants.OrderState.CANCEL.getValue());
+        this.updateOrder(consumerOrder);
+        return ResultJsonObject.getDefaultResult(orderId);
     }
 
 

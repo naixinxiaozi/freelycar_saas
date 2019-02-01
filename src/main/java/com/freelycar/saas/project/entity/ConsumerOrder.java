@@ -219,8 +219,8 @@ public class ConsumerOrder implements Serializable {
     private String faultDescription;
 
     /**
-     * 计划用车时间（智能柜预约服务）
+     * 取消时间（智能柜预约服务取消）
      */
     @Column
-    private Timestamp useTime;
+    private Timestamp cancelTime;
 }
