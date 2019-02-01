@@ -615,6 +615,9 @@ public class ConsumerOrderService {
             }
         }
 
+        //TODO 数据保存完毕之后操作硬件，成功后返回成功，否则抛出异常进行回滚操作
+
+
         return ResultJsonObject.getDefaultResult(consumerOrderRes.getId(), "订单生成成功！");
     }
 
@@ -631,6 +634,8 @@ public class ConsumerOrderService {
         }
         consumerOrder.setState(Constants.OrderState.CANCEL.getValue());
         this.updateOrder(consumerOrder);
+        //TODO 数据保存完毕之后操作硬件，成功后返回成功，否则抛出异常进行回滚操作
+
         return ResultJsonObject.getDefaultResult(orderId);
     }
 
