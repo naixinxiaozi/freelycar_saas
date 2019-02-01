@@ -50,4 +50,6 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     @Modifying(clearAutomatically = true)
     @Query(value = "update project set book_online = 0 where id=:id", nativeQuery = true)
     int lowById(String id);
+
+    List<Project> findAllByStoreIdAndAndSaleStatusOrderByCreateTime(String storeId, boolean saleStatus);
 }

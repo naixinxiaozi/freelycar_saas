@@ -221,4 +221,8 @@ public class ProjectService {
         }
         return ResultJsonObject.getDefaultResult(null);
     }
+
+    public ResultJsonObject getProjects(String storeId) {
+        return ResultJsonObject.getDefaultResult(projectRepository.findAllByStoreIdAndAndSaleStatusOrderByCreateTime(storeId, true));
+    }
 }

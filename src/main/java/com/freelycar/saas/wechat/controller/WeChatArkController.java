@@ -3,6 +3,7 @@ package com.freelycar.saas.wechat.controller;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.service.ConsumerOrderService;
+import com.freelycar.saas.project.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,9 @@ public class WeChatArkController {
     @Autowired
     private ConsumerOrderService consumerOrderService;
 
+    @Autowired
+    private ProjectService projectService;
+
     @GetMapping("/getActiveOrder")
     public ResultJsonObject getActiveOrder(@RequestParam String clientId) {
         return consumerOrderService.getActiveOrder(clientId);
@@ -31,6 +35,11 @@ public class WeChatArkController {
     @GetMapping("/cancelOrderService")
     public ResultJsonObject cancelOrderService(@RequestParam String id) {
         return consumerOrderService.cancelOrder(id);
+    }
+
+    @GetMapping("/getProjects")
+    public ResultJsonObject getProjects(@RequestParam String storeId) {
+        return projectService.getProjects(storeId);
     }
 
 
