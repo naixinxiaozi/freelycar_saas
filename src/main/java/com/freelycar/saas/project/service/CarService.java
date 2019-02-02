@@ -166,4 +166,17 @@ public class CarService {
         licensePlate = licensePlate.toUpperCase();
         return carRepository.findTopByLicensePlateAndStoreIdAndAndDelStatusOrderByCreateTimeDesc(licensePlate, storeId, Constants.DelStatus.NORMAL.isValue());
     }
+
+    /**
+     * 加载某个车主明显的所有车辆
+     *
+     * @param clientId
+     * @return
+     */
+    public ResultJsonObject listPersonalCars(String clientId) {
+        if (StringUtils.isEmpty(clientId)) {
+            return ResultJsonObject.getErrorResult(null, "参数clientId为空值");
+        }
+        return ResultJsonObject.getDefaultResult(carRepository.findByClientIdAndDelStatus(clientId, Constants.DelStatus.NORMAL.isValue()));
+    }
 }
