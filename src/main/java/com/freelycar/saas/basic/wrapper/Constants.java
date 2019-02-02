@@ -6,6 +6,22 @@ package com.freelycar.saas.basic.wrapper;
  * @email toby911115@gmail.com
  */
 public class Constants {
+
+    public static final String RESPONSE_CODE_KEY = "code"; //返回对象里的code的key名称
+    public static final String RESPONSE_MSG_KEY = "msg"; //返回对象里的msg的key名称
+    public static final String RESPONSE_DATA_KEY = "data"; //返回对象里的data的key名称
+    public static final String RESPONSE_SIZE_KEY = "size"; //返回对象里的size的key名称
+    public static final String RESPONSE_CLIENT_KEY = "client";
+    public static final String RESPONSE_REAL_SIZE_KEY = "realSize";
+    public static final String RESPONSE_AMOUNT_KEY = "amount";
+    public static final String RESPONSE_FAVOUR_KEY = "favour";
+    public static final String RESPONSE_WXORDER_KEY = "wxOrder";
+    public static final String RESPONSE_WXUSER_KEY = "wxUser";
+    public static final String RESPONSE_POINT_KEY = "point";
+    public static final String RESPONSE_CONSUMORDER_KEY = "orders";
+    public static final String RESPONSE_STORE_KEY = "store";
+    public static final String RESPONSE_STAR_KEY = "star";
+
     public enum DelStatus {
         /**
          * 有效的（数据库中对应0，bit类型）

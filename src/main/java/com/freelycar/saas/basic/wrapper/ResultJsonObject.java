@@ -123,4 +123,17 @@ public class ResultJsonObject {
         map.put(name, data);
         return getNamedResult(map);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"code\":")
+                .append(code);
+        sb.append(",\"msg\":\"")
+                .append(msg).append('\"');
+        sb.append(",\"data\":")
+                .append(data);
+        sb.append('}');
+        return sb.toString();
+    }
 }
