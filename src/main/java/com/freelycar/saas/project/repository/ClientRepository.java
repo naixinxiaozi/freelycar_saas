@@ -4,7 +4,9 @@ import com.freelycar.saas.project.entity.Client;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -43,6 +45,8 @@ public interface ClientRepository extends JpaRepository<Client,String> {
 
     int countByDelStatusAndStoreIdAndIsMemberAndMemberDateBetween(boolean delStatus, String storeId, boolean isMember, Timestamp memberDateStart, Timestamp memberDateEnd);
 
-    @Query(value = "UPDATE client SET del_status=1 WHERE id=:id", nativeQuery = true)
+    @Transactional
+    @Modifying
+    @Query(value = "update client set del_status=1 where id=:id", nativeQuery = true)
     int delById(String id);
 }
