@@ -68,6 +68,11 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.4'
     testCompileOnly 'org.projectlombok:lombok:1.18.4'
 
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.13.1'
+
+
+
     //devtools
     compile('org.springframework.boot:spring-boot-devtools')
 
