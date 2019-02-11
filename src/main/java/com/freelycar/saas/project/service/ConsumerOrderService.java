@@ -194,6 +194,17 @@ public class ConsumerOrderService {
     }
 
     /**
+     * 查询可接单的智能柜预约
+     *
+     * @param licensePlate
+     * @return
+     */
+    public List<ConsumerOrder> listReservationOrders(String licensePlate, String storeId) {
+        licensePlate = StringUtils.isEmpty(licensePlate) ? "" : licensePlate;
+        return consumerOrderRepository.findAllByStoreIdAndOrderTypeAndStateAndDelStatusAndLicensePlateContainingOrderByCreateTimeAsc(storeId, Constants.OrderType.ARK.getValue(), Constants.OrderState.RESERVATION.getValue(), Constants.DelStatus.NORMAL.isValue(), licensePlate);
+    }
+
+    /**
      * 获取订单详情的数据（用于详情页展示和结算中心展示）
      *
      * @param id
