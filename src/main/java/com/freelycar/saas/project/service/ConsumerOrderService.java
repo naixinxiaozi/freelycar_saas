@@ -194,7 +194,7 @@ public class ConsumerOrderService {
     }
 
     /**
-     * 查询可接单的智能柜预约
+     * 查询可接车的智能柜预约
      *
      * @param licensePlate
      * @return
@@ -202,6 +202,19 @@ public class ConsumerOrderService {
     public List<ConsumerOrder> listReservationOrders(String licensePlate, String storeId) {
         licensePlate = StringUtils.isEmpty(licensePlate) ? "" : licensePlate;
         return consumerOrderRepository.findAllByStoreIdAndOrderTypeAndStateAndDelStatusAndLicensePlateContainingOrderByCreateTimeAsc(storeId, Constants.OrderType.ARK.getValue(), Constants.OrderState.RESERVATION.getValue(), Constants.DelStatus.NORMAL.isValue(), licensePlate);
+    }
+
+
+    /**
+     * 查询可完工的智能柜订单
+     *
+     * @param licensePlate
+     * @param storeId
+     * @return
+     */
+    public List<ConsumerOrder> listServicingOrders(String licensePlate, String storeId) {
+        licensePlate = StringUtils.isEmpty(licensePlate) ? "" : licensePlate;
+        return consumerOrderRepository.findAllByStoreIdAndOrderTypeAndStateAndDelStatusAndLicensePlateContainingOrderByPickTimeAsc(storeId, Constants.OrderType.ARK.getValue(), Constants.OrderState.RECEIVE_CAR.getValue(), Constants.DelStatus.NORMAL.isValue(), licensePlate);
     }
 
     /**
@@ -707,4 +720,5 @@ public class ConsumerOrderService {
 
         return ResultJsonObject.getDefaultResult(orderClientInfo);
     }
+
 }

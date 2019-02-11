@@ -53,4 +53,17 @@ public class WeChatOrderController {
         return ResultJsonObject.getErrorResult(null);
     }
 
+
+    @GetMapping("/listServicingOrders")
+    public ResultJsonObject listServicingOrders(
+            @RequestParam String licensePlate,
+            @RequestParam String storeId
+    ) {
+        List<ConsumerOrder> res = consumerOrderService.listServicingOrders(licensePlate, storeId);
+        if (null != res) {
+            return ResultJsonObject.getDefaultResult(res);
+        }
+        return ResultJsonObject.getErrorResult(null);
+    }
+
 }
