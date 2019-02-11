@@ -1,9 +1,11 @@
 package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
+import com.freelycar.saas.jwt.TokenAuthenticationUtil;
 import com.freelycar.saas.project.entity.Staff;
 import com.freelycar.saas.project.repository.StaffRepository;
 import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.wechat.model.WeChatStaff;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -226,7 +228,8 @@ public class StaffService {
         }
         Staff staff = staffRepository.findTopByAccountAndPasswordAndDelStatus(account, password, Constants.DelStatus.NORMAL.isValue());
         if (null != staff) {
-            return ResultJsonObject.getDefaultResult(staff);
+            String jwt = TokenAuthenticationUtil.generateAuthentication(staff.getId());
+            return ResultJsonObject.getDefaultResult(new WeChatStaff(jwt, staff));
         }
         return ResultJsonObject.getErrorResult(null, ResultCode.USER_LOGIN_ERROR.message());
     }
