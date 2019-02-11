@@ -11,4 +11,6 @@ public interface WxUserInfoRepository extends JpaRepository<WxUserInfo, String> 
     WxUserInfo findWxUserInfoByOpenId(String openId);
 
     WxUserInfo findWxUserInfoByPhone(String phone);
+
+    WxUserInfo findWxUserInfoByDelStatusAndPhone(boolean delStatus, String phone);
 }

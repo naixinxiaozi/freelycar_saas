@@ -28,11 +28,8 @@ public class TokenAuthenticationUtil {
     private static final String TOKEN_PREFIX = "Bearer";        // Token前缀
     private static final String HEADER_STRING = "Authorization";// 存放Token的Header Key
 
-    // JWT生成方法
-    static void addAuthentication(HttpServletResponse response, String username) {
-
-        // 生成JWT
-        String JWT = Jwts.builder()
+    public static String generateAuthentication(String username) {
+        return Jwts.builder()
                 // 保存权限（角色）
                 .claim("authorities", "ROLE_ADMIN,AUTH_WRITE")
                 // 用户名写入标题
@@ -42,6 +39,13 @@ public class TokenAuthenticationUtil {
                 // 签名设置
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
+    }
+
+    // JWT生成方法
+    static void addAuthentication(HttpServletResponse response, String username) {
+
+        // 生成JWT
+        String JWT = generateAuthentication(username);
 
         // 将 JWT 写入 body
         try {

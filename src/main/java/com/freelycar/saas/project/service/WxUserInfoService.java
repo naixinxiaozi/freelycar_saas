@@ -2,6 +2,7 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.jwt.TokenAuthenticationUtil;
 import com.freelycar.saas.project.entity.Car;
 import com.freelycar.saas.project.entity.Client;
 import com.freelycar.saas.project.entity.WxUserInfo;
@@ -9,9 +10,11 @@ import com.freelycar.saas.project.repository.CarRepository;
 import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.ClientRepository;
 import com.freelycar.saas.project.repository.WxUserInfoRepository;
+import com.freelycar.saas.util.NicknameFilter;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
 import com.freelycar.saas.wechat.model.PersonalInfo;
+import com.freelycar.saas.wechat.model.WeChatUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -243,5 +246,41 @@ public class WxUserInfoService {
         }
 
         return ResultJsonObject.getDefaultResult(res);
+    }
+
+
+    /**
+     * 微信登录（手机验证码登录）
+     *
+     * @param phone
+     * @param openId
+     * @param headimgurl
+     * @param nickName
+     * @return
+     */
+    public ResultJsonObject wechatLogin(String phone, String openId, String headimgurl, String nickName) {
+        nickName = NicknameFilter.filter4BytesUTF8(nickName);
+        WxUserInfo wxUser = wxUserInfoRepository.findWxUserInfoByDelStatusAndPhone(Constants.DelStatus.NORMAL.isValue(), phone);
+        WxUserInfo res;
+        if (wxUser == null) {
+            //新用户，保存其信息
+            WxUserInfo wxUserNew = new WxUserInfo();
+            wxUserNew.setPhone(phone);
+            wxUserNew.setHeadImgUrl(headimgurl);
+            wxUserNew.setNickName(nickName);
+            wxUserNew.setOpenId(openId);
+            res = this.modify(wxUserNew);
+        } else {
+            //登录过的用户，更新其微信信息
+            wxUser.setHeadImgUrl(headimgurl);
+            wxUser.setNickName(nickName);
+            wxUser.setOpenId(openId);
+            res = wxUserInfoRepository.save(wxUser);
+        }
+
+        // 去获取jwt
+        String jwt = TokenAuthenticationUtil.generateAuthentication(openId);
+
+        return ResultJsonObject.getDefaultResult(new WeChatUser(jwt, res));
     }
 }

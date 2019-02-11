@@ -39,6 +39,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/swagger-ui.html/**").permitAll()
                 //放行微信公众号SDK接口
                 .antMatchers("/wechat/config/getJSSDKConfig").permitAll()
+                //放行微信登录相关接口
+                .antMatchers("/wechat/login/**").permitAll()
                 //测试请求mobile
                 .antMatchers(HttpMethod.GET, "/mobile/**").hasRole("ADMIN")
                 // 添加权限检测
