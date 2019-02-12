@@ -1,4 +1,4 @@
-package com.freelycar.saas.iotcloudcn;
+package com.freelycar.saas.project.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

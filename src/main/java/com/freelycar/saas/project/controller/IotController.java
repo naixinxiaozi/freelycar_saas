@@ -1,10 +1,10 @@
 package com.freelycar.saas.project.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.freelycar.saas.iotcloudcn.ArkDevice;
+import com.freelycar.saas.project.model.ArkDevice;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -16,9 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/iot/ark")
 public class IotController {
 
-
+    /**
+     * 接收设备状态变化
+     *
+     * @param deviceState
+     * @return
+     */
     @PostMapping("/deviceStateChange")
-    public JSONObject deviceStateChange(@RequestParam ArkDevice deviceState) {
+    public JSONObject deviceStateChange(@RequestBody ArkDevice deviceState) {
         //TODO 接收到数据后进行数据推送等处理
         String deviceId = deviceState.getDeviceId();
         boolean online = deviceState.getOnline();
@@ -31,8 +36,13 @@ public class IotController {
         return jsonObject;
     }
 
+    /**
+     * 接收柜门关闭
+     * @param arkDevice
+     * @return
+     */
     @PostMapping("/boxClosed")
-    public JSONObject boxClosed(@RequestParam ArkDevice arkDevice) {
+    public JSONObject boxClosed(@RequestBody ArkDevice arkDevice) {
         //TODO 接收到数据后进行数据推送等处理
         String deviceId = arkDevice.getDeviceId();
         String boardId = arkDevice.getBoardId();
