@@ -16,4 +16,18 @@ public class BoxCommand {
         this.boxId = boxId;
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"deviceId\":\"")
+                .append(deviceId).append('\"');
+        sb.append(",\"boardId\":")
+                .append(boardId);
+        sb.append(",\"boxId\":")
+                .append(boxId);
+        sb.append(",\"boardType\":")
+                .append(boardType);
+        sb.append('}');
+        return sb.toString();
+    }
 }
