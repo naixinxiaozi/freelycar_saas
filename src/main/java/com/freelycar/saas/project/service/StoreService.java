@@ -56,7 +56,10 @@ public class StoreService {
             store.setCreateTime(new Timestamp(System.currentTimeMillis()));
             store.setSort(this.generateSort());
         } else {
-            Store source = storeRepository.getOne(id);
+            Store source = storeRepository.findById(id).orElse(null);
+            if (null == source) {
+                return null;
+            }
             UpdateTool.copyNullProperties(source, store);
         }
         return storeRepository.saveAndFlush(store);
