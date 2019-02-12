@@ -14,7 +14,7 @@ import java.util.Arrays;
 /**
  * @author toby
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = {org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration.class})
 @EnableCaching
 public class BootApplication extends SpringBootServletInitializer {
 

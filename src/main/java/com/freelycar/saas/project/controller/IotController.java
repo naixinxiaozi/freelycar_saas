@@ -23,6 +23,8 @@ public class IotController {
         String deviceId = deviceState.getDeviceId();
         boolean online = deviceState.getOnline();
 
+        System.out.println(deviceState);
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", 0);
         jsonObject.put("msg", "SUCCESS");
@@ -35,6 +37,8 @@ public class IotController {
         String deviceId = arkDevice.getDeviceId();
         String boardId = arkDevice.getBoardId();
         int boxId = arkDevice.getBoxId();
+
+        System.out.println(arkDevice);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", 0);
