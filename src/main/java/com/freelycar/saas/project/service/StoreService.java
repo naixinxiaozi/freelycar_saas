@@ -1,9 +1,13 @@
 package com.freelycar.saas.project.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.PageableTools;
 import com.freelycar.saas.basic.wrapper.ResultCode;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.project.entity.CardService;
+import com.freelycar.saas.project.entity.CouponService;
+import com.freelycar.saas.project.entity.Project;
 import com.freelycar.saas.project.entity.Store;
 import com.freelycar.saas.project.repository.StoreRepository;
 import com.freelycar.saas.util.UpdateTool;
@@ -25,6 +29,15 @@ import java.util.Optional;
 public class StoreService {
     @Autowired
     private StoreRepository storeRepository;
+
+    @Autowired
+    private CardServiceService cardServiceService;
+
+    @Autowired
+    private CouponServiceService couponServiceService;
+
+    @Autowired
+    private ProjectService projectService;
 
 
     /**
@@ -133,7 +146,25 @@ public class StoreService {
         if (!optionalStore.isPresent()) {
             return ResultJsonObject.getErrorResult(id, "查询失败，为找到id为：" + id + "的门店信息");
         }
-        return ResultJsonObject.getDefaultResult(optionalStore.get());
+
+
+        //获取在售的会员卡
+        List<CardService> cardServices = cardServiceService.findOnSaleCards(id);
+
+        //获取在售的优惠券
+        List<CouponService> couponServices = couponServiceService.findOnSaleCoupons(id);
+
+        //获取门店展示的服务项目
+        List<Project> projects = projectService.getShowProjects(id);
+
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("store", optionalStore.get());
+        jsonObject.put("cardServices", cardServices);
+        jsonObject.put("couponServices", couponServices);
+        jsonObject.put("projects", projects);
+
+        return ResultJsonObject.getDefaultResult(jsonObject);
     }
 
     public ResultJsonObject listAllStoreLocation() {

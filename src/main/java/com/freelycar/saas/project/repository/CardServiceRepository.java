@@ -38,4 +38,6 @@ public interface CardServiceRepository extends JpaRepository<CardService, String
     @Modifying(clearAutomatically = true)
     @Query(value = "update card_service set book_online = 0 where id=:id", nativeQuery = true)
     int lowById(String id);
+
+    List<CardService> findByStoreIdAndDelStatusAndBookOnline(String storeId, boolean delStatus, boolean bookOnline);
 }

@@ -177,4 +177,15 @@ public class CardServiceService {
         }
         return ResultJsonObject.getDefaultResult(null);
     }
+
+
+    /**
+     * 查找上架在售的会员卡
+     *
+     * @param storeId
+     * @return
+     */
+    public List<CardService> findOnSaleCards(String storeId) {
+        return cardServiceRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
+    }
 }

@@ -38,4 +38,6 @@ public interface CouponServiceRepository extends JpaRepository<CouponService, St
     @Modifying(clearAutomatically = true)
     @Query(value = "update coupon_service set book_online = 0 where id=:id", nativeQuery = true)
     int lowById(String id);
+
+    List<CouponService> findByStoreIdAndDelStatusAndBookOnline(String storeId, boolean delStatus, boolean bookOnline);
 }

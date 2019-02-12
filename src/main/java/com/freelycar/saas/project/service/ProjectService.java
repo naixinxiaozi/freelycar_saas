@@ -86,7 +86,7 @@ public class ProjectService {
      * @return
      */
     public ResultJsonObject getDetail(String id) {
-        return ResultJsonObject.getDefaultResult(projectRepository.findById(id));
+        return ResultJsonObject.getDefaultResult(projectRepository.findById(id).orElse(null));
     }
 
 
@@ -223,6 +223,18 @@ public class ProjectService {
     }
 
     public ResultJsonObject getProjects(String storeId) {
-        return ResultJsonObject.getDefaultResult(projectRepository.findAllByStoreIdAndAndSaleStatusOrderByCreateTime(storeId, true));
+        return ResultJsonObject.getDefaultResult(projectRepository.findAllByStoreIdAndDelStatusAndSaleStatusOrderByCreateTime(storeId, Constants.DelStatus.NORMAL.isValue(), true));
     }
+
+    /**
+     * 查询门店想展示给车主的服务项目
+     *
+     * @param storeId
+     * @return
+     */
+    public List<Project> getShowProjects(String storeId) {
+        return projectRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
+    }
+
+
 }

@@ -178,4 +178,14 @@ public class CouponServiceService {
         }
         return ResultJsonObject.getDefaultResult(id, "下架成功");
     }
+
+    /**
+     * 查找上架在售的会员卡
+     *
+     * @param storeId
+     * @return
+     */
+    public List<CouponService> findOnSaleCoupons(String storeId) {
+        return couponServiceRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
+    }
 }
