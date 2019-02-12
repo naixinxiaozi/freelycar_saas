@@ -1,0 +1,19 @@
+package com.freelycar.saas.iotcloudcn;
+
+public class BoxCommand {
+
+    public static final int BOARD_TYPE_DEFAULT = 0x68;
+
+
+    public String deviceId;
+    public int boardId = 0;
+    public int boxId = 0;
+    public int boardType = BOARD_TYPE_DEFAULT;
+
+    public BoxCommand(String deviceId, int boardId, int boxId) {
+        this.deviceId = deviceId;
+        this.boardId = boardId;
+        this.boxId = boxId;
+    }
+
+}
