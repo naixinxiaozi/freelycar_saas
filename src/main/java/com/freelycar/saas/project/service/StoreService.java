@@ -10,13 +10,23 @@ import com.freelycar.saas.project.entity.CouponService;
 import com.freelycar.saas.project.entity.Project;
 import com.freelycar.saas.project.entity.Store;
 import com.freelycar.saas.project.repository.StoreRepository;
+import com.freelycar.saas.util.SpringContextUtils;
 import com.freelycar.saas.util.UpdateTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +37,7 @@ import java.util.Optional;
  */
 @Service
 public class StoreService {
+
     @Autowired
     private StoreRepository storeRepository;
 
@@ -184,4 +195,44 @@ public class StoreService {
     }
 
 
+    public ResultJsonObject uploadPicture(MultipartFile file, HttpServletRequest request) {
+        if (null == file || file.isEmpty()) {
+            return ResultJsonObject.getCustomResult(null, ResultCode.PARAM_IS_BLANK);
+        }
+        //保存时的文件名
+        DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        Calendar calendar = Calendar.getInstance();
+        String dateName = df.format(calendar.getTime()) + file.getOriginalFilename();
+
+        System.out.println(dateName);
+
+        //保存文件的绝对路径
+        WebApplicationContext webApplicationContext = (WebApplicationContext) SpringContextUtils.applicationContext;
+        ServletContext servletContext = webApplicationContext.getServletContext();
+        assert servletContext != null;
+        String realPath = servletContext.getRealPath("/");
+        String filePath = realPath + "WEB-INF" + File.separator + "classes" + File.separator + "static" + File.separator + "resource" + File.separator + dateName;
+        System.out.println("绝对路径:" + filePath);
+
+        File newFile = new File(filePath);
+
+        //MultipartFile的方法直接写文件
+        try {
+
+            //上传文件
+            file.transferTo(newFile);
+
+            //数据库存储的相对路径
+            String projectPath = servletContext.getContextPath();
+            String contextPath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + projectPath;
+            String url = contextPath + "/resource/" + dateName;
+            System.out.println("相对路径:" + url);
+            //TODO 文件名与文件URL存入数据库表
+
+            return ResultJsonObject.getDefaultResult(url);
+        } catch (IllegalStateException | IOException e) {
+            e.printStackTrace();
+        }
+        return ResultJsonObject.getErrorResult(null, "上传失败");
+    }
 }

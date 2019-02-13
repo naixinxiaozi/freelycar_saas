@@ -39,6 +39,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.boot:spring-boot-starter-cache')
     compile('org.springframework.boot:spring-boot-starter-websocket')
+    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 
     compile('mysql:mysql-connector-java')
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
