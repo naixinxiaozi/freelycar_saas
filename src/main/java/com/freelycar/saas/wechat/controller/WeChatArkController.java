@@ -42,6 +42,11 @@ public class WeChatArkController {
         return projectService.getProjects(storeId);
     }
 
+    @GetMapping("/orderFinish")
+    public ResultJsonObject orderFinish(@RequestParam String id) {
+        return consumerOrderService.orderFinish(id);
+    }
+
 
 
 }

@@ -1,9 +1,6 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.Constants;
-import com.freelycar.saas.basic.wrapper.PageableTools;
-import com.freelycar.saas.basic.wrapper.PaginationRJO;
-import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.project.entity.*;
 import com.freelycar.saas.project.model.OrderClientInfo;
 import com.freelycar.saas.project.model.OrderListParam;
@@ -723,4 +720,30 @@ public class ConsumerOrderService {
         return ResultJsonObject.getDefaultResult(orderClientInfo);
     }
 
+    /**
+     * 用户开柜取车
+     *
+     * @param orderId
+     * @return
+     */
+    public ResultJsonObject orderFinish(String orderId) {
+        if (StringUtils.isEmpty(orderId)) {
+            return ResultJsonObject.getCustomResult(orderId, ResultCode.PARAM_NOT_COMPLETE);
+        }
+        ConsumerOrder consumerOrder = consumerOrderRepository.findById(orderId).orElse(null);
+        if (null == consumerOrder) {
+            return ResultJsonObject.getCustomResult(orderId, ResultCode.RESULT_DATA_NONE);
+        }
+        //设置单据状态为"已取车（交车）"
+        consumerOrder.setState(Constants.OrderState.HAND_OVER.getValue());
+        consumerOrder.setDeliverTime(new Timestamp(System.currentTimeMillis()));
+
+        ConsumerOrder res = this.updateOrder(consumerOrder);
+        if (null == res) {
+            return ResultJsonObject.getErrorResult(orderId, "单据状态更新失败，执行数据回滚");
+        }
+
+        //TODO 智能柜开门，并更新door表数据
+        return ResultJsonObject.getDefaultResult(orderId);
+    }
 }
