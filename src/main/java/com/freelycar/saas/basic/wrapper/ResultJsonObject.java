@@ -124,6 +124,23 @@ public class ResultJsonObject {
         return getNamedResult(map);
     }
 
+
+    public static ResultJsonObject getCustomResult(Object data, int code, String message) {
+        ResultJsonObject rj = new ResultJsonObject();
+        rj.setData(data);
+        rj.setCode(code);
+        rj.setMsg(message);
+        return rj;
+    }
+
+    public static ResultJsonObject getCustomResult(Object data, ResultCode resultCode) {
+        ResultJsonObject rj = new ResultJsonObject();
+        rj.setData(data);
+        rj.setCode(resultCode.code());
+        rj.setMsg(resultCode.message());
+        return rj;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
