@@ -47,6 +47,10 @@ public class WeChatArkController {
         return consumerOrderService.orderFinish(id);
     }
 
+    @GetMapping("/pickCar")
+    public ResultJsonObject pickCar(@RequestParam String orderId, @RequestParam String staffId) {
+        return consumerOrderService.pickCar(orderId, staffId);
+    }
 
 
 }

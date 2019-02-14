@@ -87,7 +87,7 @@ public class StaffService {
      * @return
      */
     public ResultJsonObject getDetail(String id) {
-        return ResultJsonObject.getDefaultResult(staffRepository.findById(id));
+        return ResultJsonObject.getDefaultResult(staffRepository.findById(id).orElse(null));
     }
 
 

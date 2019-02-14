@@ -8,6 +8,7 @@ import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
 import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.ConsumerOrderRepository;
+import com.freelycar.saas.project.repository.StaffRepository;
 import com.freelycar.saas.util.OrderIDGenerator;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
@@ -66,6 +67,9 @@ public class ConsumerOrderService {
 
     @Autowired
     private OrderIDGenerator orderIDGenerator;
+
+    @Autowired
+    private StaffRepository staffRepository;
 
     /**
      * 保存和修改
@@ -744,6 +748,44 @@ public class ConsumerOrderService {
         }
 
         //TODO 智能柜开门，并更新door表数据
+        return ResultJsonObject.getDefaultResult(orderId);
+    }
+
+    /**
+     * 技师去取车
+     *
+     * @param orderId
+     * @param staffId
+     * @return
+     */
+    public ResultJsonObject pickCar(String orderId, String staffId) {
+        if (StringUtils.isEmpty(orderId)) {
+            return ResultJsonObject.getCustomResult("The param 'orderId' is null", ResultCode.PARAM_NOT_COMPLETE);
+        }
+        if (StringUtils.isEmpty(staffId)) {
+            return ResultJsonObject.getCustomResult("The param 'staffId' is null", ResultCode.PARAM_NOT_COMPLETE);
+        }
+        ConsumerOrder consumerOrder = consumerOrderRepository.findById(orderId).orElse(null);
+        if (null == consumerOrder) {
+            return ResultJsonObject.getCustomResult("Not found consumerOrder object by orderId : " + orderId, ResultCode.RESULT_DATA_NONE);
+        }
+
+        Staff staff = staffRepository.findById(staffId).orElse(null);
+        if (null == staff) {
+            return ResultJsonObject.getCustomResult("Not found staff object by staffId : " + staffId, ResultCode.RESULT_DATA_NONE);
+        }
+
+        consumerOrder.setPickTime(new Timestamp(System.currentTimeMillis()));
+        consumerOrder.setState(Constants.OrderState.RECEIVE_CAR.getValue());
+        consumerOrder.setPickCarStaffId(staffId);
+        consumerOrder.setPickCarStaffName(staff.getName());
+        ConsumerOrder orderRes = this.updateOrder(consumerOrder);
+        if (null == orderRes) {
+            return ResultJsonObject.getErrorResult(null, "单据状态更新失败");
+        }
+
+        //TODO 调用硬件接口方法打开柜门，关闭后更新door表数据状态
+
         return ResultJsonObject.getDefaultResult(orderId);
     }
 }
