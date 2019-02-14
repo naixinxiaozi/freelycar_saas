@@ -44,6 +44,9 @@ public class WxUserInfoService {
     private CarRepository carRepository;
 
     @Autowired
+    private CarService carService;
+
+    @Autowired
     private CardRepository cardRepository;
 
     @Autowired
@@ -156,10 +159,15 @@ public class WxUserInfoService {
                 client = clientService.saveOrUpdate(newClient);
             } else {
                 //其他门店有的话，产生一条除“所属门店”外一样的信息
-                otherStoreClient.setStoreId(defaultStoreId);
-                otherStoreClient.setId(null);
-                client = clientService.saveOrUpdate(otherStoreClient);
-                //TODO 同步车辆
+                Client newClient = clientService.copyNewObjectForOtherStore(otherStoreClient, defaultStoreId);
+                client = clientService.saveOrUpdate(newClient);
+                // 同步车辆
+                List<Car> sourceCars = carService.listClientCars(otherStoreClient.getId());
+                for (Car sourceCar : sourceCars) {
+                    Car targetCar = carService.copyNewObjectForOtherStore(sourceCar, client);
+                    carService.saveOrUpdate(targetCar);
+                }
+
             }
         }
 

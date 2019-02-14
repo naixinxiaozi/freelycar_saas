@@ -317,4 +317,47 @@ public class ClientService {
         }
         return ResultJsonObject.getErrorResult(null, ResultCode.RESULT_DATA_NONE.message());
     }
+
+    /**
+     * 为其他门店自动生成一个client对象
+     *
+     * @param source
+     * @param storeId
+     * @return
+     */
+    public Client copyNewObjectForOtherStore(Client source, String storeId) {
+        if (null == source || StringUtils.isEmpty(storeId)) {
+            return null;
+        }
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
+        Client newClient = new Client();
+        //初始化的数据项
+        newClient.setCreateTime(currentTime);
+        newClient.setLastVisit(currentTime);
+        newClient.setMember(false);
+        newClient.setConsumeAmount((double) 0);
+        newClient.setDelStatus(Constants.DelStatus.NORMAL.isValue());
+        newClient.setConsumeTimes(0);
+        newClient.setPoints(0);
+
+        //所属门店
+        newClient.setStoreId(storeId);
+
+        //其他数据copy原对象
+        newClient.setPhone(source.getPhone());
+        newClient.setName(source.getName());
+        newClient.setNickName(source.getNickName());
+        newClient.setTrueName(source.getTrueName());
+        newClient.setBirthday(source.getBirthday());
+        newClient.setGender(source.getGender());
+        newClient.setAge(source.getAge());
+        newClient.setRecommendName(source.getRecommendName());
+        newClient.setIdNumber(source.getIdNumber());
+        newClient.setDriverLicense(source.getDriverLicense());
+        newClient.setState(source.getState());
+
+        //返回新对象
+        return newClient;
+    }
 }

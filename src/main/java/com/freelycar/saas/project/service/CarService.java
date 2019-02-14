@@ -3,6 +3,7 @@ package com.freelycar.saas.project.service;
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.Car;
+import com.freelycar.saas.project.entity.Client;
 import com.freelycar.saas.project.repository.CarRepository;
 import com.freelycar.saas.util.UpdateTool;
 import org.slf4j.Logger;
@@ -168,15 +169,65 @@ public class CarService {
     }
 
     /**
-     * 加载某个车主明显的所有车辆
+     * 加载某个车主名下的所有车辆
      *
      * @param clientId
-     * @return
+     * @return jsonResult
      */
     public ResultJsonObject listPersonalCars(String clientId) {
         if (StringUtils.isEmpty(clientId)) {
             return ResultJsonObject.getErrorResult(null, "参数clientId为空值");
         }
-        return ResultJsonObject.getDefaultResult(carRepository.findByClientIdAndDelStatus(clientId, Constants.DelStatus.NORMAL.isValue()));
+        return ResultJsonObject.getDefaultResult(listClientCars(clientId));
+    }
+
+    /**
+     * 加载某个车主名下的所有车辆
+     *
+     * @param clientId
+     * @return list
+     */
+    public List<Car> listClientCars(String clientId) {
+        return carRepository.findByClientIdAndDelStatus(clientId, Constants.DelStatus.NORMAL.isValue());
+    }
+
+    /**
+     * @param source
+     * @param client
+     * @return
+     */
+    public Car copyNewObjectForOtherStore(Car source, Client client) {
+        if (null == source || null == client) {
+            return null;
+        }
+
+        Car newCar = new Car();
+        newCar.setDelStatus(Constants.DelStatus.NORMAL.isValue());
+
+        newCar.setStoreId(client.getStoreId());
+        newCar.setClientId(client.getId());
+
+        newCar.setDefaultCar(source.getDefaultCar());
+        newCar.setNewCar(source.getNewCar());
+        newCar.setNeedInspectionRemind(source.getNeedInspectionRemind());
+        newCar.setNeedInsuranceRemind(source.getNeedInsuranceRemind());
+        newCar.setCarBrand(source.getCarBrand());
+        newCar.setCarMark(source.getCarMark());
+        newCar.setCarType(source.getCarType());
+        newCar.setMiles(source.getMiles());
+        newCar.setLastMiles(source.getLastMiles());
+        newCar.setLicensePlate(source.getLicensePlate());
+        newCar.setLicenseDate(source.getLicenseDate());
+        newCar.setInsuranceStartTime(source.getInsuranceStartTime());
+        newCar.setInsuranceEndTime(source.getInsuranceEndTime());
+        newCar.setInsuranceCompany(source.getInsuranceCompany());
+        newCar.setInsuranceCity(source.getInsuranceCity());
+        newCar.setInsuranceAmount(source.getInsuranceAmount());
+        newCar.setFrameNumber(source.getFrameNumber());
+        newCar.setEngineNumber(source.getEngineNumber());
+        newCar.setDriveLicenseNumber(source.getDriveLicenseNumber());
+        newCar.setDefaultDate(source.getDefaultDate());
+
+        return newCar;
     }
 }
