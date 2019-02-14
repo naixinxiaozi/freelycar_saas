@@ -1,6 +1,7 @@
 package com.freelycar.saas.wechat.controller;
 
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.service.ConsumerOrderService;
 import com.freelycar.saas.project.service.ProjectService;
@@ -50,6 +51,11 @@ public class WeChatArkController {
     @GetMapping("/pickCar")
     public ResultJsonObject pickCar(@RequestParam String orderId, @RequestParam String staffId) {
         return consumerOrderService.pickCar(orderId, staffId);
+    }
+
+    @PostMapping("/finishCar")
+    public ResultJsonObject finishCar(@RequestBody ConsumerOrder consumerOrder) {
+        return consumerOrderService.finishCar(consumerOrder);
     }
 
 

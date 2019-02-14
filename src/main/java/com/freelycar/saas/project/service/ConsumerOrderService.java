@@ -752,7 +752,7 @@ public class ConsumerOrderService {
     }
 
     /**
-     * 技师去取车
+     * 技师去取车，提醒用户订单已经被受理
      *
      * @param orderId
      * @param staffId
@@ -786,6 +786,36 @@ public class ConsumerOrderService {
 
         //TODO 调用硬件接口方法打开柜门，关闭后更新door表数据状态
 
+
+        //TODO 推送微信公众号消息，通知用户已开始受理服务
+        return ResultJsonObject.getDefaultResult(orderId);
+    }
+
+    /**
+     * 技师还车，提醒用户来取车
+     *
+     * @param consumerOrder
+     * @return
+     */
+    public ResultJsonObject finishCar(ConsumerOrder consumerOrder) {
+        String orderId = consumerOrder.getId();
+        if (StringUtils.isEmpty(orderId)) {
+            return ResultJsonObject.getCustomResult("The param 'orderId' is null", ResultCode.PARAM_NOT_COMPLETE);
+        }
+
+        consumerOrder.setFinishTime(new Timestamp(System.currentTimeMillis()));
+        consumerOrder.setState(Constants.OrderState.SERVICE_FINISH.getValue());
+
+        ConsumerOrder order = this.updateOrder(consumerOrder);
+        if (null == order) {
+            return ResultJsonObject.getErrorResult(null, "单据状态更新失败");
+        }
+
+
+        //TODO 调用硬件接口方法打开柜门，关闭后更新door表数据状态
+
+
+        //TODO 推送微信公众号消息，通知用户取车
         return ResultJsonObject.getDefaultResult(orderId);
     }
 }
