@@ -139,7 +139,7 @@ public class StaffService {
             Staff staff = optionalStaff.get();
             staff.setAccount(account);
             staff.setPassword(password);
-            staff.setArk(true);
+            staff.setIsArk(true);
             if (this.checkRepeatAccount(staff)) {
                 return ResultJsonObject.getErrorResult(null, "已包含名称为：“" + staff.getAccount() + "”的账户，不能重复添加。");
             }
@@ -184,7 +184,7 @@ public class StaffService {
             Staff staff = optionalStaff.get();
             staff.setAccount(null);
             staff.setPassword(null);
-            staff.setArk(false);
+            staff.setIsArk(false);
 
             return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
         }
@@ -217,7 +217,7 @@ public class StaffService {
      * @param password
      * @return
      */
-    public ResultJsonObject login(String account, String password) {
+    public ResultJsonObject login(String account, String password, String openId) {
         if (StringUtils.isEmpty(account)) {
             logger.error("登录失败，参数account为空！");
             return ResultJsonObject.getErrorResult(null, "登录失败，参数account为空！");
@@ -228,9 +228,31 @@ public class StaffService {
         }
         Staff staff = staffRepository.findTopByAccountAndPasswordAndDelStatus(account, password, Constants.DelStatus.NORMAL.isValue());
         if (null != staff) {
+            //更新openId到数据库（用于推送消息）
+            staff.setOpenId(openId);
+            modify(staff);
+
             String jwt = TokenAuthenticationUtil.generateAuthentication(staff.getId());
             return ResultJsonObject.getDefaultResult(new WeChatStaff(jwt, staff));
         }
+
         return ResultJsonObject.getErrorResult(null, ResultCode.USER_LOGIN_ERROR.message());
+    }
+
+    /**
+     * 技师登出（清除openId）
+     *
+     * @param staffId
+     * @return
+     */
+    public ResultJsonObject logout(String staffId) {
+        //清除openId，这样就不会给技师推送了
+        Staff staff = staffRepository.findById(staffId).orElse(null);
+        if (null == staff) {
+            return ResultJsonObject.getErrorResult(staffId, "登出失败，对应的人员信息为查询到");
+        }
+        staff.setOpenId(null);
+        staffRepository.save(staff);
+        return ResultJsonObject.getDefaultResult(staffId);
     }
 }

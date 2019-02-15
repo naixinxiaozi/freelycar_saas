@@ -8,10 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author tangwei - Toby
@@ -33,10 +30,22 @@ public class WeChatStaffController {
     public ResultJsonObject login(@RequestBody StaffLogin staffLogin) {
         String account = staffLogin.getAccount();
         String password = staffLogin.getPassword();
+        String openId = staffLogin.getOpenId();
 
         if (StringUtils.isEmpty(account) || StringUtils.isEmpty(password)) {
             return ResultJsonObject.getErrorResult(null, "登录失败：接收到的参数中，用户名或密码为空。");
         }
-        return staffService.login(account, password);
+        if (StringUtils.isEmpty(openId)) {
+            return ResultJsonObject.getErrorResult(null, "登录失败：接收到的参数中，openId为空。注意：这会影响消息推送。");
+        }
+        return staffService.login(account, password, openId);
+    }
+
+    @GetMapping("/logout")
+    public ResultJsonObject logout(@RequestParam String staffId) {
+        if (StringUtils.isEmpty(staffId)) {
+            return ResultJsonObject.getErrorResult(null, "登录失败：接收到的参数中，staffId为空。注意：这会影响消息推送。");
+        }
+        return staffService.logout(staffId);
     }
 }

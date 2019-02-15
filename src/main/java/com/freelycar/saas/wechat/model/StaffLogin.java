@@ -16,4 +16,6 @@ public class StaffLogin {
     private String account;
 
     private String password;
+
+    private String openId;
 }

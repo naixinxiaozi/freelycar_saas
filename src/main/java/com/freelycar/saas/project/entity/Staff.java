@@ -1,5 +1,6 @@
 package com.freelycar.saas.project.entity;
 
+import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
@@ -18,6 +19,7 @@ import java.sql.Timestamp;
 @Table
 @DynamicInsert
 @DynamicUpdate
+@Data
 public class Staff implements Serializable {
     private static final long serialVersionUID = 3L;
 
@@ -32,6 +34,9 @@ public class Staff implements Serializable {
 
     @Column(nullable = false, columnDefinition = "datetime default NOW()")
     private Timestamp createTime;
+
+    @Column
+    private String openId;
 
     @Column
     private String storeId;
@@ -66,113 +71,6 @@ public class Staff implements Serializable {
     @Column
     private String password;
 
-    public Staff() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Boolean getDelStatus() {
-        return delStatus;
-    }
-
-    public void setDelStatus(Boolean delStatus) {
-        this.delStatus = delStatus;
-    }
-
-    public Timestamp getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Timestamp createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getStoreId() {
-        return storeId;
-    }
-
-    public void setStoreId(String storeId) {
-        this.storeId = storeId;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public String getLevel() {
-        return level;
-    }
-
-    public void setLevel(String level) {
-        this.level = level;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
-    public Boolean getArk() {
-        return isArk;
-    }
-
-    public void setArk(Boolean ark) {
-        isArk = ark;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -184,6 +82,8 @@ public class Staff implements Serializable {
                 .append(createTime).append('\"');
         sb.append(",\"storeId\":\"")
                 .append(storeId).append('\"');
+        sb.append(",\"openId\":\"")
+                .append(openId).append('\"');
         sb.append(",\"comment\":\"")
                 .append(comment).append('\"');
         sb.append(",\"gender\":\"")
@@ -196,6 +96,8 @@ public class Staff implements Serializable {
                 .append(phone).append('\"');
         sb.append(",\"position\":\"")
                 .append(position).append('\"');
+        sb.append(",\"staffNumber\":\"")
+                .append(staffNumber).append('\"');
         sb.append(",\"isArk\":")
                 .append(isArk);
         sb.append(",\"account\":\"")
