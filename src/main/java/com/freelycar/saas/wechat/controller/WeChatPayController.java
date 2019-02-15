@@ -6,7 +6,9 @@ import com.freelycar.saas.basic.wrapper.ResultCode;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.repository.ConsumerOrderRepository;
+import com.freelycar.saas.project.service.ConsumerOrderService;
 import com.freelycar.saas.util.RandomStringGenerator;
+import com.freelycar.saas.wechat.model.OrderPay;
 import com.freelycar.saas.wxutils.HttpRequest;
 import com.freelycar.saas.wxutils.WeChatSignatureUtil;
 import com.freelycar.saas.wxutils.WechatConfig;
@@ -15,9 +17,7 @@ import org.apache.http.HttpEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,9 +41,15 @@ public class WeChatPayController {
     @Autowired
     private ConsumerOrderRepository consumerOrderRepository;
 
+    @Autowired
+    private ConsumerOrderService consumerOrderService;
 
-    @RequestMapping(value = "payment", method = RequestMethod.GET)
-    public String wechatPay(String openId, String orderId, float totalPrice, HttpServletRequest request) {
+
+    @PostMapping("/payOrderByWechat")
+    public String payOrderByWechat(@RequestBody OrderPay orderPay, HttpServletRequest request) {
+        String openId = orderPay.getOpenId();
+        String orderId = orderPay.getOrderId();
+        float totalPrice = orderPay.getTotalPrice();
 
         //微信支付
         logger.info("执行微信支付：");
@@ -65,11 +71,11 @@ public class WeChatPayController {
 
         map.put("device_info", "WEB");
         map.put("mch_id", WechatConfig.MCH_ID);// 商户号，微信商户平台里获取
-//随机32位
+        //随机32位
         map.put("nonce_str", RandomStringGenerator.getRandomStringByLength(32));
 
-//返回结果	自己掉自己的接口
-        map.put("notify_url", "http://www.freelycar.cn/jinao_wechat/api/pay/wechatresult");
+        //返回结果	自己调用自己的接口
+        map.put("notify_url", WechatConfig.APP_DOMAIN + "/wechat/pay/wechatPayResult");
         map.put("openid", openId);
         map.put("spbill_create_ip", ip);
         map.put("total_fee", (int) (totalPrice * 100));
@@ -80,8 +86,7 @@ public class WeChatPayController {
 
         HttpEntity entity = HttpRequest.getEntity(XMLParser.getXmlFromMap(map));
         logger.info("entity: " + XMLParser.getXmlFromMap(map));
-        String result = HttpRequest.postCall(WechatConfig.ORDER_URL, entity,
-                null);
+        String result = HttpRequest.postCall(WechatConfig.ORDER_URL, entity, null);
         //第一步请求完成
         logger.info("请求微信支付结果：" + result);
 
@@ -115,10 +120,10 @@ public class WeChatPayController {
     }
 
 
-    @RequestMapping(value = "wechatresult")
+    @GetMapping("/wechatPayResult")
     public void wechatResult(HttpServletRequest request, HttpServletResponse response) {
         logger.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!准备回调!!!!!!!!!");
-        logger.info("callback wechatPay");
+        logger.info("callback payOrderByWechat");
         //Map
         Map<String, Object> map = XMLParser.requestToXml(request);
         Map<String, Object> responseMap = new HashMap<>();
@@ -131,13 +136,14 @@ public class WeChatPayController {
                     responseMap.put("return_code", "SUCCESS");
                     responseMap.put("return_msg", "OK");
                     String orderId = map.get("out_trade_no").toString();
-                    // 支付成功，处理支付结果，同步到数据库
+                    //支付成功，处理支付结果，同步到数据库
 
-//                    JSONObject obj = payService.paySuccess(orderId);
-                    JSONObject obj = new JSONObject();
-                    logger.debug("paySuccess本地处理结果:" + obj.toString());
-                    if (obj.get(Constants.RESPONSE_CODE_KEY) != ResultCode.SUCCESS.code()) {
-                        responseMap.put(Constants.RESPONSE_CODE_KEY, obj.get(Constants.RESPONSE_CODE_KEY));
+                    ResultJsonObject resultJsonObject = consumerOrderService.arkPaySuccess(orderId);
+
+                    logger.info("paySuccess本地处理结果:" + resultJsonObject.toString());
+                    if (resultJsonObject.getCode() != ResultCode.SUCCESS.code()) {
+                        responseMap.put(Constants.RESPONSE_CODE_KEY, resultJsonObject.getCode());
+                        logger.error("paySuccess本地处理结果:" + resultJsonObject.toString());
                     }
                 }
                 logger.debug(String.valueOf(responseMap));

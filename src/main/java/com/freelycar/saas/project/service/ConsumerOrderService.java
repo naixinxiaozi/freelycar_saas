@@ -818,4 +818,24 @@ public class ConsumerOrderService {
         //TODO 推送微信公众号消息，通知用户取车
         return ResultJsonObject.getDefaultResult(orderId);
     }
+
+
+    /**
+     * 智能柜服订单支付成功后更新支付状态
+     *
+     * @param orderId
+     * @return
+     */
+    public ResultJsonObject arkPaySuccess(String orderId) {
+        ConsumerOrder consumerOrder = consumerOrderRepository.findById(orderId).orElse(null);
+        if (null == consumerOrder) {
+            return ResultJsonObject.getCustomResult(null, ResultCode.RESULT_DATA_NONE);
+        }
+        consumerOrder.setPayState(Constants.PayState.FINISH_PAY.getValue());
+        ConsumerOrder orderRes = updateOrder(consumerOrder);
+        if (null == orderRes) {
+            ResultJsonObject.getErrorResult(null, "单据数据更新失败");
+        }
+        return ResultJsonObject.getDefaultResult(orderId);
+    }
 }
