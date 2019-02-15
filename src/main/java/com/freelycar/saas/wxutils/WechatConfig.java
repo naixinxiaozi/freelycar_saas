@@ -28,7 +28,7 @@ public class WechatConfig {
     //商户号-商户ID
     public static final String MCH_ID = "1500603051";
 
-    public static final String APP_DOMAIN = "https://www.pwai.net.cn/SaaS";//url域名
+    public static final String APP_DOMAIN = "www.pwai.net.cn/SaaS";//url域名
 
     public static final String KEY = "HKzuTu1FrT5wRR9EXb8MRzloIgMophix"; //签名秘钥，在微信商户平台里面设置z`z`
 

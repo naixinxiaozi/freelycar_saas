@@ -75,7 +75,7 @@ public class WeChatPayController {
         map.put("nonce_str", RandomStringGenerator.getRandomStringByLength(32));
 
         //返回结果	自己调用自己的接口
-        map.put("notify_url", WechatConfig.APP_DOMAIN + "/wechat/pay/wechatPayResult");
+        map.put("notify_url", "https://" + WechatConfig.APP_DOMAIN + "/wechat/pay/wechatPayResult");
         map.put("openid", openId);
         map.put("spbill_create_ip", ip);
         map.put("total_fee", (int) (totalPrice * 100));

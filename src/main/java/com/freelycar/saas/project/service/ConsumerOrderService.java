@@ -12,6 +12,7 @@ import com.freelycar.saas.project.repository.StaffRepository;
 import com.freelycar.saas.util.OrderIDGenerator;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.wxutils.WechatTemplateMessage;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +71,9 @@ public class ConsumerOrderService {
 
     @Autowired
     private StaffRepository staffRepository;
+
+    @Autowired
+    private WxUserInfoService wxUserInfoService;
 
     /**
      * 保存和修改
@@ -748,6 +752,10 @@ public class ConsumerOrderService {
         }
 
         //TODO 智能柜开门，并更新door表数据
+
+        //推送微信公众号消息，通知用户服务完全结束
+        sendWeChatMsg(res);
+
         return ResultJsonObject.getDefaultResult(orderId);
     }
 
@@ -787,7 +795,9 @@ public class ConsumerOrderService {
         //TODO 调用硬件接口方法打开柜门，关闭后更新door表数据状态
 
 
-        //TODO 推送微信公众号消息，通知用户已开始受理服务
+        //推送微信公众号消息，通知用户已开始受理服务
+        sendWeChatMsg(orderRes);
+
         return ResultJsonObject.getDefaultResult(orderId);
     }
 
@@ -815,7 +825,9 @@ public class ConsumerOrderService {
         //TODO 调用硬件接口方法打开柜门，关闭后更新door表数据状态
 
 
-        //TODO 推送微信公众号消息，通知用户取车
+        // 推送微信公众号消息，通知用户取车
+        sendWeChatMsg(order);
+
         return ResultJsonObject.getDefaultResult(orderId);
     }
 
@@ -837,5 +849,16 @@ public class ConsumerOrderService {
             ResultJsonObject.getErrorResult(null, "单据数据更新失败");
         }
         return ResultJsonObject.getDefaultResult(orderId);
+    }
+
+    public void sendWeChatMsg(ConsumerOrder consumerOrder) {
+        //推送微信公众号消息，通知用户已开始受理服务
+        String phone = consumerOrder.getPhone();
+        String openId = wxUserInfoService.getOpenId(phone);
+        if (StringUtils.isEmpty(openId)) {
+            logger.error("未获得到对应的openId，微信消息推送失败");
+        } else {
+            WechatTemplateMessage.orderChanged(consumerOrder, openId);
+        }
     }
 }

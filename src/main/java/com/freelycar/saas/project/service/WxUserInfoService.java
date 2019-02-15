@@ -291,4 +291,18 @@ public class WxUserInfoService {
 
         return ResultJsonObject.getDefaultResult(new WeChatUser(jwt, res));
     }
+
+    /**
+     * 根据phone获取openId
+     *
+     * @param phone
+     * @return
+     */
+    public String getOpenId(String phone) {
+        if (StringUtils.isEmpty(phone)) {
+            return null;
+        }
+        WxUserInfo wxUserInfo = wxUserInfoRepository.findWxUserInfoByDelStatusAndPhone(Constants.DelStatus.NORMAL.isValue(), phone);
+        return wxUserInfo.getOpenId();
+    }
 }

@@ -1,9 +1,11 @@
 package com.freelycar.saas.wxutils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.freelycar.saas.project.entity.ConsumerOrder;
 import org.apache.http.entity.StringEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.util.StringUtils;
 
 public class WechatTemplateMessage {
 
@@ -135,20 +137,17 @@ public class WechatTemplateMessage {
     }
 
     */
-/**
- * {{first.DATA}}
- * 订单编号： {{OrderSn.DATA}}
- * 订单状态： {{OrderStatus.DATA}}
- * {{remark.DATA}}
- *//*
 
+    /**
+     * {{first.DATA}}
+     * 订单编号： {{OrderSn.DATA}}
+     * 订单状态： {{OrderStatus.DATA}}
+     * {{remark.DATA}}
+     */
     public static void orderChanged(ConsumerOrder consumerOrder, String openId) {
         log.info("准备订单更新模版消息。。。");
-        Staff staff = consumerOrder.getPickCarStaffId();
-        String staffName = null;
-        if (null != staff) {
-            staffName = staff.getName();
-        }
+
+        String staffName = consumerOrder.getPickCarStaffName();
         Integer state = consumerOrder.getState();
         String first;
         String stateString;
@@ -156,14 +155,14 @@ public class WechatTemplateMessage {
         String remark = "";
         String remarkSuffix = "小易爱车竭诚为您服务！";
         switch (state) {
-            case Constants.OrderState.RECEIVE_CAR.getValue():
+            case 1:
                 stateString = "已接车";
                 first = "已接到您的爱车" + consumerOrder.getLicensePlate() + "，我们将马上为您服务。";
                 if (StringUtils.hasText(staffName)) {
                     remark += "服务人员：" + staffName + "\\/r\\/n";
                 }
                 break;
-            case Constants.OrderState.SERVICE_FINISH.getValue():
+            case 2:
                 stateString = "已完工";
                 first = "您的爱车" + consumerOrder.getLicensePlate() + "已服务完成，等待您的取回。";
                 if (StringUtils.hasText(staffName)) {
@@ -173,20 +172,20 @@ public class WechatTemplateMessage {
                     remark += "停车位置：" + parkingLocation + "\\/r\\/n";
                 }
                 break;
-            case Constants.OrderState.HAND_OVER.getValue():
+            case 3:
                 stateString = "已交车";
-                first = "您的爱车" + consumerOrder.getLicensePlate() + "已交车，评价领积分。";
+                first = "您的爱车" + consumerOrder.getLicensePlate() + "已交车。";
                 break;
             default:
                 stateString = "已交车";
-                first = "您的爱车" + consumerOrder.getLicensePlate() + "已交车，评价领积分。";
+                first = "您的爱车" + consumerOrder.getLicensePlate() + "已交车。";
         }
 
         JSONObject params = new JSONObject();
         JSONObject data = new JSONObject();
         params.put("touser", openId);
         params.put("template_id", ORDER_CHANGED_ID);
-        params.put("url", "http://" + WechatConfig.APP_DOMAIN + "/index.html#/ordertrack?orderId=" + consumerOrder.getId());
+        params.put("url", "https://" + WechatConfig.APP_DOMAIN + "/index.html#/ordertrack?orderId=" + consumerOrder.getId());
         data.put("first", keywordFactory(first, "#173177"));
         data.put("OrderSn", keywordFactory(consumerOrder.getId(), "#173177"));
         data.put("OrderStatus", keywordFactory(stateString, "#173177"));
@@ -195,7 +194,16 @@ public class WechatTemplateMessage {
         String result = invokeTemplateMessage(params);
         log.info("微信订单更新模版消息结果：" + result);
     }
-*/
 
+    private static JSONObject keywordFactory(String value) {
+        JSONObject keyword = new JSONObject();
+        keyword.put("value", value);
+        return keyword;
+    }
 
+    private static JSONObject keywordFactory(String value, String color) {
+        JSONObject keyword = keywordFactory(value);
+        keyword.put("color", color);
+        return keyword;
+    }
 }
