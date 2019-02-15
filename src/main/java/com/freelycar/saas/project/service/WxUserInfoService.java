@@ -293,6 +293,34 @@ public class WxUserInfoService {
     }
 
     /**
+     * 更改手机号
+     *
+     * @param phone
+     * @param id
+     * @return
+     */
+    public ResultJsonObject changePhone(String phone, String id) {
+        WxUserInfo wxUserInfo = wxUserInfoRepository.findById(id).orElse(null);
+        if (null == wxUserInfo) {
+            return ResultJsonObject.getErrorResult(null, "未查找到id：" + id + " 的微信用户信息");
+        }
+        String oldPhone = wxUserInfo.getPhone();
+        wxUserInfo.setPhone(phone);
+        WxUserInfo wxUserInfoRes = wxUserInfoRepository.save(wxUserInfo);
+        if (null == wxUserInfoRes) {
+            return ResultJsonObject.getErrorResult(null, "微信用户信息更新失败，更换手机号失败");
+        }
+        // 相关client信息也需要更新
+        List<Client> clients = clientRepository.findByPhoneAndDelStatusOrderByCreateTimeAsc(oldPhone, Constants.DelStatus.NORMAL.isValue());
+        for (Client client : clients) {
+            client.setPhone(phone);
+            clientRepository.save(client);
+        }
+
+        return ResultJsonObject.getDefaultResult(wxUserInfoRes);
+    }
+
+    /**
      * 根据phone获取openId
      *
      * @param phone
@@ -305,4 +333,5 @@ public class WxUserInfoService {
         WxUserInfo wxUserInfo = wxUserInfoRepository.findWxUserInfoByDelStatusAndPhone(Constants.DelStatus.NORMAL.isValue(), phone);
         return wxUserInfo.getOpenId();
     }
+
 }
