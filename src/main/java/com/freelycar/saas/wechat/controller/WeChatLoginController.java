@@ -78,7 +78,7 @@ public class WeChatLoginController {
         JSONObject json = this.verifySmsCode(phone, smsCode);
         if (StringUtils.hasText(json.getString("error"))) {
             log.debug(phone + ";code:" + smsCode + " 验证失败。。。");
-            return ResultJsonObject.getErrorResult(json);
+            return ResultJsonObject.getCustomResult(null, json.getIntValue("code"), json.getString("error"));
         } else {
             return wxUserInfoService.changePhone(phone, id);
         }
