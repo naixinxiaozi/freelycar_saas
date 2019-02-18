@@ -13,6 +13,7 @@ import com.freelycar.saas.util.OrderIDGenerator;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
 import com.freelycar.saas.wechat.model.FinishOrderInfo;
+import com.freelycar.saas.wechat.model.ReservationOrderInfo;
 import com.freelycar.saas.wxutils.WechatTemplateMessage;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.query.NativeQuery;
@@ -213,9 +214,25 @@ public class ConsumerOrderService {
      * @param licensePlate
      * @return
      */
-    public List<ConsumerOrder> listReservationOrders(String licensePlate, String storeId) {
-        licensePlate = StringUtils.isEmpty(licensePlate) ? "" : licensePlate;
-        return consumerOrderRepository.findAllByStoreIdAndOrderTypeAndStateAndDelStatusAndLicensePlateContainingOrderByCreateTimeAsc(storeId, Constants.OrderType.ARK.getValue(), Constants.OrderState.RESERVATION.getValue(), Constants.DelStatus.NORMAL.isValue(), licensePlate);
+    public List<ReservationOrderInfo> listReservationOrders(String licensePlate, String storeId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT co.id, co.license_plate as licensePlate, co.car_brand as carBrand, co.car_type as carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id GROUP BY cpi.consumer_order_id ) AS projectNames, co.create_time AS createTime, co.parking_location AS parkingLocation, d.ark_sn AS arkSn, d.door_sn AS doorSn, concat( ( SELECT ark.`name` FROM ark WHERE ark.id = d.ark_id ), '-', d.door_sn, '门' ) AS keyLocation FROM door d LEFT JOIN consumer_order co ON co.id = d.order_id WHERE co.state = 0 ")
+                .append(" AND co.store_id = ").append(storeId);
+        if (StringUtils.hasText(licensePlate)) {
+            sql.append(" and co.license_plate like '%").append(licensePlate).append("%' ");
+        }
+        sql.append(" ORDER BY co.create_time ASC");
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(ReservationOrderInfo.class));
+        @SuppressWarnings({"unused", "unchecked"})
+        List<ReservationOrderInfo> reservationOrderInfos = nativeQuery.getResultList();
+
+        //关闭em
+        em.close();
+
+        return reservationOrderInfos;
     }
 
 
@@ -228,7 +245,7 @@ public class ConsumerOrderService {
      */
     public List<FinishOrderInfo> listServicingOrders(String licensePlate, String storeId) {
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT co.id, co.license_plate as licensePlate, co.car_brand as carBrand, co.car_type as carType, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id ) projectNames, co.pick_time as pickTime FROM consumer_order co WHERE co.del_status = 0 AND co.order_type = 2 AND co.state = 1 ")
+        sql.append(" SELECT co.id, co.client_name AS clientName, co.license_plate as licensePlate, co.car_brand as carBrand, co.car_type as carType, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id GROUP BY cpi.consumer_order_id ) projectNames, co.pick_time as pickTime FROM consumer_order co WHERE co.del_status = 0 AND co.order_type = 2 AND co.state = 1 ")
                 .append(" AND co.store_id = ").append(storeId);
         if (StringUtils.hasText(licensePlate)) {
             sql.append(" AND co.license_plate LIKE '%").append(licensePlate).append("%' ");

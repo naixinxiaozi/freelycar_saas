@@ -14,18 +14,16 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FinishOrderInfo {
+public class ReservationOrderInfo {
     private String id;
-
-    private String clientName;
-
     private String licensePlate;
-
     private String carBrand;
-
     private String carType;
-
+    private String clientName;
     private String projectNames;
-
-    private Date pickTime;
+    private Date createTime;
+    private String parkingLocation;
+    private String arkSn;
+    private String doorSn;
+    private String keyLocation;
 }
