@@ -8,6 +8,7 @@ import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
 import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.ConsumerOrderRepository;
+import com.freelycar.saas.project.repository.DoorRepository;
 import com.freelycar.saas.project.repository.StaffRepository;
 import com.freelycar.saas.util.OrderIDGenerator;
 import com.freelycar.saas.util.RoundTool;
@@ -85,6 +86,12 @@ public class ConsumerOrderService {
 
     @Autowired
     private WxUserInfoService wxUserInfoService;
+
+    @Autowired
+    private DoorRepository doorRepository;
+
+    @Autowired
+    private DoorService doorService;
 
     /**
      * 保存和修改
@@ -623,10 +630,16 @@ public class ConsumerOrderService {
      * @param orderObject
      * @return
      */
-    public ResultJsonObject arkHandleOrder(OrderObject orderObject) {
+    public ResultJsonObject arkHandleOrder(OrderObject orderObject) throws Exception {
+        String arkSn = orderObject.getArkSn();
         //获取提交过来的数据
         ConsumerOrder consumerOrder = orderObject.getConsumerOrder();
         List<ConsumerProjectInfo> consumerProjectInfos = orderObject.getConsumerProjectInfos();
+
+        if (StringUtils.isEmpty(arkSn)) {
+            logger.error("智能柜开单失败：参数中的arkSn对象为空，无法分配智能柜");
+            return ResultJsonObject.getErrorResult(null, "智能柜开单失败：参数中的arkSn对象为空，无法分配智能柜");
+        }
 
         if (null == consumerOrder) {
             logger.error("智能柜开单失败：参数中的consumerOrder对象为空");
@@ -699,9 +712,13 @@ public class ConsumerOrderService {
             }
         }
 
-        //TODO 数据保存完毕之后操作硬件，成功后返回成功，否则抛出异常进行回滚操作
-        // door表数据更新
+        // 有效柜子分配逻辑
+        Door emptyDoor = doorService.getUsefulDoor(arkSn);
 
+        //TODO 数据保存完毕之后操作硬件，成功后返回成功，否则抛出异常进行回滚操作
+
+        // door表数据更新，根据智能柜编号获取door对象，并更新状态为"预约状态"
+        this.changeDoorState(emptyDoor, orderId, Constants.DoorState.USER_RESERVATION.getValue());
 
         return ResultJsonObject.getDefaultResult(consumerOrderRes.getId(), "订单生成成功！");
     }
@@ -821,7 +838,7 @@ public class ConsumerOrderService {
      * @param staffId
      * @return
      */
-    public ResultJsonObject pickCar(String orderId, String staffId) {
+    public ResultJsonObject pickCar(String orderId, String staffId) throws Exception {
         if (StringUtils.isEmpty(orderId)) {
             return ResultJsonObject.getCustomResult("The param 'orderId' is null", ResultCode.PARAM_NOT_COMPLETE);
         }
@@ -847,8 +864,11 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(null, "单据状态更新失败");
         }
 
-        //TODO 调用硬件接口方法打开柜门，关闭后更新door表数据状态
+        //TODO 调用硬件接口方法打开柜门
 
+        //更新door表数据状态
+        Door door = doorRepository.findTopByOrderId(orderId);
+        this.changeDoorState(door, null, Constants.DoorState.EMPTY.getValue());
 
         //推送微信公众号消息，通知用户已开始受理服务
         sendWeChatMsg(orderRes);
@@ -915,5 +935,38 @@ public class ConsumerOrderService {
         } else {
             WechatTemplateMessage.orderChanged(consumerOrder, openId);
         }
+    }
+
+    /**
+     * 改变door表的数据状态
+     *
+     * @param arkSn
+     * @param doorSn
+     * @param orderId
+     * @param doorState
+     * @throws Exception
+     */
+    private void changeDoorState(String arkSn, String doorSn, String orderId, int doorState) throws Exception {
+        Door door = doorRepository.findTopByArkSnAndDoorSn(arkSn, doorSn);
+        this.changeDoorState(door, orderId, doorState);
+    }
+
+    /**
+     * 改变door表的数据状态
+     *
+     * @param door
+     * @param orderId
+     * @param doorState
+     * @throws Exception
+     */
+    private void changeDoorState(Door door, String orderId, int doorState) throws Exception {
+        if (null == door) {
+            logger.error("没找到分配的智能柜door表信息，无法更新状态。预约服务状态终止。");
+            //TODO 重新打开柜子，让用户能取出钥匙
+            throw new Exception();
+        }
+        door.setOrderId(orderId);
+        door.setState(doorState);
+        doorRepository.save(door);
     }
 }

@@ -19,6 +19,8 @@ public class OrderObject {
 
     private List<AutoParts> autoParts;
 
+    private String arkSn;
+
     public OrderObject() {
     }
 
@@ -46,6 +48,14 @@ public class OrderObject {
         this.autoParts = autoParts;
     }
 
+    public String getArkSn() {
+        return arkSn;
+    }
+
+    public void setArkSn(String arkSn) {
+        this.arkSn = arkSn;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -55,6 +65,8 @@ public class OrderObject {
                 .append(consumerProjectInfos);
         sb.append(",\"autoParts\":")
                 .append(autoParts);
+        sb.append(",\"arkSn\":\"")
+                .append(arkSn).append('\"');
         sb.append('}');
         return sb.toString();
     }

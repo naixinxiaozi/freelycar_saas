@@ -6,6 +6,8 @@ import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.service.ArkService;
 import com.freelycar.saas.project.service.ConsumerOrderService;
 import com.freelycar.saas.project.service.ProjectService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/wechat/ark")
 public class WeChatArkController {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private ConsumerOrderService consumerOrderService;
 
@@ -34,7 +38,13 @@ public class WeChatArkController {
 
     @PostMapping("/orderService")
     public ResultJsonObject orderService(@RequestBody OrderObject orderObject) {
-        return consumerOrderService.arkHandleOrder(orderObject);
+        try {
+            return consumerOrderService.arkHandleOrder(orderObject);
+        } catch (Exception e) {
+            logger.error("用户预约智能柜服务出现异常", e);
+            e.printStackTrace();
+        }
+        return ResultJsonObject.getErrorResult(null, "用户预约智能柜服务出现异常，请稍后重试或联系门店。");
     }
 
     @GetMapping("/cancelOrderService")
@@ -54,7 +64,13 @@ public class WeChatArkController {
 
     @GetMapping("/pickCar")
     public ResultJsonObject pickCar(@RequestParam String orderId, @RequestParam String staffId) {
-        return consumerOrderService.pickCar(orderId, staffId);
+        try {
+            return consumerOrderService.pickCar(orderId, staffId);
+        } catch (Exception e) {
+            logger.error("技师取车出现异常", e);
+            e.printStackTrace();
+        }
+        return ResultJsonObject.getErrorResult(null, "技师取车出现异常，请稍后重试或联系门店。");
     }
 
     @PostMapping("/finishCar")
