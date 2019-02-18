@@ -12,6 +12,7 @@ import com.freelycar.saas.project.repository.StaffRepository;
 import com.freelycar.saas.util.OrderIDGenerator;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.wechat.model.ActiveArkOrderInfo;
 import com.freelycar.saas.wechat.model.FinishOrderInfo;
 import com.freelycar.saas.wechat.model.ReservationOrderInfo;
 import com.freelycar.saas.wxutils.WechatTemplateMessage;
@@ -597,10 +598,23 @@ public class ConsumerOrderService {
         if (StringUtils.isEmpty(clientId)) {
             return ResultJsonObject.getErrorResult(clientId, "参数clientId为空值");
         }
-        ConsumerOrder res = consumerOrderRepository.findTopByClientIdAndOrderTypeAndDelStatusAndStateLessThan(clientId, Constants.OrderType.ARK.getValue(), Constants.DelStatus.NORMAL.isValue(), Constants.OrderState.HAND_OVER.getValue());
-        logger.info("res:", res);
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT co.id, co.license_plate AS licensePlate, co.car_brand AS carBrand, co.car_type AS carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id GROUP BY cpi.consumer_order_id ) AS projectNames, co.create_time AS createTime, co.pick_time AS pickTime, co.finish_time AS finishTime, co.state, co.actual_price as actualPrice FROM consumer_order co WHERE co.del_status = 0 AND co.state < 3 ")
+                .append(" AND co.client_id = '").append(clientId).append("' ORDER BY co.create_time DESC ");
 
-        return ResultJsonObject.getDefaultResult(res);
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(ActiveArkOrderInfo.class));
+        @SuppressWarnings({"unused", "unchecked"})
+        List<ActiveArkOrderInfo> activeArkOrderInfos = nativeQuery.getResultList();
+
+        //关闭em
+        em.close();
+
+        if (null != activeArkOrderInfos && !activeArkOrderInfos.isEmpty()) {
+            return ResultJsonObject.getDefaultResult(activeArkOrderInfos.get(0));
+        }
+        return ResultJsonObject.getDefaultResult(null);
     }
 
     /**
