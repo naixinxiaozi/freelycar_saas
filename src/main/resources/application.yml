@@ -1,8 +1,8 @@
 spring:
   # 选择加载不同环境的配置文件
   profiles:
-    active: dev
-    include: data
+    active: pro
+    include: data,mvc
 
   # 静态资源路径
   #  resources:

@@ -3,6 +3,7 @@ package com.freelycar.saas.wechat.controller;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.service.ConsumerOrderService;
+import com.freelycar.saas.wechat.model.FinishOrderInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,7 +60,7 @@ public class WeChatOrderController {
             @RequestParam String licensePlate,
             @RequestParam String storeId
     ) {
-        List<ConsumerOrder> res = consumerOrderService.listServicingOrders(licensePlate, storeId);
+        List<FinishOrderInfo> res = consumerOrderService.listServicingOrders(licensePlate, storeId);
         if (null != res) {
             return ResultJsonObject.getDefaultResult(res);
         }

@@ -12,17 +12,23 @@ import com.freelycar.saas.project.repository.StaffRepository;
 import com.freelycar.saas.util.OrderIDGenerator;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.wechat.model.FinishOrderInfo;
 import com.freelycar.saas.wxutils.WechatTemplateMessage;
 import org.apache.commons.lang3.time.DateUtils;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -41,6 +47,9 @@ import java.util.Optional;
 @Transactional
 public class ConsumerOrderService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private LocalContainerEntityManagerFactoryBean entityManagerFactory;
 
     @Autowired
     private ConsumerOrderRepository consumerOrderRepository;
@@ -217,9 +226,24 @@ public class ConsumerOrderService {
      * @param storeId
      * @return
      */
-    public List<ConsumerOrder> listServicingOrders(String licensePlate, String storeId) {
-        licensePlate = StringUtils.isEmpty(licensePlate) ? "" : licensePlate;
-        return consumerOrderRepository.findAllByStoreIdAndOrderTypeAndStateAndDelStatusAndLicensePlateContainingOrderByPickTimeAsc(storeId, Constants.OrderType.ARK.getValue(), Constants.OrderState.RECEIVE_CAR.getValue(), Constants.DelStatus.NORMAL.isValue(), licensePlate);
+    public List<FinishOrderInfo> listServicingOrders(String licensePlate, String storeId) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT co.id, co.license_plate as licensePlate, co.car_brand as carBrand, co.car_type as carType, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id ) projectNames, co.pick_time as pickTime FROM consumer_order co WHERE co.del_status = 0 AND co.order_type = 2 AND co.state = 1 ")
+                .append(" AND co.store_id = ").append(storeId);
+        if (StringUtils.hasText(licensePlate)) {
+            sql.append(" AND co.license_plate LIKE '%").append(licensePlate).append("%' ");
+        }
+        sql.append(" ORDER BY co.pick_time ASC ");
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(FinishOrderInfo.class));
+        @SuppressWarnings({"unused", "unchecked"})
+        List<FinishOrderInfo> finishOrderInfo = nativeQuery.getResultList();
+
+        //关闭em
+        em.close();
+
+        return finishOrderInfo;
     }
 
     /**
