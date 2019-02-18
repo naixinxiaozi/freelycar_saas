@@ -331,6 +331,9 @@ public class WxUserInfoService {
             return null;
         }
         WxUserInfo wxUserInfo = wxUserInfoRepository.findWxUserInfoByDelStatusAndPhone(Constants.DelStatus.NORMAL.isValue(), phone);
+        if (null == wxUserInfo) {
+            return null;
+        }
         return wxUserInfo.getOpenId();
     }
 
