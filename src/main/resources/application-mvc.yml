@@ -1,6 +1,9 @@
 spring:
   # 页面方面的配置
   thymeleaf:
+    prefix: classpath:/templates/
+    check-template-location: false
+    suffix: .html
     encoding: UTF-8
     # 热部署静态文件
     cache: false
@@ -12,7 +15,8 @@ spring:
     # 配置ICO
     favicon:
       enabled: false
+  #文件上传相关设置
   servlet:
     multipart:
-      max-file-size: 5MB
+      max-file-size: 10MB
       max-request-size: 10MB

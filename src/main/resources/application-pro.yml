@@ -13,9 +13,9 @@ spring:
 logging:
   path: ${project.name}-log
   level:
-    root: error
+    root: info
     org:
       springframework:
-        web: error
-        security: error
+        web: info
+        security: info
       hibernate: error

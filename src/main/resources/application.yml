@@ -10,6 +10,9 @@ spring:
 
   # 配置热部署
   devtools:
+    livereload:
+      enabled: true #是否支持livereload
+      port: 35729
     restart:
       # 如果改为true则当修改java目录下的文件时会自动进行重启
       enabled: false
