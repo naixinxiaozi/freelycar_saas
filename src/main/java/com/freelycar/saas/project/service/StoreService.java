@@ -15,6 +15,7 @@ import com.freelycar.saas.util.UpdateTool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +37,7 @@ import java.util.Optional;
  * @email toby911115@gmail.com
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class StoreService {
 
     @Autowired

@@ -7,12 +7,14 @@ import com.freelycar.saas.permission.repository.SysUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author tangwei [toby911115@gmail.com]
  * @date 2018/9/29
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class RegisterServcie {
     @Autowired
     SysUserRepository userRepository;

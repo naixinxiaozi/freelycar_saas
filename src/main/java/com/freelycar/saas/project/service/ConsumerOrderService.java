@@ -47,7 +47,7 @@ import java.util.Optional;
  * @email toby911115@gmail.com
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class ConsumerOrderService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -806,7 +806,7 @@ public class ConsumerOrderService {
      * @param orderId
      * @return
      */
-    public ResultJsonObject orderFinish(String orderId) {
+    public ResultJsonObject orderFinish(String orderId) throws Exception {
         if (StringUtils.isEmpty(orderId)) {
             return ResultJsonObject.getCustomResult(orderId, ResultCode.PARAM_NOT_COMPLETE);
         }
@@ -823,7 +823,12 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(orderId, "单据状态更新失败，执行数据回滚");
         }
 
-        //TODO 智能柜开门，并更新door表数据
+        //TODO 智能柜开门
+
+        //更新door表数据
+        Door door = doorRepository.findTopByOrderId(orderId);
+        this.changeDoorState(door, null, Constants.DoorState.EMPTY.getValue());
+
 
         //推送微信公众号消息，通知用户服务完全结束
         sendWeChatMsg(res);
@@ -917,7 +922,6 @@ public class ConsumerOrderService {
 
         // 更新door表数据状态
         this.changeDoorState(emptyDoor, orderId, Constants.DoorState.STAFF_FINISH.getValue());
-
 
 
         // 推送微信公众号消息，通知用户取车

@@ -19,7 +19,7 @@ import java.util.Optional;
  * @email toby911115@gmail.com
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class AutoPartsService {
     @Autowired
     private AutoPartsRepository autoPartsRepository;

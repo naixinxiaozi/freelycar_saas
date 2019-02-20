@@ -19,6 +19,7 @@ import java.util.Optional;
 import static com.freelycar.saas.basic.wrapper.ResultCode.RESULT_DATA_NONE;
 
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class CardServiceService {
     private Logger logger = LoggerFactory.getLogger(CardServiceService.class);
 

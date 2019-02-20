@@ -39,7 +39,7 @@ import java.util.*;
  * @email toby911115@gmail.com
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class ClientService {
     private Logger logger = LoggerFactory.getLogger(ClientService.class);
     @Autowired

@@ -65,7 +65,13 @@ public class WeChatArkController {
 
     @GetMapping("/orderFinish")
     public ResultJsonObject orderFinish(@RequestParam String id) {
-        return consumerOrderService.orderFinish(id);
+        try {
+            return consumerOrderService.orderFinish(id);
+        } catch (Exception e) {
+            logger.error("用户取车出现异常", e);
+            e.printStackTrace();
+        }
+        return ResultJsonObject.getErrorResult(null, "用户取车出现异常，请稍后重试或联系门店。");
     }
 
     @GetMapping("/pickCar")

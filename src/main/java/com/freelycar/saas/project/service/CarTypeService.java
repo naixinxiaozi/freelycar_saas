@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @email toby911115@gmail.com
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class CarTypeService {
 
     @Autowired

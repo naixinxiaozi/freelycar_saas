@@ -32,7 +32,7 @@ import java.util.Optional;
  * @date 2018/9/25
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class WxUserInfoService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

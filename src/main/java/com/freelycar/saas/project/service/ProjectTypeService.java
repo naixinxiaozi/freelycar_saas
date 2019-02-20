@@ -27,6 +27,7 @@ import static com.freelycar.saas.basic.wrapper.ResultCode.RESULT_DATA_NONE;
  * @email toby911115@gmail.com
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class ProjectTypeService {
     private Logger logger = LoggerFactory.getLogger(ProjectTypeService.class);
 

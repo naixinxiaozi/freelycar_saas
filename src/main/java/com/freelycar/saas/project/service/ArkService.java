@@ -7,6 +7,7 @@ import com.freelycar.saas.project.entity.Ark;
 import com.freelycar.saas.project.repository.ArkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.util.StringUtils;
  * @email toby911115@gmail.com
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class ArkService {
     @Autowired
     private ArkRepository arkRepository;

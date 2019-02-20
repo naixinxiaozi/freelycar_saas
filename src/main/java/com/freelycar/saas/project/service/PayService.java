@@ -20,7 +20,7 @@ import java.util.Date;
  * @email toby911115@gmail.com
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class PayService {
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
