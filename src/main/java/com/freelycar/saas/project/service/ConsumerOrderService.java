@@ -6,10 +6,7 @@ import com.freelycar.saas.project.model.OrderClientInfo;
 import com.freelycar.saas.project.model.OrderListParam;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
-import com.freelycar.saas.project.repository.CardRepository;
-import com.freelycar.saas.project.repository.ConsumerOrderRepository;
-import com.freelycar.saas.project.repository.DoorRepository;
-import com.freelycar.saas.project.repository.StaffRepository;
+import com.freelycar.saas.project.repository.*;
 import com.freelycar.saas.util.OrderIDGenerator;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
@@ -65,6 +62,9 @@ public class ConsumerOrderService {
 
     @Autowired
     private CouponService couponService;
+
+    @Autowired
+    private CouponRepository couponRepository;
 
     @Autowired
     private CardService cardService;
@@ -289,11 +289,28 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(null, "未找到id为：" + id + " 的订单数据");
         }
 
+        ConsumerOrder consumerOrder = optionalConsumerOrder.get();
+
+        //获取服务项目
         List<ConsumerProjectInfo> consumerProjectInfos = consumerProjectInfoService.getAllProjectInfoByOrderId(id);
 
+        //获取配件
         List<AutoParts> autoPartsList = autoPartsService.getAllAutoPartsByOrderId(id);
 
-        orderObject.setConsumerOrder(optionalConsumerOrder.get());
+        //获取相关的卡信息或券信息
+        String cardOrCouponId = consumerOrder.getCardOrCouponId();
+        if (StringUtils.hasText(cardOrCouponId)) {
+            Card card = cardRepository.findById(cardOrCouponId).orElse(null);
+            Coupon coupon = couponRepository.findById(cardOrCouponId).orElse(null);
+            if (null != card) {
+                orderObject.setCard(card);
+            }
+            if (null != coupon) {
+                orderObject.setCoupon(coupon);
+            }
+        }
+
+        orderObject.setConsumerOrder(consumerOrder);
         orderObject.setConsumerProjectInfos(consumerProjectInfos);
         orderObject.setAutoParts(autoPartsList);
 

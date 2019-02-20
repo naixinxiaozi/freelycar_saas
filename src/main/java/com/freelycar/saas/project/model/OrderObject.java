@@ -1,8 +1,6 @@
 package com.freelycar.saas.project.model;
 
-import com.freelycar.saas.project.entity.AutoParts;
-import com.freelycar.saas.project.entity.ConsumerOrder;
-import com.freelycar.saas.project.entity.ConsumerProjectInfo;
+import com.freelycar.saas.project.entity.*;
 
 import java.util.List;
 
@@ -20,6 +18,10 @@ public class OrderObject {
     private List<AutoParts> autoParts;
 
     private String arkSn;
+
+    private Card card;
+
+    private Coupon coupon;
 
     public OrderObject() {
     }
@@ -56,6 +58,22 @@ public class OrderObject {
         this.arkSn = arkSn;
     }
 
+    public Card getCard() {
+        return card;
+    }
+
+    public void setCard(Card card) {
+        this.card = card;
+    }
+
+    public Coupon getCoupon() {
+        return coupon;
+    }
+
+    public void setCoupon(Coupon coupon) {
+        this.coupon = coupon;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -67,6 +85,10 @@ public class OrderObject {
                 .append(autoParts);
         sb.append(",\"arkSn\":\"")
                 .append(arkSn).append('\"');
+        sb.append(",\"card\":")
+                .append(card);
+        sb.append(",\"coupon\":")
+                .append(coupon);
         sb.append('}');
         return sb.toString();
     }
