@@ -13,6 +13,7 @@ import com.freelycar.saas.project.repository.WxUserInfoRepository;
 import com.freelycar.saas.util.NicknameFilter;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.wechat.model.ActiveArkOrderInfo;
 import com.freelycar.saas.wechat.model.PersonalInfo;
 import com.freelycar.saas.wechat.model.WeChatUser;
 import org.slf4j.Logger;
@@ -54,6 +55,9 @@ public class WxUserInfoService {
 
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private ConsumerOrderService consumerOrderService;
 
     /**
      * 查找微信用户对象
@@ -312,6 +316,21 @@ public class WxUserInfoService {
         }
         // 相关client信息也需要更新
         List<Client> clients = clientRepository.findByPhoneAndDelStatusOrderByCreateTimeAsc(oldPhone, Constants.DelStatus.NORMAL.isValue());
+
+
+        // 查找是否存在活跃的智能柜订单，如果存在，则提示用户此时不能够更换手机号
+        for (Client client : clients) {
+            String clientId = client.getId();
+            ResultJsonObject resultJsonObject = consumerOrderService.getActiveOrder(clientId);
+            if (null != resultJsonObject.getData()) {
+                ActiveArkOrderInfo activeArkOrderInfo = (ActiveArkOrderInfo) resultJsonObject.getData();
+                String errorMessage = "用户名下下存在未完结的智能柜服务订单，此时不能够更换手机号。请结束订单后再试，或联系门店处理。";
+                logger.error(errorMessage + "clientId：" + clientId + "。orderId：" + activeArkOrderInfo.getId());
+                throw new RuntimeException(errorMessage);
+            }
+        }
+
+        //更新对应的clientId表中的手机号
         for (Client client : clients) {
             client.setPhone(phone);
             clientRepository.save(client);
