@@ -3,8 +3,10 @@ package com.freelycar.saas.wechat.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.freelycar.saas.wxutils.MD5;
 import com.freelycar.saas.wxutils.WechatConfig;
+import com.freelycar.saas.wxutils.WechatLoginUse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +33,7 @@ public class WeChatConfigController {
     @GetMapping(value = "/getJSSDKConfig")
     public String getJsSDKConfig(String targetUrl) {
         logger.debug("JSSDK Url:" + targetUrl);
-        if (targetUrl == null || targetUrl.isEmpty()) {
+        if (StringUtils.isEmpty(targetUrl)) {
             throw new RuntimeException("jsapiTicket获取失败,当前url为空！！");
         }
 
@@ -58,5 +60,11 @@ public class WeChatConfigController {
         jsSDKConfig.put("timestamp", timestamp);
         jsSDKConfig.put("signature", signature);
         return jsSDKConfig.toString();
+    }
+
+    @GetMapping("/getWeChatUserInfo")
+    public JSONObject getWeChatUserInfo(String code) {
+        logger.debug("weChat code: " + code);
+        return WechatLoginUse.wechatInfo(code);
     }
 }

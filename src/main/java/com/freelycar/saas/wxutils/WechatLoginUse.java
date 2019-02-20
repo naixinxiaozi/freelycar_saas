@@ -9,7 +9,7 @@ public class WechatLoginUse {
 
     private static Logger log = LogManager.getLogger(WechatLoginUse.class);
 
-    public static String wechatInfo(String code) {
+    public static JSONObject wechatInfo(String code) {
         //返回前台
         JSONObject wechatInfo = new JSONObject();
 
@@ -41,7 +41,7 @@ public class WechatLoginUse {
             wechatInfo.put("message", "fail");
         }
 
-        return wechatInfo.toString();
+        return wechatInfo;
 
     }
 }

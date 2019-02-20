@@ -40,7 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //放行与iotcloudcn通信的接口
                 .antMatchers("/iot/**").permitAll()
                 //放行微信公众号SDK接口
-                .antMatchers("/wechat/config/getJSSDKConfig").permitAll()
+                .antMatchers("/wechat/config/**").permitAll()
                 //放行微信登录相关接口
                 .antMatchers("/wechat/login/**").permitAll()
                 //测试请求mobile
