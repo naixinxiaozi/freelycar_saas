@@ -34,11 +34,11 @@ public class WechatLoginUse {
                 wechatInfo.put("message", "success");
 
             } else {
-                wechatInfo.put("message", "fail");
+                return resultJson;
             }
 
         } else {
-            wechatInfo.put("message", "fail");
+            return resultJson;
         }
 
         return wechatInfo;
