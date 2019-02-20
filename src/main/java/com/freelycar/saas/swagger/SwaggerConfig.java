@@ -1,5 +1,6 @@
 package com.freelycar.saas.swagger;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,9 @@ import java.util.function.Predicate;
 @EnableSwagger2
 public class SwaggerConfig {
 
+    @Value("${swagger.enable}")
+    private boolean enableSwagger;
+
     @Bean
     public Docket createRestApi() {
         Predicate<RequestHandler> predicate = input -> {
@@ -43,6 +47,7 @@ public class SwaggerConfig {
         };
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(getApiInfo())
+                .enable(enableSwagger)
                 .useDefaultResponseMessages(false)
                 .select()
                 .apis(predicate::test)

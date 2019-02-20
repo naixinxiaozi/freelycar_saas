@@ -19,3 +19,6 @@ logging:
         web: info
         security: info
       hibernate: info
+
+swagger:
+  enable: true
