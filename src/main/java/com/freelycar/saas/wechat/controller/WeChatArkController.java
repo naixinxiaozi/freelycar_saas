@@ -1,7 +1,7 @@
 package com.freelycar.saas.wechat.controller;
 
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
-import com.freelycar.saas.project.entity.ConsumerOrder;
+import com.freelycar.saas.exception.NoEmptyArkException;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.service.ArkService;
 import com.freelycar.saas.project.service.ConsumerOrderService;
@@ -38,13 +38,19 @@ public class WeChatArkController {
 
     @PostMapping("/orderService")
     public ResultJsonObject orderService(@RequestBody OrderObject orderObject) {
+        String errorMessage;
         try {
             return consumerOrderService.arkHandleOrder(orderObject);
+        } catch (NoEmptyArkException e1) {
+            errorMessage = "没有可用的空智能柜";
+            logger.error(errorMessage, e1);
+            e1.printStackTrace();
         } catch (Exception e) {
-            logger.error("用户预约智能柜服务出现异常", e);
+            errorMessage = "用户预约-智能柜服务出现异常";
+            logger.error(errorMessage, e);
             e.printStackTrace();
         }
-        return ResultJsonObject.getErrorResult(null, "用户预约智能柜服务出现异常，请稍后重试或联系门店。");
+        return ResultJsonObject.getErrorResult(null, errorMessage + "，请稍后重试或联系门店。");
     }
 
     @GetMapping("/cancelOrderService")
@@ -74,8 +80,20 @@ public class WeChatArkController {
     }
 
     @PostMapping("/finishCar")
-    public ResultJsonObject finishCar(@RequestBody ConsumerOrder consumerOrder) {
-        return consumerOrderService.finishCar(consumerOrder);
+    public ResultJsonObject finishCar(@RequestBody OrderObject orderObject) {
+        String errorMessage;
+        try {
+            return consumerOrderService.finishCar(orderObject);
+        } catch (NoEmptyArkException e1) {
+            errorMessage = "没有可用的空智能柜";
+            logger.error(errorMessage, e1);
+            e1.printStackTrace();
+        } catch (Exception e) {
+            errorMessage = "技师完工还车-智能柜服务出现异常";
+            logger.error(errorMessage, e);
+            e.printStackTrace();
+        }
+        return ResultJsonObject.getErrorResult(null, errorMessage + "，请稍后重试或联系门店。");
     }
 
     @GetMapping("/getCurrentArkLocation")

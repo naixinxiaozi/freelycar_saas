@@ -1,6 +1,6 @@
 package com.freelycar.saas.iotcloudcn;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -14,7 +14,7 @@ public class ShaUtil {
         try {
             // ָ指定sha1算法
             MessageDigest digest = MessageDigest.getInstance("SHA1");
-            digest.update(str.getBytes("UTF-8"));
+            digest.update(str.getBytes(StandardCharsets.UTF_8));
             byte[] md = digest.digest();
             int j = md.length;
             char[] buf = new char[j * 2];
@@ -26,8 +26,6 @@ public class ShaUtil {
             }
             return new String(buf);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return null;

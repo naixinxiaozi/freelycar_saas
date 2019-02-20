@@ -879,14 +879,28 @@ public class ConsumerOrderService {
     /**
      * 技师还车，提醒用户来取车
      *
-     * @param consumerOrder
+     * @param orderObject
      * @return
      */
-    public ResultJsonObject finishCar(ConsumerOrder consumerOrder) {
+    public ResultJsonObject finishCar(OrderObject orderObject) throws Exception {
+        ConsumerOrder consumerOrder = orderObject.getConsumerOrder();
+        String arkSn = orderObject.getArkSn();
+
+        if (StringUtils.isEmpty(arkSn)) {
+            logger.error("智能柜-车辆完工 失败：参数中的arkSn对象为空，无法分配智能柜");
+            return ResultJsonObject.getErrorResult(null, "智能柜-车辆完工 失败：参数中的arkSn对象为空，无法分配智能柜");
+        }
+
+        if (null == consumerOrder) {
+            logger.error("智能柜-车辆完工 失败：参数中的consumerOrder对象为空");
+            return ResultJsonObject.getErrorResult(null, "智能柜-车辆完工 失败：参数中的consumerOrder对象为空");
+        }
+
         String orderId = consumerOrder.getId();
         if (StringUtils.isEmpty(orderId)) {
             return ResultJsonObject.getCustomResult("The param 'orderId' is null", ResultCode.PARAM_NOT_COMPLETE);
         }
+
 
         consumerOrder.setFinishTime(new Timestamp(System.currentTimeMillis()));
         consumerOrder.setState(Constants.OrderState.SERVICE_FINISH.getValue());
@@ -896,8 +910,14 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(null, "单据状态更新失败");
         }
 
+        // 有效柜子分配逻辑
+        Door emptyDoor = doorService.getUsefulDoor(arkSn);
 
-        //TODO 调用硬件接口方法打开柜门，关闭后更新door表数据状态
+        //TODO 调用硬件接口方法打开柜门
+
+        // 更新door表数据状态
+        this.changeDoorState(emptyDoor, orderId, Constants.DoorState.STAFF_FINISH.getValue());
+
 
 
         // 推送微信公众号消息，通知用户取车
