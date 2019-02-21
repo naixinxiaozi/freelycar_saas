@@ -29,4 +29,5 @@ public class BaseOrderInfo {
     private Integer state;
     private Double actualPrice;
     private Double totalPrice;
+    private Integer payState;
 }
