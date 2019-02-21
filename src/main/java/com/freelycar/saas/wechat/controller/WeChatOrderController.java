@@ -1,8 +1,8 @@
 package com.freelycar.saas.wechat.controller;
 
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
-import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.service.ConsumerOrderService;
+import com.freelycar.saas.wechat.model.BaseOrderInfo;
 import com.freelycar.saas.wechat.model.FinishOrderInfo;
 import com.freelycar.saas.wechat.model.ReservationOrderInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class WeChatOrderController {
             @RequestParam String clientId,
             @RequestParam String type
     ) {
-        List<ConsumerOrder> res = consumerOrderService.findAllOrdersByTypeAndClientId(clientId, type);
+        List<BaseOrderInfo> res = consumerOrderService.findAllOrdersByClientId(clientId, type);
         if (null != res) {
             return ResultJsonObject.getDefaultResult(res);
         }

@@ -13,7 +13,7 @@ import com.freelycar.saas.project.repository.WxUserInfoRepository;
 import com.freelycar.saas.util.NicknameFilter;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
-import com.freelycar.saas.wechat.model.ActiveArkOrderInfo;
+import com.freelycar.saas.wechat.model.BaseOrderInfo;
 import com.freelycar.saas.wechat.model.PersonalInfo;
 import com.freelycar.saas.wechat.model.WeChatUser;
 import org.slf4j.Logger;
@@ -323,7 +323,7 @@ public class WxUserInfoService {
             String clientId = client.getId();
             ResultJsonObject resultJsonObject = consumerOrderService.getActiveOrder(clientId);
             if (null != resultJsonObject.getData()) {
-                ActiveArkOrderInfo activeArkOrderInfo = (ActiveArkOrderInfo) resultJsonObject.getData();
+                BaseOrderInfo activeArkOrderInfo = (BaseOrderInfo) resultJsonObject.getData();
                 String errorMessage = "用户名下下存在未完结的智能柜服务订单，此时不能够更换手机号。请结束订单后再试，或联系门店处理。";
                 logger.error(errorMessage + "clientId：" + clientId + "。orderId：" + activeArkOrderInfo.getId());
                 throw new RuntimeException(errorMessage);

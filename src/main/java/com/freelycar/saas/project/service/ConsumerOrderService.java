@@ -10,7 +10,7 @@ import com.freelycar.saas.project.repository.*;
 import com.freelycar.saas.util.OrderIDGenerator;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
-import com.freelycar.saas.wechat.model.ActiveArkOrderInfo;
+import com.freelycar.saas.wechat.model.BaseOrderInfo;
 import com.freelycar.saas.wechat.model.FinishOrderInfo;
 import com.freelycar.saas.wechat.model.ReservationOrderInfo;
 import com.freelycar.saas.wxutils.WechatTemplateMessage;
@@ -214,6 +214,32 @@ public class ConsumerOrderService {
             return consumerOrderRepository.findAllByClientIdAndDelStatusAndOrderTypeOrderByCreateTimeDesc(clientId, Constants.DelStatus.NORMAL.isValue(), Constants.OrderType.CARD.getValue());
         }
         return null;
+    }
+
+    public List<BaseOrderInfo> findAllOrdersByClientId(String clientId, String type) {
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT co.id, co.license_plate AS licensePlate, co.car_brand AS carBrand, co.car_type AS carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id AND cpi.del_status=0 GROUP BY cpi.consumer_order_id ) AS projectNames, co.create_time AS createTime, co.pick_time AS pickTime, co.finish_time AS finishTime, co.state, co.actual_price as actualPrice, co.total_price as totalPrice FROM consumer_order co WHERE co.del_status = 0 ");
+        if (Constants.OrderType.SERVICE.getName().equalsIgnoreCase(type)) {
+            sql.append(" AND co.order_type < 3 ");
+        } else if (Constants.OrderType.CARD.getName().equalsIgnoreCase(type)) {
+            sql.append(" AND co.order_type = 3 ");
+        } else {
+            return null;
+        }
+
+        sql.append(" AND co.client_id = '").append(clientId).append("' ORDER BY co.create_time DESC ");
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(BaseOrderInfo.class));
+        @SuppressWarnings({"unused", "unchecked"})
+        List<BaseOrderInfo> baseOrderInfos = nativeQuery.getResultList();
+
+        //关闭entityManagerFactory
+        em.close();
+
+        return baseOrderInfos;
+
     }
 
     /**
@@ -623,14 +649,14 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(clientId, "参数clientId为空值");
         }
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT co.id, co.license_plate AS licensePlate, co.car_brand AS carBrand, co.car_type AS carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id GROUP BY cpi.consumer_order_id ) AS projectNames, co.create_time AS createTime, co.pick_time AS pickTime, co.finish_time AS finishTime, co.state, co.actual_price as actualPrice FROM consumer_order co WHERE co.del_status = 0 AND co.state < 3 ")
+        sql.append(" SELECT co.id, co.license_plate AS licensePlate, co.car_brand AS carBrand, co.car_type AS carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id GROUP BY cpi.consumer_order_id ) AS projectNames, co.create_time AS createTime, co.pick_time AS pickTime, co.finish_time AS finishTime, co.state, co.actual_price as actualPrice, co.total_price as totalPrice FROM consumer_order co WHERE co.del_status = 0 AND co.state < 3 ")
                 .append(" AND co.client_id = '").append(clientId).append("' ORDER BY co.create_time DESC ");
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());
-        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(ActiveArkOrderInfo.class));
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(BaseOrderInfo.class));
         @SuppressWarnings({"unused", "unchecked"})
-        List<ActiveArkOrderInfo> activeArkOrderInfos = nativeQuery.getResultList();
+        List<BaseOrderInfo> activeArkOrderInfos = nativeQuery.getResultList();
 
         //关闭em
         em.close();

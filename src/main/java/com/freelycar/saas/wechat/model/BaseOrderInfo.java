@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActiveArkOrderInfo {
+public class BaseOrderInfo {
     private String id;
     private String licensePlate;
     private String carBrand;
@@ -26,4 +26,5 @@ public class ActiveArkOrderInfo {
     private Date finishTime;
     private Integer state;
     private Double actualPrice;
+    private Double totalPrice;
 }
