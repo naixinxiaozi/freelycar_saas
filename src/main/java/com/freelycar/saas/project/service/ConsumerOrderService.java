@@ -218,11 +218,11 @@ public class ConsumerOrderService {
 
     public List<BaseOrderInfo> findAllOrdersByClientId(String clientId, String type) {
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT co.id, co.license_plate AS licensePlate, co.car_brand AS carBrand, co.car_type AS carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id AND cpi.del_status=0 GROUP BY cpi.consumer_order_id ) AS projectNames, co.create_time AS createTime, co.pick_time AS pickTime, co.finish_time AS finishTime, co.state, co.actual_price as actualPrice, co.total_price as totalPrice FROM consumer_order co WHERE co.del_status = 0 ");
         if (Constants.OrderType.SERVICE.getName().equalsIgnoreCase(type)) {
+            sql.append(" SELECT co.id, co.license_plate AS licensePlate, co.car_brand AS carBrand, co.car_type AS carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id AND cpi.del_status=0 GROUP BY cpi.consumer_order_id ) AS projectNames, co.create_time AS createTime, co.pick_time AS pickTime, co.finish_time AS finishTime, co.state, co.actual_price as actualPrice, co.total_price as totalPrice FROM consumer_order co WHERE co.del_status = 0 ");
             sql.append(" AND co.order_type < 3 ");
         } else if (Constants.OrderType.CARD.getName().equalsIgnoreCase(type)) {
-            sql.append(" AND co.order_type = 3 ");
+            sql.append(" SELECT co.id, co.license_plate AS licensePlate, co.car_brand AS carBrand, co.car_type AS carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( c.`name` ) FROM card c WHERE c.id = co.card_or_coupon_id AND c.del_status = 0 ) AS cardName, ( SELECT GROUP_CONCAT( cp.`name` ) FROM coupon cp WHERE cp.id = co.card_or_coupon_id AND cp.del_status = 0 ) AS couponName, co.create_time AS createTime, co.pick_time AS pickTime, co.finish_time AS finishTime, co.state, co.actual_price AS actualPrice, co.total_price AS totalPrice FROM consumer_order co WHERE co.del_status = 0 AND co.order_type = 3 ");
         } else {
             return null;
         }

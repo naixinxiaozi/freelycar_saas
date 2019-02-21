@@ -21,6 +21,8 @@ public class BaseOrderInfo {
     private String carType;
     private String clientName;
     private String projectNames;
+    private String cardName;
+    private String couponName;
     private Date createTime;
     private Date pickTime;
     private Date finishTime;
