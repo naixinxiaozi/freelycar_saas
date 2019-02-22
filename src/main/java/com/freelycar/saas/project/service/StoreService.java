@@ -7,8 +7,8 @@ import com.freelycar.saas.basic.wrapper.ResultCode;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.CardService;
 import com.freelycar.saas.project.entity.CouponService;
-import com.freelycar.saas.project.entity.Project;
-import com.freelycar.saas.project.entity.Store;
+import com.freelycar.saas.project.entity.*;
+import com.freelycar.saas.project.repository.StoreImgRepository;
 import com.freelycar.saas.project.repository.StoreRepository;
 import com.freelycar.saas.util.SpringContextUtils;
 import com.freelycar.saas.util.UpdateTool;
@@ -51,6 +51,9 @@ public class StoreService {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private StoreImgRepository storeImgRepository;
 
 
     /**
@@ -173,12 +176,16 @@ public class StoreService {
         //获取门店展示的服务项目
         List<Project> projects = projectService.getShowProjects(id);
 
+        //获取门店的轮播图
+        List<StoreImg> storeImgs = storeImgRepository.findByStoreIdAndDelStatusOrderByCreateTimeAsc(id, Constants.DelStatus.NORMAL.isValue());
+
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("store", optionalStore.get());
         jsonObject.put("cardServices", cardServices);
         jsonObject.put("couponServices", couponServices);
         jsonObject.put("projects", projects);
+        jsonObject.put("storeImgs", storeImgs);
 
         return ResultJsonObject.getDefaultResult(jsonObject);
     }

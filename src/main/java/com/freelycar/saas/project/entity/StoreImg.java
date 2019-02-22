@@ -9,13 +9,11 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.sql.Time;
 import java.sql.Timestamp;
 
 /**
  * @author tangwei - Toby
- * @date 2018/10/17
+ * @date 2019-02-22
  * @email toby911115@gmail.com
  */
 @Entity
@@ -25,7 +23,7 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Store implements Serializable {
+public class StoreImg {
     private static final long serialVersionUID = 2L;
 
     @Id
@@ -41,37 +39,8 @@ public class Store implements Serializable {
     private Timestamp createTime;
 
     @Column
-    private String name;
+    private String storeId;
 
     @Column
-    private String address;
-
-    @Column
-    private Time openingTime;
-
-    @Column
-    private Time closingTime;
-
-    @Column
-    private Double latitude;
-
-    @Column
-    private Double longitude;
-
-    @Column
-    private String linkman;
-
-    @Column
-    private String phone;
-
-    @Column
-    private String remark;
-
-    @Column
-    private Long sort;
-
-    @Column
-    private String headUrl;
-
-
+    private String url;
 }
