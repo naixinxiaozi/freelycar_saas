@@ -42,6 +42,27 @@ public class WeChatStoreController {
     }
 
     /**
+     * 获取门店宣传图
+     *
+     * @param storeId
+     * @return
+     */
+    @GetMapping("/getImgs")
+    public ResultJsonObject getImgs(String storeId) {
+        return storeService.getImgs(storeId);
+    }
+
+    /**
+     * 获取公众号宣传图
+     *
+     * @return
+     */
+    @GetMapping("/listWeCahtImgs")
+    public ResultJsonObject listWeCahtImgs() {
+        return storeService.listWeCahtImgs();
+    }
+
+    /**
      * 获取所有门店分布信息
      *
      * @return

@@ -24,7 +24,7 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StoreImg implements Serializable {
+public class SpecialOffer implements Serializable {
     private static final long serialVersionUID = 30L;
 
     @Id
@@ -40,8 +40,15 @@ public class StoreImg implements Serializable {
     private Timestamp createTime;
 
     @Column
-    private String storeId;
+    private String remark;
 
     @Column
-    private String url;
+    private String linkUrl;
+
+    @Column
+    private String imgUrl;
+
+    @Column
+    private Integer sort;
+
 }

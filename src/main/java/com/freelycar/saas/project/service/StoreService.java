@@ -8,6 +8,7 @@ import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.CardService;
 import com.freelycar.saas.project.entity.CouponService;
 import com.freelycar.saas.project.entity.*;
+import com.freelycar.saas.project.repository.SpecialOfferRepository;
 import com.freelycar.saas.project.repository.StoreImgRepository;
 import com.freelycar.saas.project.repository.StoreRepository;
 import com.freelycar.saas.util.SpringContextUtils;
@@ -54,6 +55,9 @@ public class StoreService {
 
     @Autowired
     private StoreImgRepository storeImgRepository;
+
+    @Autowired
+    private SpecialOfferRepository specialOfferRepository;
 
 
     /**
@@ -177,7 +181,7 @@ public class StoreService {
         List<Project> projects = projectService.getShowProjects(id);
 
         //获取门店的轮播图
-        List<StoreImg> storeImgs = storeImgRepository.findByStoreIdAndDelStatusOrderByCreateTimeAsc(id, Constants.DelStatus.NORMAL.isValue());
+        List<StoreImg> storeImgs = getImgList(id);
 
 
         JSONObject jsonObject = new JSONObject();
@@ -244,4 +248,34 @@ public class StoreService {
         }
         return ResultJsonObject.getErrorResult(null, "上传失败");
     }
+
+    /**
+     * 查询门店宣传图
+     *
+     * @param storeId
+     * @return
+     */
+    public ResultJsonObject getImgs(String storeId) {
+        if (StringUtils.hasText(storeId)) {
+            return ResultJsonObject.getDefaultResult(getImgList(storeId));
+        }
+        return ResultJsonObject.getCustomResult(null, ResultCode.PARAM_NOT_COMPLETE);
+    }
+
+    /**
+     * 查询门店宣传图列表
+     *
+     * @param storeId
+     * @return
+     */
+    public List<StoreImg> getImgList(String storeId) {
+        //获取门店的轮播图
+        return storeImgRepository.findByStoreIdAndDelStatusOrderByCreateTimeAsc(storeId, Constants.DelStatus.NORMAL.isValue());
+    }
+
+    public ResultJsonObject listWeCahtImgs() {
+        List<SpecialOffer> specialOffers = specialOfferRepository.findByDelStatusOrderBySort(Constants.DelStatus.NORMAL.isValue());
+        return ResultJsonObject.getDefaultResult(specialOffers);
+    }
+
 }
