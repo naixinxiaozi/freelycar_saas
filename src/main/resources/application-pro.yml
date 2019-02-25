@@ -6,9 +6,9 @@ server:
 spring:
   # 数据库连接配置
   datasource:
-    url: jdbc:mysql://www.pwai.net.cn:3306/${project.name}?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://www.freelycar.com:3306/${project.name}?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=GMT%2B8
     username: root
-    password: ymq920907
+    password: freelycar2016
 
 logging:
   path: ${project.name}-log
@@ -21,4 +21,4 @@ logging:
       hibernate: error
 
 swagger:
-  enable: true
+  enable: false
