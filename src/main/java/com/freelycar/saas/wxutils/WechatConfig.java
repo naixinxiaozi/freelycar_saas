@@ -40,6 +40,8 @@ public class WechatConfig {
     private final static String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/sns/oauth2/access_token";
     private final static String WECHAT_USER_INFO = "https://api.weixin.qq.com/sns/userinfo";
 
+    private final static String WECHAT_USER_INFO_URL = "https://api.weixin.qq.com/cgi-bin/user/info";
+
 
     //暂时注释掉 证书相关
     //public static String CERT_LOCAL_PATH = null; //证书路径
@@ -224,6 +226,26 @@ public class WechatConfig {
         String downUrl = "http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=" + access_token + "&media_id=" + media_id;
         HttpRequest.userId = userId;
         return HttpRequest.getCall(downUrl, null, null);
+    }
+
+    //获取用户是否关注了公众号
+    public static boolean isUserFollow(String openId) {
+        String accessToken = getAccessTokenForInteface().getString("access_token");
+        Integer subscribe;
+        String wxUserInfoUrl = WECHAT_USER_INFO_URL + "?access_token=" + accessToken + "&openid="
+                + openId + "&lang=zh_CN";
+        String userInfo = HttpRequest.getCall(wxUserInfoUrl, null, null);
+
+        JSONObject resultObject;
+        try {
+            resultObject = JSONObject.parseObject(userInfo);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            throw new RuntimeException("WechatConfig#获取userInfo的json字符串解析失败", e);
+        }
+
+        subscribe = resultObject.getInteger("subscribe");
+        return 1 == subscribe;
     }
 
 }

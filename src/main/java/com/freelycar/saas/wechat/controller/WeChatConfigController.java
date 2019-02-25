@@ -67,4 +67,5 @@ public class WeChatConfigController {
         logger.debug("weChat code: " + code);
         return WechatLoginUse.wechatInfo(code);
     }
+
 }

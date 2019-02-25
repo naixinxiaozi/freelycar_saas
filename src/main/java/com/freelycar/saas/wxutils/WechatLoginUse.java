@@ -27,12 +27,16 @@ public class WechatLoginUse {
             String head = userInfoJson.getString("headimgurl");
             log.debug("获取微信昵称: " + name + " ; 头像: " + head);
 
+            //获取是否关注了公众号
+
+
             if (StringUtils.hasText(name) && StringUtils.hasText(head)) {
+                boolean subscribe = WechatConfig.isUserFollow(openid);
                 wechatInfo.put("openid", openid);
                 wechatInfo.put("nickname", name);
                 wechatInfo.put("headimgurl", head);
                 wechatInfo.put("message", "success");
-
+                wechatInfo.put("subscribe", subscribe);
             } else {
                 return resultJson;
             }
