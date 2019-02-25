@@ -9,6 +9,10 @@ spring:
     url: jdbc:mysql://www.pwai.net.cn:3306/${project.name}?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=GMT%2B8
     username: root
     password: ymq920907
+#  jpa:
+#    hibernate:
+#      naming:
+#        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
 logging:
   path: ${project.name}-log

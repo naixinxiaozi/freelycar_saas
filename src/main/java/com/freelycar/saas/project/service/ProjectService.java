@@ -4,15 +4,20 @@ import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.project.entity.Project;
 import com.freelycar.saas.project.repository.ProjectRepository;
 import com.freelycar.saas.util.UpdateTool;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +31,9 @@ public class ProjectService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    private LocalContainerEntityManagerFactoryBean entityManagerFactory;
 
     /**
      * 新增/修改项目对象
@@ -234,7 +242,21 @@ public class ProjectService {
      * @return
      */
     public List<Project> getShowProjects(String storeId) {
-        return projectRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
+//        return projectRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
+        StringBuilder sql = new StringBuilder();
+        sql.append(" select p.id,p.name,p.del_status as delStatus,p.create_time as createTime,p.comment,p.price,p.project_type_id as projectTypeId,p.book_online as bookOnline,p.sale_status as saleStatus,p.store_id as storeId,pt.`name` as projectTypeName from project p LEFT JOIN project_type pt on p.project_type_id=pt.id where p.book_online=1 and p.del_status=0 ")
+                .append("  and p.store_id= '").append(storeId).append("' ORDER BY p.create_time asc ");
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(Project.class));
+        @SuppressWarnings({"unused", "unchecked"})
+        List<Project> projects = nativeQuery.getResultList();
+
+        //关闭em
+        em.close();
+
+        return projects;
     }
 
 
