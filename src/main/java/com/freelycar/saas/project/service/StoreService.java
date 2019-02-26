@@ -75,6 +75,8 @@ public class StoreService {
             store.setDelStatus(Constants.DelStatus.NORMAL.isValue());
             store.setCreateTime(new Timestamp(System.currentTimeMillis()));
             store.setSort(this.generateSort());
+
+            //TODO 新增门店成功后需要添加一个orderSn规则
         } else {
             Store source = storeRepository.findById(id).orElse(null);
             if (null == source) {
