@@ -25,7 +25,7 @@ public interface SysUserRepository extends JpaRepository<SysUser, Long> {
 
     @Transactional
     @Modifying
-    @Query(value = "update sys_user set del_status=1 where id=:id", nativeQuery = true)
+    @Query(value = "update sysUser set delStatus=1 where id=:id", nativeQuery = true)
     int delById(long id);
 
     Page<SysUser> findByDelStatusAndStoreId(boolean delStatus, String storeId, Pageable pageable);

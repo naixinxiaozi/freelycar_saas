@@ -16,10 +16,10 @@ import java.util.List;
  * @email toby911115@gmail.com
  */
 public interface StaffRepository extends JpaRepository<Staff,String> {
-    @Query(value = "select * from staff where id != :id and store_id = :storeId and del_status = 0 and name = :name",nativeQuery = true)
+    @Query(value = "select * from staff where id != :id and storeId = :storeId and delStatus = 0 and name = :name", nativeQuery = true)
     List<Staff> checkRepeatName(String id, String name, String storeId);
 
-    @Query(value = "select * from staff where store_id = :storeId and del_status = 0 and name = :name",nativeQuery = true)
+    @Query(value = "select * from staff where storeId = :storeId and delStatus = 0 and name = :name", nativeQuery = true)
     List<Staff> checkRepeatName(String name,String storeId);
 
 
@@ -27,10 +27,10 @@ public interface StaffRepository extends JpaRepository<Staff,String> {
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "update staff set del_status = 1 where id=:id", nativeQuery = true)
+    @Query(value = "update staff set delStatus = 1 where id=:id", nativeQuery = true)
     int delById(String id);
 
-    @Query(value = "select * from staff where account=:account and id!=:id and is_ark = 1",nativeQuery = true)
+    @Query(value = "select * from staff where account=:account and id!=:id and isArk = 1", nativeQuery = true)
     List<Staff> checkRepeatAccount(String account,String id);
 
     @Query(value = "select * from staff where account=:account",nativeQuery = true)

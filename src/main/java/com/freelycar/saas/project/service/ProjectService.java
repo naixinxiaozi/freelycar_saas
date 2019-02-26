@@ -244,8 +244,8 @@ public class ProjectService {
     public List<Project> getShowProjects(String storeId) {
 //        return projectRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
         StringBuilder sql = new StringBuilder();
-        sql.append(" select p.id,p.name,p.del_status as delStatus,p.create_time as createTime,p.comment,p.price,p.project_type_id as projectTypeId,p.book_online as bookOnline,p.sale_status as saleStatus,p.store_id as storeId,pt.`name` as projectTypeName from project p LEFT JOIN project_type pt on p.project_type_id=pt.id where p.book_online=1 and p.del_status=0 ")
-                .append("  and p.store_id= '").append(storeId).append("' ORDER BY p.create_time asc ");
+        sql.append(" select p.*,pt.`name` as projectTypeName from project p LEFT JOIN projectType pt on p.projectTypeId=pt.id where p.bookOnline=1 and p.delStatus=0 ")
+                .append("  and p.storeId= '").append(storeId).append("' ORDER BY p.createTime asc ");
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());

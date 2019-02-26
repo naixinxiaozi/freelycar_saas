@@ -18,17 +18,17 @@ import java.util.List;
 public interface ProjectTypeRepository extends JpaRepository<ProjectType, String> {
 
 
-    @Query(value = "select * from project_type where id != :id and store_id = :storeId and del_status = 0 and name = :name",nativeQuery = true)
+    @Query(value = "select * from projectType where id != :id and storeId = :storeId and delStatus = 0 and name = :name", nativeQuery = true)
     List<ProjectType> checkRepeatName(String id, String name,String storeId);
 
-    @Query(value = "select * from project_type where store_id = :storeId and del_status = 0 and name = :name",nativeQuery = true)
+    @Query(value = "select * from projectType where storeId = :storeId and delStatus = 0 and name = :name", nativeQuery = true)
     List<ProjectType> checkRepeatName(String name,String storeId);
 
     Page<ProjectType> findAllByDelStatusAndStoreIdOrderByCreateTimeAsc(boolean delStatus, String storeId, Pageable pageable);
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "update project_type set del_status = 1 where id=:id", nativeQuery = true)
+    @Query(value = "update projectType set delStatus = 1 where id=:id", nativeQuery = true)
     int delById(String id);
 
 }

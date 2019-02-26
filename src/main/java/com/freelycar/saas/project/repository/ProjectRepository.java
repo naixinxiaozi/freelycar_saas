@@ -16,10 +16,10 @@ import java.util.List;
  * @email toby911115@gmail.com
  */
 public interface ProjectRepository extends JpaRepository<Project, String> {
-    @Query(value = "select * from project where id != :id and store_id = :storeId and del_status = 0 and name = :name", nativeQuery = true)
+    @Query(value = "select * from project where id != :id and storeId = :storeId and delStatus = 0 and name = :name", nativeQuery = true)
     List<Project> checkRepeatName(String id, String name, String storeId);
 
-    @Query(value = "select * from project where store_id = :storeId and del_status = 0 and name = :name", nativeQuery = true)
+    @Query(value = "select * from project where storeId = :storeId and delStatus = 0 and name = :name", nativeQuery = true)
     List<Project> checkRepeatName(String name, String storeId);
 
     Page<Project> findAllByDelStatusAndStoreIdAndNameContainingAndProjectTypeId(boolean delStatus, String storeId, String name, String projectTypeId, Pageable pageable);
@@ -28,27 +28,27 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "update project set del_status = 1 where id=:id", nativeQuery = true)
+    @Query(value = "update project set delStatus = 1 where id=:id", nativeQuery = true)
     int delById(String id);
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "update project set sale_status = 1 where id=:id", nativeQuery = true)
+    @Query(value = "update project set saleStatus = 1 where id=:id", nativeQuery = true)
     int uppArkById(String id);
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "update project set sale_status = 0 where id=:id", nativeQuery = true)
+    @Query(value = "update project set saleStatus = 0 where id=:id", nativeQuery = true)
     int lowArkById(String id);
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "update project set book_online = 1 where id=:id", nativeQuery = true)
+    @Query(value = "update project set bookOnline = 1 where id=:id", nativeQuery = true)
     int uppById(String id);
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "update project set book_online = 0 where id=:id", nativeQuery = true)
+    @Query(value = "update project set bookOnline = 0 where id=:id", nativeQuery = true)
     int lowById(String id);
 
     List<Project> findAllByStoreIdAndDelStatusAndSaleStatusOrderByCreateTime(String storeId, boolean delStatus, boolean saleStatus);

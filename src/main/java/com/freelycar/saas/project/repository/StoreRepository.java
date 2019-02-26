@@ -26,6 +26,6 @@ public interface StoreRepository extends JpaRepository<Store, String> {
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "update store set del_status = 1 where id=:id", nativeQuery = true)
+    @Query(value = "update store set delStatus = 1 where id=:id", nativeQuery = true)
     int delById(String id);
 }

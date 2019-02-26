@@ -219,15 +219,15 @@ public class ConsumerOrderService {
     public List<BaseOrderInfo> findAllOrdersByClientId(String clientId, String type) {
         StringBuilder sql = new StringBuilder();
         if (Constants.OrderType.SERVICE.getName().equalsIgnoreCase(type)) {
-            sql.append(" SELECT co.id, co.license_plate AS licensePlate, co.car_brand AS carBrand, co.car_type AS carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id AND cpi.del_status=0 GROUP BY cpi.consumer_order_id ) AS projectNames, co.create_time AS createTime, co.pick_time AS pickTime, co.finish_time AS finishTime, co.state, co.actual_price as actualPrice, co.total_price as totalPrice, co.pay_state AS payState FROM consumer_order co WHERE co.del_status = 0 ");
-            sql.append(" AND co.order_type < 3 ");
+            sql.append(" SELECT co.id, co.licensePlate AS licensePlate, co.carBrand AS carBrand, co.carType AS carType, co.clientName AS clientName, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id AND cpi.delStatus=0 GROUP BY cpi.consumerOrderId ) AS projectNames, co.createTime AS createTime, co.pickTime AS pickTime, co.finishTime AS finishTime, co.state, co.actualPrice as actualPrice, co.totalPrice as totalPrice, co.payState AS payState FROM consumerOrder co WHERE co.delStatus = 0 ");
+            sql.append(" AND co.orderType < 3 ");
         } else if (Constants.OrderType.CARD.getName().equalsIgnoreCase(type)) {
-            sql.append(" SELECT co.id, co.license_plate AS licensePlate, co.car_brand AS carBrand, co.car_type AS carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( c.`name` ) FROM card c WHERE c.id = co.card_or_coupon_id AND c.del_status = 0 ) AS cardName, ( SELECT GROUP_CONCAT( cp.`name` ) FROM coupon cp WHERE cp.id = co.card_or_coupon_id AND cp.del_status = 0 ) AS couponName, co.create_time AS createTime, co.pick_time AS pickTime, co.finish_time AS finishTime, co.state, co.actual_price AS actualPrice, co.total_price AS totalPrice, co.pay_state AS payState FROM consumer_order co WHERE co.del_status = 0 AND co.order_type = 3 ");
+            sql.append(" SELECT co.id, co.licensePlate AS licensePlate, co.carBrand AS carBrand, co.carType AS carType, co.clientName AS clientName, ( SELECT GROUP_CONCAT( c.`name` ) FROM card c WHERE c.id = co.cardOrCouponId AND c.delStatus = 0 ) AS cardName, ( SELECT GROUP_CONCAT( cp.`name` ) FROM coupon cp WHERE cp.id = co.cardOrCouponId AND cp.delStatus = 0 ) AS couponName, co.createTime AS createTime, co.pickTime AS pickTime, co.finishTime AS finishTime, co.state, co.actualPrice AS actualPrice, co.totalPrice AS totalPrice, co.payState AS payState FROM consumerOrder co WHERE co.delStatus = 0 AND co.orderType = 3 ");
         } else {
             return null;
         }
 
-        sql.append(" AND co.client_id = '").append(clientId).append("' ORDER BY co.create_time DESC ");
+        sql.append(" AND co.clientId = '").append(clientId).append("' ORDER BY co.createTime DESC ");
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());
@@ -250,12 +250,12 @@ public class ConsumerOrderService {
      */
     public List<ReservationOrderInfo> listReservationOrders(String licensePlate, String storeId) {
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT co.id, co.license_plate as licensePlate, co.car_brand as carBrand, co.car_type as carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id GROUP BY cpi.consumer_order_id ) AS projectNames, co.create_time AS createTime, co.parking_location AS parkingLocation, d.ark_sn AS arkSn, d.door_sn AS doorSn, concat( ( SELECT ark.`name` FROM ark WHERE ark.id = d.ark_id ), '-', d.door_sn, '门' ) AS keyLocation FROM door d LEFT JOIN consumer_order co ON co.id = d.order_id WHERE co.state = 0 ")
-                .append(" AND co.store_id = ").append(storeId);
+        sql.append(" SELECT co.id, co.licensePlate as licensePlate, co.carBrand as carBrand, co.carType as carType, co.clientName AS clientName, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) AS projectNames, co.createTime AS createTime, co.parkingLocation AS parkingLocation, d.arkSn AS arkSn, d.doorSn AS doorSn, concat( ( SELECT ark.`name` FROM ark WHERE ark.id = d.arkId ), '-', d.doorSn, '门' ) AS keyLocation FROM door d LEFT JOIN consumerOrder co ON co.id = d.orderId WHERE co.state = 0 ")
+                .append(" AND co.storeId = ").append(storeId);
         if (StringUtils.hasText(licensePlate)) {
-            sql.append(" and co.license_plate like '%").append(licensePlate).append("%' ");
+            sql.append(" and co.licensePlate like '%").append(licensePlate).append("%' ");
         }
-        sql.append(" ORDER BY co.create_time ASC");
+        sql.append(" ORDER BY co.createTime ASC");
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());
@@ -279,12 +279,12 @@ public class ConsumerOrderService {
      */
     public List<FinishOrderInfo> listServicingOrders(String licensePlate, String storeId) {
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT co.id, co.client_name AS clientName, co.license_plate as licensePlate, co.car_brand as carBrand, co.car_type as carType, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id GROUP BY cpi.consumer_order_id ) projectNames, co.pick_time as pickTime FROM consumer_order co WHERE co.del_status = 0 AND co.order_type = 2 AND co.state = 1 ")
-                .append(" AND co.store_id = ").append(storeId);
+        sql.append(" SELECT co.id, co.clientName AS clientName, co.licensePlate as licensePlate, co.carBrand as carBrand, co.carType as carType, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) projectNames, co.pickTime as pickTime FROM consumerOrder co WHERE co.delStatus = 0 AND co.orderType = 2 AND co.state = 1 ")
+                .append(" AND co.storeId = ").append(storeId);
         if (StringUtils.hasText(licensePlate)) {
-            sql.append(" AND co.license_plate LIKE '%").append(licensePlate).append("%' ");
+            sql.append(" AND co.licensePlate LIKE '%").append(licensePlate).append("%' ");
         }
-        sql.append(" ORDER BY co.pick_time ASC ");
+        sql.append(" ORDER BY co.pickTime ASC ");
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());
         nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(FinishOrderInfo.class));
@@ -649,8 +649,8 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(clientId, "参数clientId为空值");
         }
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT co.id, co.license_plate AS licensePlate, co.car_brand AS carBrand, co.car_type AS carType, co.client_name AS clientName, ( SELECT GROUP_CONCAT( cpi.project_name ) FROM consumer_project_info cpi WHERE cpi.consumer_order_id = co.id GROUP BY cpi.consumer_order_id ) AS projectNames, co.create_time AS createTime, co.pick_time AS pickTime, co.finish_time AS finishTime, co.state, co.actual_price as actualPrice, co.total_price as totalPrice FROM consumer_order co WHERE co.del_status = 0 AND co.state < 3 ")
-                .append(" AND co.client_id = '").append(clientId).append("' ORDER BY co.create_time DESC ");
+        sql.append(" SELECT co.id, co.licensePlate AS licensePlate, co.carBrand AS carBrand, co.carType AS carType, co.clientName AS clientName, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) AS projectNames, co.createTime AS createTime, co.pickTime AS pickTime, co.finishTime AS finishTime, co.state, co.actualPrice as actualPrice, co.totalPrice as totalPrice FROM consumerOrder co WHERE co.delStatus = 0 AND co.state < 3 ")
+                .append(" AND co.clientId = '").append(clientId).append("' ORDER BY co.createTime DESC ");
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());

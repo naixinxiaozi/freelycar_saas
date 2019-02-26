@@ -18,7 +18,7 @@ public interface CardRepository extends JpaRepository<Card, String> {
 
     List<Card> findByCardNumberAndDelStatusAndStoreId(String cardNumber, boolean delStatus, String storeId);
 
-    @Query(value = "select sum(balance) from card where client_id=:clientId and del_status=0", nativeQuery = true)
+    @Query(value = "select sum(balance) from card where clientId=:clientId and delStatus=0", nativeQuery = true)
     Float sumBalanceByClientId(String clientId);
 
 }
