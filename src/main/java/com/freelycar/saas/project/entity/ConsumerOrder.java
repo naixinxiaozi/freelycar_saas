@@ -3,6 +3,7 @@ package com.freelycar.saas.project.entity;
 import lombok.Data;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +26,7 @@ public class ConsumerOrder implements Serializable {
     private static final long serialVersionUID = 11L;
 
     @Id
+    @Length(max = 50)
     private String id;
 
     @Column(nullable = false, columnDefinition = "bit default 0")

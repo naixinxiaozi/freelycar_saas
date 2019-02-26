@@ -3,6 +3,7 @@ package com.freelycar.saas.project.entity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -27,6 +28,7 @@ public class CouponService implements Serializable {
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
     @NotNull
+    @Length(max = 50)
     private String id;
 
     @Column(nullable = false, columnDefinition = "bit default 0")
