@@ -62,7 +62,12 @@ public class WeChatLoginController {
      * @return
      */
     @RequestMapping(value = "/verifySmsCode", method = RequestMethod.POST)
-    public ResultJsonObject verifySmsCode(String phone, String smscode, String openId, String headimgurl, String nickName) {
+    public ResultJsonObject verifySmsCode(
+            @RequestParam String phone,
+            @RequestParam String smscode,
+            @RequestParam String openId,
+            @RequestParam String headimgurl,
+            @RequestParam String nickName) {
         JSONObject json = this.verifySmsCode(phone, smscode);
         if (StringUtils.hasText(json.getString("error"))) {
             log.debug(phone + ";code:" + smscode + " 验证失败。。。");
