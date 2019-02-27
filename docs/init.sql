@@ -16,3 +16,6 @@ INSERT INTO `freelycar_saas`.`sysrole`(`id`, `name`) VALUES (2, 'ADMIN');
 
 INSERT INTO `freelycar_saas`.`sysrole`(`id`, `name`) VALUES (3, 'USER');
 
+
+-- 注：自行执行车牌信息的初始化接口方法
+
