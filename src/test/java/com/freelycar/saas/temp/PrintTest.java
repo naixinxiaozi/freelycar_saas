@@ -1,9 +1,8 @@
 package com.freelycar.saas.temp;
 
-import com.freelycar.saas.iotcloudcn.BoxCommand;
-import com.freelycar.saas.iotcloudcn.BoxCommandResponse;
-import com.freelycar.saas.iotcloudcn.SafeConnection;
-import com.freelycar.saas.project.entity.CouponService;
+import com.freelycar.saas.iotcloudcn.util.BoxCommand;
+import com.freelycar.saas.iotcloudcn.util.BoxCommandResponse;
+import com.freelycar.saas.iotcloudcn.util.SafeConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +22,9 @@ public class PrintTest {
     static final Logger logger = LoggerFactory.getLogger(PrintTest.class);
 
     public static void main(String[] args) {
-        Object obj = new CouponService();
-        System.out.println(obj);
         BoxCommand cmd = new BoxCommand("869696048118504", 1, 1);
         try {
-            BoxCommandResponse response = SafeConnection.postAndGetResponse(URL_QUERY_BOARD, cmd, BoxCommandResponse.class);
+            BoxCommandResponse response = SafeConnection.postAndGetResponse(URL_OPEN_BOX, cmd, BoxCommandResponse.class);
             System.out.println(response);
         } catch (IOException e) {
             e.printStackTrace();

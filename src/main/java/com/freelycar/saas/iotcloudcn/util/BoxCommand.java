@@ -1,4 +1,4 @@
-package com.freelycar.saas.iotcloudcn;
+package com.freelycar.saas.iotcloudcn.util;
 
 public class BoxCommand {
 

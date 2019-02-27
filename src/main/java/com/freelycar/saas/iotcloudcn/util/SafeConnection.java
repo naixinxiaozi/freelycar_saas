@@ -1,4 +1,4 @@
-package com.freelycar.saas.iotcloudcn;
+package com.freelycar.saas.iotcloudcn.util;
 
 import com.google.gson.Gson;
 import okhttp3.FormBody;

@@ -1,8 +1,8 @@
 package com.freelycar.saas.util;
 
-import com.freelycar.saas.iotcloudcn.BoxCommand;
-import com.freelycar.saas.iotcloudcn.BoxCommandResponse;
-import com.freelycar.saas.iotcloudcn.SafeConnection;
+import com.freelycar.saas.iotcloudcn.util.BoxCommand;
+import com.freelycar.saas.iotcloudcn.util.BoxCommandResponse;
+import com.freelycar.saas.iotcloudcn.util.SafeConnection;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package com.freelycar.saas.iotcloudcn;
+package com.freelycar.saas.iotcloudcn.util;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
