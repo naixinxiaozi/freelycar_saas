@@ -154,11 +154,11 @@ public class WxUserInfoService {
             if (null == otherStoreClient) {
                 //其他门店也没有信息的话就按照微信用户信息生成一条
                 Client newClient = new Client();
-                newClient.setBirthday(wxUserInfo.getBirthday());
-                newClient.setName(wxUserInfo.getNickName());
-                newClient.setNickName(wxUserInfo.getNickName());
-                newClient.setTrueName(wxUserInfo.getTrueName());
-                newClient.setPhone(wxUserInfo.getPhone());
+                newClient.setBirthday(source.getBirthday());
+                newClient.setName(source.getNickName());
+                newClient.setNickName(source.getNickName());
+                newClient.setTrueName(source.getTrueName());
+                newClient.setPhone(source.getPhone());
                 newClient.setStoreId(defaultStoreId);
                 client = clientService.saveOrUpdate(newClient);
             } else {
