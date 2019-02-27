@@ -25,4 +25,4 @@ logging:
       hibernate: error
 
 swagger:
-  enable: false
+  enable: true
