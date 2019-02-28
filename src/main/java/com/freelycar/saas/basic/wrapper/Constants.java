@@ -22,6 +22,16 @@ public class Constants {
     public static final String RESPONSE_STORE_KEY = "store";
     public static final String RESPONSE_STAR_KEY = "star";
 
+    /**
+     * 智能柜门关闭监控线程返回结果
+     */
+    public final static String OPEN_SUCCESS = "success";
+    public final static String OPEN_FAILED = "failed";
+    public final static String CLOSED = "closed";
+    public final static String CLOSE_TIMEOUT = "timeout";
+    public final static String DEVICE_OFFLINE = "offline";
+    public final static String ALREADY_OPEN = "opened";
+
     public enum DelStatus {
         /**
          * 有效的（数据库中对应0，bit类型）

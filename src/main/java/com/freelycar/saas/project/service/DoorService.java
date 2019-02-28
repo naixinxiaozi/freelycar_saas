@@ -3,6 +3,11 @@ package com.freelycar.saas.project.service;
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.exception.NoEmptyArkException;
+import com.freelycar.saas.exception.OpenArkDoorFailedException;
+import com.freelycar.saas.exception.OpenArkDoorTimeOutException;
+import com.freelycar.saas.iotcloudcn.ArkOperation;
+import com.freelycar.saas.iotcloudcn.util.ArkThread;
+import com.freelycar.saas.iotcloudcn.util.BoxCommandResponse;
 import com.freelycar.saas.project.entity.Door;
 import com.freelycar.saas.project.repository.DoorRepository;
 import org.slf4j.Logger;
@@ -55,5 +60,44 @@ public class DoorService {
             targetIndex = random.nextInt(emptyDoorsCount);
         }
         return emptyDoorList.get(targetIndex);
+    }
+
+    //TODO 打开柜门并启用监控线程
+    public void openDoorByDoorObject(Door door) throws ArgumentMissingException, OpenArkDoorFailedException, OpenArkDoorTimeOutException {
+        if (null == door) {
+            throw new ArgumentMissingException("参数doorObject为空。");
+        }
+        String deviceId = door.getArkSn();
+        int boxId = Integer.valueOf(door.getDoorSn());
+
+        if (StringUtils.isEmpty(deviceId)) {
+            throw new ArgumentMissingException("参数doorObject中的arkSn值为空");
+        }
+
+        //打开柜门
+        BoxCommandResponse boxCommandResponse = ArkOperation.openBox(deviceId, boxId);
+        //判断是否成功，成功就启动监控线程
+        if (null != boxCommandResponse && ArkOperation.SUCCESS_CODE == boxCommandResponse.code) {
+            ArkThread arkThread = new ArkThread(deviceId, boxId);
+            arkThread.start();
+
+            //等待线程结束
+            try {
+                arkThread.join();
+            } catch (InterruptedException e) {
+                logger.error("捕获到等待线程中断异常……");
+                e.printStackTrace();
+            }
+
+            String endStatus = arkThread.getEndStatus();
+            //获取结果，如果不是success，说明超时
+            if (!Constants.OPEN_SUCCESS.equalsIgnoreCase(endStatus)) {
+                throw new OpenArkDoorTimeOutException("柜门关闭线程超时（1分钟）");
+            }
+
+            //如果正常到这边，不抛出异常，就说明一切正常，可以开单
+        } else {
+            throw new OpenArkDoorFailedException("打开柜门失败：从远端获取到打开柜门失败的信息。");
+        }
     }
 }

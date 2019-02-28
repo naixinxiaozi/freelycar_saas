@@ -24,7 +24,7 @@ public class PrintTest {
     public static void main(String[] args) {
         BoxCommand cmd = new BoxCommand("869696048118504", 1, 1);
         try {
-            BoxCommandResponse response = SafeConnection.postAndGetResponse(URL_OPEN_BOX, cmd, BoxCommandResponse.class);
+            BoxCommandResponse response = SafeConnection.postAndGetResponse(URL_QUERY_BOX, cmd, BoxCommandResponse.class);
             System.out.println(response);
         } catch (IOException e) {
             e.printStackTrace();

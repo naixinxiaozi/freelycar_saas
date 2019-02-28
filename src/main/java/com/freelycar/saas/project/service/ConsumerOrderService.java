@@ -1,6 +1,7 @@
 package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
+import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.project.entity.*;
 import com.freelycar.saas.project.model.OrderClientInfo;
 import com.freelycar.saas.project.model.OrderListParam;
@@ -757,11 +758,13 @@ public class ConsumerOrderService {
 
         // 有效柜子分配逻辑
         Door emptyDoor = doorService.getUsefulDoor(arkSn);
-
-        //TODO 数据保存完毕之后操作硬件，成功后返回成功，否则抛出异常进行回滚操作
-
         // door表数据更新，根据智能柜编号获取door对象，并更新状态为"预约状态"
         this.changeDoorState(emptyDoor, orderId, Constants.DoorState.USER_RESERVATION.getValue());
+        // 数据保存完毕之后操作硬件，成功后返回成功，否则抛出异常进行回滚操作
+        doorService.openDoorByDoorObject(emptyDoor);
+
+
+        //TODO 推送微信消息给技师
 
         return ResultJsonObject.getDefaultResult(consumerOrderRes.getId(), "订单生成成功！");
     }
@@ -866,11 +869,13 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(orderId, "单据状态更新失败，执行数据回滚");
         }
 
-        //TODO 智能柜开门
 
-        //更新door表数据
+        //获取订单对应的柜子信息
         Door door = doorRepository.findTopByOrderId(orderId);
+        //更新door表数据
         this.changeDoorState(door, null, Constants.DoorState.EMPTY.getValue());
+        //打开柜门
+        doorService.openDoorByDoorObject(door);
 
 
         //推送微信公众号消息，通知用户服务完全结束
@@ -912,11 +917,12 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(null, "单据状态更新失败");
         }
 
-        //TODO 调用硬件接口方法打开柜门
 
         //更新door表数据状态
         Door door = doorRepository.findTopByOrderId(orderId);
         this.changeDoorState(door, null, Constants.DoorState.EMPTY.getValue());
+        // 调用硬件接口方法打开柜门
+        doorService.openDoorByDoorObject(door);
 
         //推送微信公众号消息，通知用户已开始受理服务
         sendWeChatMsg(orderRes);
@@ -960,11 +966,10 @@ public class ConsumerOrderService {
 
         // 有效柜子分配逻辑
         Door emptyDoor = doorService.getUsefulDoor(arkSn);
-
-        //TODO 调用硬件接口方法打开柜门
-
         // 更新door表数据状态
         this.changeDoorState(emptyDoor, orderId, Constants.DoorState.STAFF_FINISH.getValue());
+        // 调用硬件接口方法打开柜门
+        doorService.openDoorByDoorObject(emptyDoor);
 
 
         // 推送微信公众号消息，通知用户取车
@@ -1026,11 +1031,9 @@ public class ConsumerOrderService {
      * @param doorState
      * @throws Exception
      */
-    private void changeDoorState(Door door, String orderId, int doorState) throws Exception {
+    private void changeDoorState(Door door, String orderId, int doorState) throws ArgumentMissingException {
         if (null == door) {
-            logger.error("没找到分配的智能柜door表信息，无法更新状态。预约服务状态终止。");
-            //TODO 重新打开柜子，让用户能取出钥匙
-            throw new Exception();
+            throw new ArgumentMissingException("没找到分配的智能柜door表信息，无法更新状态。预约服务状态终止。");
         }
         door.setOrderId(orderId);
         door.setState(doorState);
