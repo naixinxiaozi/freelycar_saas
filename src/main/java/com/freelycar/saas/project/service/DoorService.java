@@ -8,6 +8,7 @@ import com.freelycar.saas.exception.OpenArkDoorTimeOutException;
 import com.freelycar.saas.iotcloudcn.ArkOperation;
 import com.freelycar.saas.iotcloudcn.util.ArkThread;
 import com.freelycar.saas.iotcloudcn.util.BoxCommandResponse;
+import com.freelycar.saas.project.entity.Ark;
 import com.freelycar.saas.project.entity.Door;
 import com.freelycar.saas.project.repository.DoorRepository;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Random;
 
@@ -62,13 +64,20 @@ public class DoorService {
         return emptyDoorList.get(targetIndex);
     }
 
-    //TODO 打开柜门并启用监控线程
+    /**
+     * 打开柜门并启用监控线程
+     *
+     * @param door
+     * @throws ArgumentMissingException
+     * @throws OpenArkDoorFailedException
+     * @throws OpenArkDoorTimeOutException
+     */
     public void openDoorByDoorObject(Door door) throws ArgumentMissingException, OpenArkDoorFailedException, OpenArkDoorTimeOutException {
         if (null == door) {
             throw new ArgumentMissingException("参数doorObject为空。");
         }
         String deviceId = door.getArkSn();
-        int boxId = Integer.valueOf(door.getDoorSn());
+        int boxId = door.getDoorSn();
 
         if (StringUtils.isEmpty(deviceId)) {
             throw new ArgumentMissingException("参数doorObject中的arkSn值为空");
@@ -98,6 +107,34 @@ public class DoorService {
             //如果正常到这边，不抛出异常，就说明一切正常，可以开单
         } else {
             throw new OpenArkDoorFailedException("打开柜门失败：从远端获取到打开柜门失败的信息。");
+        }
+    }
+
+    /**
+     * 生成智能柜的状态表数据（子表数据）
+     *
+     * @param ark
+     * @throws ArgumentMissingException
+     */
+    public void generateDoors(Ark ark) throws ArgumentMissingException {
+        if (null == ark) {
+            throw new ArgumentMissingException("参数ark为空，生成door表数据失败");
+        }
+        String arkSn = ark.getSn();
+        String arkId = ark.getId();
+        int doorNum = ark.getDoorNum();
+        if (StringUtils.isEmpty(arkSn)) {
+            throw new ArgumentMissingException("参数arkSn为空，生成door表数据失败");
+        }
+        for (int i = 0; i < doorNum; i++) {
+            Door door = new Door();
+            door.setDelStatus(Constants.DelStatus.NORMAL.isValue());
+            door.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            door.setState(Constants.DoorState.EMPTY.getValue());
+            door.setArkId(arkId);
+            door.setArkSn(arkSn);
+            door.setDoorSn(i + 1);
+            doorRepository.save(door);
         }
     }
 }

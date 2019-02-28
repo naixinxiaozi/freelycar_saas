@@ -65,7 +65,7 @@ public class Door implements Serializable {
      * 智能柜门编号
      */
     @Column
-    private String doorSn;
+    private Integer doorSn;
 
     /**
      * 柜门状态
@@ -124,11 +124,11 @@ public class Door implements Serializable {
         this.arkSn = arkSn;
     }
 
-    public String getDoorSn() {
+    public Integer getDoorSn() {
         return doorSn;
     }
 
-    public void setDoorSn(String doorSn) {
+    public void setDoorSn(Integer doorSn) {
         this.doorSn = doorSn;
     }
 
