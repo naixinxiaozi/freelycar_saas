@@ -20,7 +20,7 @@ public class WechatLoginUse {
         log.debug("获取登陆时accesstoken: " + accessToken + " ; openid: " + openid);
 
         if (StringUtils.hasText(openid) && StringUtils.hasText(accessToken)) {
-            //user info
+            // 获取微信用户信息
             JSONObject userInfoJson = WechatConfig.getWXUserInfo(accessToken, openid);
             String name = userInfoJson.getString("nickname");
             String head = userInfoJson.getString("headimgurl");
