@@ -11,7 +11,7 @@ public class WechatTemplateMessage {
 
     private static final String PAY_SUCCESS_TEMPLATE_ID = "F5CyYJ5u9_1wRcapK1ECOYRrjxcLcL3rjB0xUg_VQn0";
     private static final String PAY_FAIL_ID = "o0TOjg7KkxoL4CtQ91j--TVVmxYDSNk-dLWqoUVd8mw";
-    private static final String ORDER_CHANGED_ID = "Au2k3CSXdYZu7ujvagXT6GxTzjDGUmQTkI8xutL30Fc";
+    private static final String ORDER_CHANGED_ID = "PeRe0M0iEbm7TpN6NOThhBUjwzy_aHsi6r2E7Pa8J1A";
 
     private static final Logger log = LogManager.getLogger(WechatTemplateMessage.class);
 
