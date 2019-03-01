@@ -2,6 +2,8 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.OpenArkDoorFailedException;
+import com.freelycar.saas.exception.OpenArkDoorTimeOutException;
 import com.freelycar.saas.project.entity.*;
 import com.freelycar.saas.project.model.OrderClientInfo;
 import com.freelycar.saas.project.model.OrderListParam;
@@ -775,15 +777,20 @@ public class ConsumerOrderService {
      * @param orderId
      * @return
      */
-    public ResultJsonObject cancelOrder(String orderId) {
+    public ResultJsonObject cancelOrder(String orderId) throws ArgumentMissingException, OpenArkDoorFailedException, OpenArkDoorTimeOutException {
         ConsumerOrder consumerOrder = consumerOrderRepository.findById(orderId).orElse(null);
         if (null == consumerOrder) {
             return ResultJsonObject.getErrorResult(null, "未找到id为：" + orderId + " 的订单");
         }
         consumerOrder.setState(Constants.OrderState.CANCEL.getValue());
         this.updateOrder(consumerOrder);
-        //TODO 数据保存完毕之后操作硬件，成功后返回成功，否则抛出异常进行回滚操作
-        // door表数据更新
+
+        //获取订单对应的柜子信息
+        Door door = doorRepository.findTopByOrderId(orderId);
+        //更新door表数据
+        this.changeDoorState(door, null, Constants.DoorState.EMPTY.getValue());
+        //打开柜门
+        doorService.openDoorByDoorObject(door);
 
         return ResultJsonObject.getDefaultResult(orderId);
     }
