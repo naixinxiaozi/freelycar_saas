@@ -31,12 +31,12 @@ public class WechatLoginUse {
 
 
             if (StringUtils.hasText(name) && StringUtils.hasText(head)) {
-                boolean subscribe = WechatConfig.isUserFollow(openid);
+//                boolean subscribe = WechatConfig.isUserFollow(openid);
                 wechatInfo.put("openid", openid);
                 wechatInfo.put("nickname", name);
                 wechatInfo.put("headimgurl", head);
                 wechatInfo.put("message", "success");
-                wechatInfo.put("subscribe", subscribe);
+//                wechatInfo.put("subscribe", subscribe);
             } else {
                 return resultJson;
             }

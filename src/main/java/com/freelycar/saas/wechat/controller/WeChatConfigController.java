@@ -68,4 +68,12 @@ public class WeChatConfigController {
         return WechatLoginUse.wechatInfo(code);
     }
 
+    @GetMapping("/isSubscribe")
+    public JSONObject isSubscribe(String openId) {
+        JSONObject wechatInfo = new JSONObject();
+        boolean subscribe = WechatConfig.isUserFollow(openId);
+        wechatInfo.put("subscribe", subscribe);
+        return wechatInfo;
+    }
+
 }
