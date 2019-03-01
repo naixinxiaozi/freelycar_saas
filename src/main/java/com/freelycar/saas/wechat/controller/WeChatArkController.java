@@ -1,7 +1,10 @@
 package com.freelycar.saas.wechat.controller;
 
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.exception.NoEmptyArkException;
+import com.freelycar.saas.exception.OpenArkDoorFailedException;
+import com.freelycar.saas.exception.OpenArkDoorTimeOutException;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.service.ArkService;
 import com.freelycar.saas.project.service.ConsumerOrderService;
@@ -55,7 +58,15 @@ public class WeChatArkController {
 
     @GetMapping("/cancelOrderService")
     public ResultJsonObject cancelOrderService(@RequestParam String id) {
-        return consumerOrderService.cancelOrder(id);
+        String errorMessage;
+        try {
+            return consumerOrderService.cancelOrder(id);
+        } catch (ArgumentMissingException | OpenArkDoorFailedException | OpenArkDoorTimeOutException e) {
+            errorMessage = e.getMessage();
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
+        return ResultJsonObject.getErrorResult(null, errorMessage);
     }
 
     @GetMapping("/getProjects")
