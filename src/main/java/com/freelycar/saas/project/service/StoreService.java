@@ -1,5 +1,6 @@
 package com.freelycar.saas.project.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.PageableTools;
@@ -28,9 +29,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author tangwei - Toby
@@ -180,7 +179,39 @@ public class StoreService {
         List<CouponService> couponServices = couponServiceService.findOnSaleCoupons(id);
 
         //获取门店展示的服务项目
-        List<Project> projects = projectService.getShowProjects(id);
+        List<Project> projectsList = projectService.getShowProjects(id);
+        JSONArray projects = new JSONArray();
+//        JSONObject projectData = new JSONObject();
+
+        Map<String, String> typeInfos = new HashMap<>();
+        List<String> projectTypeIdList = new ArrayList<>();
+        if (!projectsList.isEmpty()) {
+            //统计查处的项目有几个分类
+            for (Project project : projectsList) {
+                String projectTypeId = project.getProjectTypeId();
+                String projectTypeName = project.getProjectTypeName();
+                if (!typeInfos.containsKey(projectTypeId)) {
+                    typeInfos.put(projectTypeId, projectTypeName);
+                    projectTypeIdList.add(projectTypeId);
+                }
+            }
+            //按分类去处理项目
+            for (String projectTypeId : projectTypeIdList) {
+                if (StringUtils.hasText(projectTypeId)) {
+                    JSONObject typeJSON = new JSONObject();
+                    typeJSON.put("projectTypeId", projectTypeId);
+                    typeJSON.put("projectTypeName", typeInfos.get(projectTypeId));
+                    JSONArray typeJSONArr = new JSONArray();
+                    for (Project projectObj : projectsList) {
+                        if (projectTypeId.equals(projectObj.getProjectTypeId())) {
+                            typeJSONArr.add(projectObj);
+                        }
+                    }
+                    typeJSON.put("projectInfos", typeJSONArr);
+                    projects.add(typeJSON);
+                }
+            }
+        }
 
         //获取门店的轮播图
         List<StoreImg> storeImgs = getImgList(id);
