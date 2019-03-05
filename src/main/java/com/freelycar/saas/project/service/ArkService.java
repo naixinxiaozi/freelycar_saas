@@ -100,4 +100,19 @@ public class ArkService {
 
         return result;
     }
+
+    /**
+     * @param arkSn
+     * @return
+     */
+    public ResultJsonObject getArkInfo(String arkSn) {
+        if (StringUtils.hasText(arkSn)) {
+            Ark ark = arkRepository.findTopBySnAndDelStatus(arkSn, Constants.DelStatus.NORMAL.isValue());
+            if (null == ark) {
+                return ResultJsonObject.getCustomResult(arkSn, ResultCode.RESULT_DATA_NONE);
+            }
+            return ResultJsonObject.getDefaultResult(ark);
+        }
+        return ResultJsonObject.getCustomResult(arkSn, ResultCode.PARAM_NOT_COMPLETE);
+    }
 }

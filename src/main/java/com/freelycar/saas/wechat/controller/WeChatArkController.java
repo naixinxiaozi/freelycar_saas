@@ -118,5 +118,10 @@ public class WeChatArkController {
         return arkService.getCurrentArkLocation(arkSn);
     }
 
+    @GetMapping("/getArkInfo")
+    public ResultJsonObject getArkInfo(@RequestParam String arkSn) {
+        return arkService.getArkInfo(arkSn);
+    }
+
 
 }
