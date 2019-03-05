@@ -1,6 +1,7 @@
 package com.freelycar.saas.wechat.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultCode;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
@@ -17,6 +18,7 @@ import org.apache.http.HttpEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,10 +48,17 @@ public class WeChatPayController {
 
 
     @PostMapping("/payOrderByWechat")
+    @LoggerManage(description = "调用智能柜微信支付接口")
     public String payOrderByWechat(@RequestBody OrderPay orderPay, HttpServletRequest request) {
         String openId = orderPay.getOpenId();
         String orderId = orderPay.getOrderId();
         float totalPrice = orderPay.getTotalPrice();
+
+        //添加参数验证
+        if (StringUtils.isEmpty(openId) || StringUtils.isEmpty(orderId)) {
+            return ResultJsonObject.getErrorResult(orderPay, "传入的参数有缺失，请核实。").toString();
+        }
+
 
         //微信支付
         logger.info("执行微信支付：");
@@ -75,7 +84,10 @@ public class WeChatPayController {
         map.put("nonce_str", RandomStringGenerator.getRandomStringByLength(32));
 
         //返回结果	自己调用自己的接口
-        map.put("notify_url", "https://" + WechatConfig.APP_DOMAIN + "/wechat/pay/wechatPayResult");
+        String notifyUrl = WechatConfig.API_URL + "/pay/wechatPayResult";
+        logger.info(notifyUrl);
+        map.put("notify_url", notifyUrl);
+
         map.put("openid", openId);
         map.put("spbill_create_ip", ip);
         map.put("total_fee", (int) (totalPrice * 100));
@@ -121,8 +133,9 @@ public class WeChatPayController {
 
 
     @GetMapping("/wechatPayResult")
+    @LoggerManage(description = "执行智能柜微信支付结果回调方法")
     public void wechatResult(HttpServletRequest request, HttpServletResponse response) {
-        logger.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!准备回调!!!!!!!!!");
+        logger.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!准备回调!!!!!!!!!");
         logger.info("callback payOrderByWechat");
         //Map
         Map<String, Object> map = XMLParser.requestToXml(request);
@@ -136,8 +149,10 @@ public class WeChatPayController {
                     responseMap.put("return_code", "SUCCESS");
                     responseMap.put("return_msg", "OK");
                     String orderId = map.get("out_trade_no").toString();
-                    //支付成功，处理支付结果，同步到数据库
 
+                    //支付成功，处理支付结果，同步到数据库
+                    logger.info("支付成功，处理支付结果，更新订单状态到数据库------------------------");
+                    logger.info("orderId：" + orderId);
                     ResultJsonObject resultJsonObject = consumerOrderService.arkPaySuccess(orderId);
 
                     logger.info("paySuccess本地处理结果:" + resultJsonObject.toString());

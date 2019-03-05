@@ -9,7 +9,10 @@ import com.freelycar.saas.project.model.OrderClientInfo;
 import com.freelycar.saas.project.model.OrderListParam;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
-import com.freelycar.saas.project.repository.*;
+import com.freelycar.saas.project.repository.CardRepository;
+import com.freelycar.saas.project.repository.ConsumerOrderRepository;
+import com.freelycar.saas.project.repository.CouponRepository;
+import com.freelycar.saas.project.repository.DoorRepository;
 import com.freelycar.saas.util.OrderIDGenerator;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
@@ -85,7 +88,7 @@ public class ConsumerOrderService {
     private OrderIDGenerator orderIDGenerator;
 
     @Autowired
-    private StaffRepository staffRepository;
+    private StaffService staffService;
 
     @Autowired
     private WxUserInfoService wxUserInfoService;
@@ -766,7 +769,14 @@ public class ConsumerOrderService {
         doorService.openDoorByDoorObject(emptyDoor);
 
 
-        //TODO 推送微信消息给技师
+        //推送微信消息给技师 需要给这个柜子相关的技师都推送
+        List<Staff> staffList = staffService.getAllArkStaffInStore(consumerOrder.getStoreId());
+        for (Staff staff : staffList) {
+            String openId = staff.getOpenId();
+            if (StringUtils.hasText(openId)) {
+                WechatTemplateMessage.orderCreated(consumerOrderRes, openId, emptyDoor);
+            }
+        }
 
         return ResultJsonObject.getDefaultResult(consumerOrderRes.getId(), "订单生成成功！");
     }
@@ -910,7 +920,7 @@ public class ConsumerOrderService {
             return ResultJsonObject.getCustomResult("Not found consumerOrder object by orderId : " + orderId, ResultCode.RESULT_DATA_NONE);
         }
 
-        Staff staff = staffRepository.findById(staffId).orElse(null);
+        Staff staff = staffService.findById(staffId);
         if (null == staff) {
             return ResultJsonObject.getCustomResult("Not found staff object by staffId : " + staffId, ResultCode.RESULT_DATA_NONE);
         }

@@ -39,7 +39,7 @@ public interface StaffRepository extends JpaRepository<Staff,String> {
     Staff findTopByAccountAndPasswordAndDelStatus(String account, String password, boolean delStatus);
 
 
-
+    List<Staff> findAllByDelStatusAndIsArkAndStoreId(boolean delStatus, boolean isArk, String storeId);
 
 
 }

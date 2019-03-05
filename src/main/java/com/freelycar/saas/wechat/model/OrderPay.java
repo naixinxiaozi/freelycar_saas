@@ -14,4 +14,17 @@ public class OrderPay {
     private String orderId;
 
     private float totalPrice;
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"openId\":\"")
+                .append(openId).append('\"');
+        sb.append(",\"orderId\":\"")
+                .append(orderId).append('\"');
+        sb.append(",\"totalPrice\":")
+                .append(totalPrice);
+        sb.append('}');
+        return sb.toString();
+    }
 }

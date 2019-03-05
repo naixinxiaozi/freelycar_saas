@@ -28,7 +28,11 @@ public class WechatConfig {
     //商户号-商户ID
     public static final String MCH_ID = "1234616002";
 
-    public static final String APP_DOMAIN = "www.freelycar.com/wechat";//url域名
+    //微信前端页面url域名
+    public static final String APP_DOMAIN = "https://www.freelycar.com/wechat/";
+
+    //微信后端接口url域名
+    public static final String API_URL = "https://www.freelycar.com/api/";
 
     public static final String KEY = "F8B4D84CE5B3FF39A9695FA99B5BC9C3"; //签名秘钥，在微信商户平台里面设置
 

@@ -256,4 +256,18 @@ public class StaffService {
         staffRepository.save(staff);
         return ResultJsonObject.getDefaultResult(staffId);
     }
+
+    /**
+     * 获取门店的所有有智能柜帐号的员工
+     *
+     * @param storeId
+     * @return
+     */
+    public List<Staff> getAllArkStaffInStore(String storeId) {
+        return staffRepository.findAllByDelStatusAndIsArkAndStoreId(Constants.DelStatus.NORMAL.isValue(), true, storeId);
+    }
+
+    public Staff findById(String id) {
+        return staffRepository.findById(id).orElse(null);
+    }
 }
