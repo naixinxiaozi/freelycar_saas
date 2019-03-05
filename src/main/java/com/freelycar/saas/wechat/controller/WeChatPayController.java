@@ -19,7 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -72,7 +75,7 @@ public class WeChatPayController {
         if (null == consumerOrder) {
             return ResultJsonObject.getErrorResult(null, "未找到id为：" + orderId + " 的单据信息").toString();
         }
-        map.put("body", "智能柜汽车服务");
+        map.put("body", "carService");
         map.put("out_trade_no", consumerOrder.getId());
 
 
@@ -132,7 +135,7 @@ public class WeChatPayController {
     }
 
 
-    @GetMapping("/wechatPayResult")
+    @RequestMapping(value = "/wechatPayResult")
     @LoggerManage(description = "执行智能柜微信支付结果回调方法")
     public void wechatResult(HttpServletRequest request, HttpServletResponse response) {
         logger.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!准备回调!!!!!!!!!");
