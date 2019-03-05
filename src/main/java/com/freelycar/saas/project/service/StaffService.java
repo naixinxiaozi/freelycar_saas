@@ -2,10 +2,13 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.jwt.TokenAuthenticationUtil;
+import com.freelycar.saas.project.entity.ConsumerOrder;
+import com.freelycar.saas.project.entity.Door;
 import com.freelycar.saas.project.entity.Staff;
 import com.freelycar.saas.project.repository.StaffRepository;
 import com.freelycar.saas.util.UpdateTool;
 import com.freelycar.saas.wechat.model.WeChatStaff;
+import com.freelycar.saas.wxutils.WechatTemplateMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -252,8 +255,10 @@ public class StaffService {
         if (null == staff) {
             return ResultJsonObject.getErrorResult(staffId, "登出失败，对应的人员信息为查询到");
         }
-        staff.setOpenId(null);
-        staffRepository.save(staff);
+        //暂时不清除openId
+//        staff.setOpenId(null);
+//        staffRepository.save(staff);
+        logger.info("技师" + staff.getName() + "退出登录");
         return ResultJsonObject.getDefaultResult(staffId);
     }
 
@@ -265,6 +270,25 @@ public class StaffService {
      */
     public List<Staff> getAllArkStaffInStore(String storeId) {
         return staffRepository.findAllByDelStatusAndIsArkAndStoreId(Constants.DelStatus.NORMAL.isValue(), true, storeId);
+    }
+
+    /**
+     * 给所有技师推送微信消息（有用户预约了汽车服务）
+     *
+     * @param consumerOrder
+     * @param emptyDoor
+     */
+    public void sendWeChatMessageToStaff(ConsumerOrder consumerOrder, Door emptyDoor) {
+        String storeId = consumerOrder.getStoreId();
+        List<Staff> staffList = this.getAllArkStaffInStore(storeId);
+        logger.info("查询到storeId为" + storeId + "的门店有" + staffList.size() + "个技师");
+        for (Staff staff : staffList) {
+            String openId = staff.getOpenId();
+            logger.info("技师openId：" + openId);
+            if (StringUtils.hasText(openId)) {
+                WechatTemplateMessage.orderCreated(consumerOrder, openId, emptyDoor);
+            }
+        }
     }
 
     public Staff findById(String id) {

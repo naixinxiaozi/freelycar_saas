@@ -770,16 +770,7 @@ public class ConsumerOrderService {
 
 
         //推送微信消息给技师 需要给这个柜子相关的技师都推送
-        String storeId = consumerOrder.getStoreId();
-        List<Staff> staffList = staffService.getAllArkStaffInStore(storeId);
-        logger.info("查询到storeId为" + storeId + "的门店有" + staffList.size() + "个技师");
-        for (Staff staff : staffList) {
-            String openId = staff.getOpenId();
-            logger.info("技师openId：" + openId);
-            if (StringUtils.hasText(openId)) {
-                WechatTemplateMessage.orderCreated(consumerOrderRes, openId, emptyDoor);
-            }
-        }
+        staffService.sendWeChatMessageToStaff(consumerOrderRes, emptyDoor);
 
         return ResultJsonObject.getDefaultResult(consumerOrderRes.getId(), "订单生成成功！");
     }
@@ -804,6 +795,8 @@ public class ConsumerOrderService {
         this.changeDoorState(door, null, Constants.DoorState.EMPTY.getValue());
         //打开柜门
         doorService.openDoorByDoorObject(door);
+
+        //TODO 用户取消服务订单的时候推送消息给技师
 
         return ResultJsonObject.getDefaultResult(orderId);
     }
