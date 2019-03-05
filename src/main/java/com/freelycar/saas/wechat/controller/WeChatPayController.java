@@ -72,7 +72,7 @@ public class WeChatPayController {
         if (null == consumerOrder) {
             return ResultJsonObject.getErrorResult(null, "未找到id为：" + orderId + " 的单据信息").toString();
         }
-        map.put("body", "productName");
+        map.put("body", "智能柜汽车服务");
         map.put("out_trade_no", consumerOrder.getId());
 
 
@@ -84,7 +84,7 @@ public class WeChatPayController {
         map.put("nonce_str", RandomStringGenerator.getRandomStringByLength(32));
 
         //返回结果	自己调用自己的接口
-        String notifyUrl = WechatConfig.API_URL + "/pay/wechatPayResult";
+        String notifyUrl = WechatConfig.API_URL + "wechat/pay/wechatPayResult";
         logger.info(notifyUrl);
         map.put("notify_url", notifyUrl);
 
@@ -127,7 +127,7 @@ public class WeChatPayController {
             jsonObject.put(Constants.RESPONSE_CODE_KEY, ResultCode.CALL_PORT_ERROR.code());
             jsonObject.put(Constants.RESPONSE_MSG_KEY, ResultCode.CALL_PORT_ERROR.message());
         }
-        logger.error("结果：return_code: " + jsonObject.toString());
+        logger.info("结果：return_code: " + jsonObject.toString());
         return jsonObject.toString();
     }
 
