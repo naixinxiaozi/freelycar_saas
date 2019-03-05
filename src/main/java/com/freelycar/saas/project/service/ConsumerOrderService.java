@@ -770,9 +770,12 @@ public class ConsumerOrderService {
 
 
         //推送微信消息给技师 需要给这个柜子相关的技师都推送
-        List<Staff> staffList = staffService.getAllArkStaffInStore(consumerOrder.getStoreId());
+        String storeId = consumerOrder.getStoreId();
+        List<Staff> staffList = staffService.getAllArkStaffInStore(storeId);
+        logger.info("查询到storeId为" + storeId + "的门店有" + staffList.size() + "个技师");
         for (Staff staff : staffList) {
             String openId = staff.getOpenId();
+            logger.info("技师openId：" + openId);
             if (StringUtils.hasText(openId)) {
                 WechatTemplateMessage.orderCreated(consumerOrderRes, openId, emptyDoor);
             }
