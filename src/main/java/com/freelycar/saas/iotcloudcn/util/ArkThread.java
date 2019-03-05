@@ -11,7 +11,7 @@ import org.springframework.util.StringUtils;
 public class ArkThread extends Thread {
 
     private final static long TIME_INTERVAL = 5000;
-    private final static long TIMEOUT = 60000;
+    private final static long TIMEOUT = 50000;
     private static Logger log = LogManager.getLogger(ArkThread.class);
     private String deviceId = null;
     private int boxId = 0;
