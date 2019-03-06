@@ -4,6 +4,8 @@ import com.freelycar.saas.jwt.bean.JSONResult;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,6 +25,8 @@ import java.util.List;
  * @email toby911115@gmail.com
  */
 public class TokenAuthenticationUtil {
+    private static Logger logger = LoggerFactory.getLogger(TokenAuthenticationUtil.class);
+
     private static final long EXPIRATIONTIME = 432_000_000;     // 5天
     private static final String SECRET = "FreelyC@r";            // JWT密码
     private static final String TOKEN_PREFIX = "Bearer";        // Token前缀
@@ -53,6 +57,7 @@ public class TokenAuthenticationUtil {
             response.setStatus(HttpServletResponse.SC_OK);
             response.getOutputStream().println(JSONResult.fillResultString(0, "", JWT));
         } catch (IOException e) {
+            logger.error(e.getMessage(), e);
             e.printStackTrace();
         }
     }

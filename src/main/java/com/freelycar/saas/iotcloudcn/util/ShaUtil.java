@@ -1,10 +1,15 @@
 package com.freelycar.saas.iotcloudcn.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class ShaUtil {
+    private static Logger logger = LoggerFactory.getLogger(ShaUtil.class);
+
     private static char[] CHARARRAY = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     public static String toSHA1(String str) {
@@ -26,8 +31,9 @@ public class ShaUtil {
             }
             return new String(buf);
         } catch (NoSuchAlgorithmException e) {
+            logger.error(e.getMessage(), e);
             e.printStackTrace();
         }
         return null;
     }
-};
+}

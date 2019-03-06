@@ -14,6 +14,8 @@ import com.freelycar.saas.project.repository.StoreImgRepository;
 import com.freelycar.saas.project.repository.StoreRepository;
 import com.freelycar.saas.util.SpringContextUtils;
 import com.freelycar.saas.util.UpdateTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,7 @@ import java.util.*;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class StoreService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private StoreRepository storeRepository;
@@ -277,6 +280,7 @@ public class StoreService {
 
             return ResultJsonObject.getDefaultResult(url);
         } catch (IllegalStateException | IOException e) {
+            logger.error(e.getMessage(), e);
             e.printStackTrace();
         }
         return ResultJsonObject.getErrorResult(null, "上传失败");

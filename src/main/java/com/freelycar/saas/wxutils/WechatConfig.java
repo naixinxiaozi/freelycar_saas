@@ -2,8 +2,8 @@ package com.freelycar.saas.wxutils;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,6 +15,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author javabean
  */
 public class WechatConfig {
+
+    /**
+     * 获得 token的方法 (这个用户获取用户信息的token ，和下面的普通token不同)
+     * https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140842&token=&lang=zh_CN
+     */
+
+//	static {
+//		CERT_LOCAL_PATH = WechatConfig.class.getClassLoader().getResource("apiclient_cert.p12").getPath();
+//		logger.debug("Cert location:" + CERT_LOCAL_PATH);
+//	}
+
+    //用户缓存itoken openid 之类的变量
+    public static Map<String, JSONObject> cacheVariable = new ConcurrentHashMap<>();
 
     //自定义的token
     public static final String TOKEN = "freelycar-saas";
@@ -63,19 +76,7 @@ public class WechatConfig {
      * }
      */
     private static final String JSAPI_TICKET_URL = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi";
-    /**
-     * 获得 token的方法 (这个用户获取用户信息的token ，和下面的普通token不同)
-     * https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140842&token=&lang=zh_CN
-     */
-
-//	static {
-//		CERT_LOCAL_PATH = WechatConfig.class.getClassLoader().getResource("apiclient_cert.p12").getPath();
-//		log.debug("Cert location:" + CERT_LOCAL_PATH);
-//	}
-
-    //用户缓存itoken openid 之类的变量
-    public static Map<String, JSONObject> cacheVariable = new ConcurrentHashMap<>();
-    private static Logger log = LogManager.getLogger(WechatConfig.class);
+    private static Logger logger = LoggerFactory.getLogger(WechatConfig.class);
 
     private static String getAccessTokenUrl(String code) {
         String ret = ACCESS_TOKEN_URL + "?appid=" + APP_ID + "&secret=" + APP_SECRET
@@ -99,11 +100,12 @@ public class WechatConfig {
         try {
             obj = JSONObject.parseObject(call);
         } catch (JSONException e) {
+            logger.error(e.getMessage(), e);
             e.printStackTrace();
             throw new RuntimeException("WechatConfig#获取token的json字符串解析失败", e);
         }
 
-        log.debug("新获取的token:" + obj.getString("access_token"));
+        logger.debug("新获取的token:" + obj.getString("access_token"));
 
         return obj;
 
@@ -144,6 +146,7 @@ public class WechatConfig {
         try {
             obj = JSONObject.parseObject(userInfo);
         } catch (JSONException e) {
+            logger.error(e.getMessage(), e);
             e.printStackTrace();
             throw new RuntimeException("WechatConfig#获取userInfo的json字符串解析失败", e);
         }
@@ -162,7 +165,7 @@ public class WechatConfig {
         //检查是否过期 我这里设置了1个半小时过期
         JSONObject tokenJSON = cacheVariable.get("itoken");
         if (tokenJSON != null && (System.currentTimeMillis() - tokenJSON.getLong("get_time")) < TIME_OUT) {
-            log.debug("从缓存中拿的itoken:" + tokenJSON.getString("access_token"));
+            logger.debug("从缓存中拿的itoken:" + tokenJSON.getString("access_token"));
             return tokenJSON;
         }
 
@@ -174,10 +177,11 @@ public class WechatConfig {
             obj = JSONObject.parseObject(call);
             obj.put("get_time", System.currentTimeMillis());//此处设置获取时间，用于比对过期时间
         } catch (JSONException e) {
+            logger.error(e.getMessage(), e);
             e.printStackTrace();
         }
         cacheVariable.put("itoken", obj);
-        log.debug("新获取的itoken:" + obj.getString("access_token"));
+        logger.debug("新获取的itoken:" + obj.getString("access_token"));
         return obj;
     }
 
@@ -187,7 +191,7 @@ public class WechatConfig {
         //检查是否过期 我这里设置了1个半小时过期
         JSONObject ticketJSON = cacheVariable.get("jsapi_ticket");
         if (ticketJSON != null && (System.currentTimeMillis() - ticketJSON.getLong("get_time")) < TIME_OUT) {
-            log.debug("从缓存中拿的jsapi_ticket:" + ticketJSON.getString("ticket"));
+            logger.debug("从缓存中拿的jsapi_ticket:" + ticketJSON.getString("ticket"));
             return ticketJSON;
         }
         String jsAPITicktUrl = JSAPI_TICKET_URL + "&access_token=" + token;
@@ -197,9 +201,10 @@ public class WechatConfig {
             jsonObject = JSONObject.parseObject(sTotalString);
             jsonObject.put("get_time", System.currentTimeMillis());//此处设置获取时间，用于比对过期时间
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             throw new RuntimeException(e.getMessage(), e);
         }
-        log.debug("新获取的jsapi_ticket:" + jsonObject);
+        logger.debug("新获取的jsapi_ticket:" + jsonObject);
         cacheVariable.put("jsapi_ticket", jsonObject);
         return jsonObject;
     }
@@ -245,6 +250,7 @@ public class WechatConfig {
             resultObject = JSONObject.parseObject(userInfo);
         } catch (JSONException e) {
             e.printStackTrace();
+            logger.error(e.getMessage(), e);
             throw new RuntimeException("WechatConfig#获取userInfo的json字符串解析失败", e);
         }
 

@@ -33,6 +33,7 @@ public class DeviceStateThread extends Thread {
                         break;
                     }
                 } catch (InterruptedException e) {
+                    log.error(e.getMessage(), e);
                     e.printStackTrace();
                 }
                 if (StringUtils.isEmpty(deviceId)) {
