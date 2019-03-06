@@ -1,6 +1,7 @@
 package com.freelycar.saas.wxutils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.freelycar.saas.project.entity.Ark;
 import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.entity.Door;
 import com.freelycar.saas.util.RoundTool;
@@ -213,7 +214,7 @@ public class WechatTemplateMessage {
      * 详情：{{keyword5.DATA}}
      * {{remark.DATA}}
      */
-    public static void orderCreated(ConsumerOrder consumerOrder, String openId, Door door) {
+    public static void orderCreated(ConsumerOrder consumerOrder, String openId, Door door, Ark ark) {
         log.info("准备订单生成成功的模版消息。");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
@@ -246,7 +247,7 @@ public class WechatTemplateMessage {
         //详情
         data.put("keyword5", keywordFactory("智能柜：" + door.getArkSn() + "-" + door.getDoorSn(), "#173177"));
 
-        data.put("remark", keywordFactory(""));
+        data.put("remark", keywordFactory("智能柜名称：" + ark.getName() + "；地址：" + ark.getLocation() + "。"));
         params.put("data", data);
         String result = invokeTemplateMessage(params);
         log.info("微信订单更新模版消息结果：" + result);

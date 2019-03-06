@@ -2,9 +2,11 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.jwt.TokenAuthenticationUtil;
+import com.freelycar.saas.project.entity.Ark;
 import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.entity.Door;
 import com.freelycar.saas.project.entity.Staff;
+import com.freelycar.saas.project.repository.ArkRepository;
 import com.freelycar.saas.project.repository.StaffRepository;
 import com.freelycar.saas.util.UpdateTool;
 import com.freelycar.saas.wechat.model.WeChatStaff;
@@ -30,6 +32,9 @@ public class StaffService {
 
     @Autowired
     private StaffRepository staffRepository;
+
+    @Autowired
+    private ArkRepository arkRepository;
 
     /**
      * 新增/修改员工对象
@@ -280,13 +285,15 @@ public class StaffService {
      */
     public void sendWeChatMessageToStaff(ConsumerOrder consumerOrder, Door emptyDoor) {
         String storeId = consumerOrder.getStoreId();
+        //查询门店的地址
+        Ark ark = arkRepository.findTopBySnAndDelStatus(emptyDoor.getArkSn(), Constants.DelStatus.NORMAL.isValue());
         List<Staff> staffList = this.getAllArkStaffInStore(storeId);
         logger.info("查询到storeId为" + storeId + "的门店有" + staffList.size() + "个技师");
         for (Staff staff : staffList) {
             String openId = staff.getOpenId();
             logger.info("技师openId：" + openId);
             if (StringUtils.hasText(openId)) {
-                WechatTemplateMessage.orderCreated(consumerOrder, openId, emptyDoor);
+                WechatTemplateMessage.orderCreated(consumerOrder, openId, emptyDoor, ark);
             }
         }
     }
