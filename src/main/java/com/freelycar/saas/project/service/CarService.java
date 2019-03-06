@@ -2,9 +2,11 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.exception.CarNumberValidationException;
 import com.freelycar.saas.project.entity.Car;
 import com.freelycar.saas.project.entity.Client;
 import com.freelycar.saas.project.repository.CarRepository;
+import com.freelycar.saas.util.CarNumberTool;
 import com.freelycar.saas.util.UpdateTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +45,7 @@ public class CarService {
      * @param car
      * @return
      */
-    public Car saveOrUpdate(Car car) {
+    public Car saveOrUpdate(Car car) throws CarNumberValidationException {
         if (null == car) {
             return null;
         }
@@ -52,6 +54,12 @@ public class CarService {
         if (StringUtils.isEmpty(clientId)) {
             logger.error("保存车辆信息失败：数据中没有包含clientId。");
             return null;
+        }
+
+        //验证车牌
+        String licensePlate = car.getLicensePlate();
+        if (!CarNumberTool.isCarNumberNO(licensePlate)) {
+            throw new CarNumberValidationException("保存车辆信息失败：车牌号未通过验证。车牌号：" + licensePlate);
         }
 
         if (StringUtils.isEmpty(id)) {

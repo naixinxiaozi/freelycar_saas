@@ -1,6 +1,7 @@
 package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
+import com.freelycar.saas.exception.CarNumberValidationException;
 import com.freelycar.saas.project.entity.Car;
 import com.freelycar.saas.project.entity.Card;
 import com.freelycar.saas.project.entity.Client;
@@ -69,7 +70,7 @@ public class ClientService {
      * @param car
      * @return
      */
-    public ResultJsonObject addClientAndCar(Client client, Car car) {
+    public ResultJsonObject addClientAndCar(Client client, Car car) throws CarNumberValidationException {
         //非空验证
         if (null == client || null == car) {
             return ResultJsonObject.getErrorResult("保存失败！客户信息或车辆信息为空！");

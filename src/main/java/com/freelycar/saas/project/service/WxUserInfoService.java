@@ -2,6 +2,7 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.exception.CarNumberValidationException;
 import com.freelycar.saas.jwt.TokenAuthenticationUtil;
 import com.freelycar.saas.project.entity.Car;
 import com.freelycar.saas.project.entity.Client;
@@ -169,7 +170,12 @@ public class WxUserInfoService {
                 List<Car> sourceCars = carService.listClientCars(otherStoreClient.getId());
                 for (Car sourceCar : sourceCars) {
                     Car targetCar = carService.copyNewObjectForOtherStore(sourceCar, client);
-                    carService.saveOrUpdate(targetCar);
+                    try {
+                        carService.saveOrUpdate(targetCar);
+                    } catch (CarNumberValidationException e) {
+                        logger.error(e.getMessage());
+                        e.printStackTrace();
+                    }
                 }
 
             }

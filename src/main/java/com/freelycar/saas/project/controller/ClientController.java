@@ -2,6 +2,7 @@ package com.freelycar.saas.project.controller;
 
 import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.exception.CarNumberValidationException;
 import com.freelycar.saas.project.entity.Client;
 import com.freelycar.saas.project.model.NewClientInfo;
 import com.freelycar.saas.project.service.ClientService;
@@ -34,7 +35,13 @@ public class ClientController {
     @PostMapping("/addClientAndCar")
     @LoggerManage(description = "新增客户（提交数据中包含车辆和客户信息）")
     public ResultJsonObject addClientAndCar(@RequestBody NewClientInfo newClientInfo) {
-        return clientService.addClientAndCar(newClientInfo.getClient(), newClientInfo.getCar());
+        try {
+            return clientService.addClientAndCar(newClientInfo.getClient(), newClientInfo.getCar());
+        } catch (CarNumberValidationException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
     }
 
     /**
