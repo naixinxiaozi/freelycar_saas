@@ -139,7 +139,7 @@ public class CarService {
             }
             return ResultJsonObject.getDefaultResult(res);
         } catch (Exception e) {
-            return ResultJsonObject.getErrorResult(null);
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
         }
     }
 
