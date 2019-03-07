@@ -184,8 +184,6 @@ public class StoreService {
         //获取门店展示的服务项目
         List<Project> projectsList = projectService.getShowProjects(id);
         JSONArray projects = new JSONArray();
-//        JSONObject projectData = new JSONObject();
-
         Map<String, String> typeInfos = new HashMap<>();
         List<String> projectTypeIdList = new ArrayList<>();
         if (!projectsList.isEmpty()) {

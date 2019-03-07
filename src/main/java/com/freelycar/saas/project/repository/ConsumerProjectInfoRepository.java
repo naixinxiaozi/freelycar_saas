@@ -13,4 +13,8 @@ import java.util.List;
 public interface ConsumerProjectInfoRepository extends JpaRepository<ConsumerProjectInfo,String> {
 
     List<ConsumerProjectInfo> findAllByDelStatusAndConsumerOrderIdOrderByCreateTimeAsc(boolean delStatus, String consumerOrderId);
+
+    List<ConsumerProjectInfo> findAllByDelStatusAndAndCardIdOrderByCreateTimeDesc(boolean delStatus, String cardId);
+
+    List<ConsumerProjectInfo> findAllByDelStatusAndAndCouponIdOrderByCreateTimeDesc(boolean delStatus, String couponId);
 }
