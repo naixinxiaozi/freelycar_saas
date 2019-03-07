@@ -1,7 +1,13 @@
 package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
+import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.ObjectNotFoundException;
+import com.freelycar.saas.project.entity.Card;
 import com.freelycar.saas.project.entity.CardService;
+import com.freelycar.saas.project.entity.Client;
+import com.freelycar.saas.project.entity.ConsumerOrder;
+import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.CardServiceRepository;
 import com.freelycar.saas.util.UpdateTool;
 import org.slf4j.Logger;
@@ -25,6 +31,15 @@ public class CardServiceService {
 
     @Autowired
     private CardServiceRepository cardServiceRepository;
+
+    @Autowired
+    private ClientService clientService;
+
+    @Autowired
+    private ConsumerOrderService consumerOrderService;
+
+    @Autowired
+    private CardRepository cardRepository;
 
     /**
      * 新增/修改卡类对象
@@ -188,5 +203,74 @@ public class CardServiceService {
      */
     public List<CardService> findOnSaleCards(String storeId) {
         return cardServiceRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
+    }
+
+    /**
+     * 生成微信端订单
+     *
+     * @param clientId
+     * @param cardServiceId
+     * @return
+     * @throws Exception
+     */
+    public String generateCardOrder(String clientId, String cardServiceId) throws Exception {
+        if (StringUtils.isEmpty(clientId)) {
+            throw new ArgumentMissingException("参数clientId为空，生成会员卡购买订单失败！");
+        }
+        if (StringUtils.isEmpty(cardServiceId)) {
+            throw new ArgumentMissingException("参数cardServiceId为空，生成会员卡购买订单失败！");
+        }
+
+        Client client = clientService.findById(clientId);
+        if (null == client) {
+            throw new ObjectNotFoundException("用户信息查找失败，无法生成购买订单，请稍后再试或联系客服。");
+        }
+
+        CardService cardServiceObject = cardServiceRepository.findById(cardServiceId).orElse(null);
+        if (null == cardServiceObject) {
+            throw new ObjectNotFoundException("会员卡信息查找失败，无法生成购买订单，请稍后再试或联系客服。");
+        }
+
+        if (null != client.getStoreId() && null != cardServiceObject.getStoreId() && !client.getStoreId().equals(cardServiceObject.getStoreId())) {
+            throw new Exception("用户信息与会员卡信息所属门店不同，无法生成购买订单，请核实或联系客服。");
+        }
+
+        Float price = cardServiceObject.getPrice();
+
+        //生成订单
+        ConsumerOrder cardOrder = new ConsumerOrder();
+        cardOrder.setPayState(Constants.PayState.NOT_PAY.getValue());
+        cardOrder.setOrderType(Constants.OrderType.CARD.getValue());
+        cardOrder.setClientId(clientId);
+        cardOrder.setTotalPrice(price.doubleValue());
+        cardOrder.setActualPrice(price.doubleValue());
+
+        cardOrder.setClientName(client.getName());
+        cardOrder.setPhone(client.getPhone());
+        cardOrder.setIsMember(client.getMember());
+        cardOrder.setGender(client.getGender());
+        cardOrder.setStoreId(client.getStoreId());
+
+        ConsumerOrder consumerOrder = consumerOrderService.saveOrUpdate(cardOrder);
+
+        String orderId = consumerOrder.getId();
+        //生成card对象（未支付前是不可用的：delStatus是1）
+        Card card = new Card();
+        card.setDelStatus(Constants.DelStatus.DELETE.isValue());
+        //为字段赋默认值
+        card.setCreateTime(consumerOrder.getCreateTime());
+        card.setBalance(cardServiceObject.getActualPrice());
+        card.setActualPrice(cardServiceObject.getActualPrice());
+        card.setFailed(false);
+        card.setName(cardServiceObject.getName());
+        card.setPrice(cardServiceObject.getPrice());
+
+        Card cardRes = cardRepository.saveAndFlush(card);
+        if (null == cardRes) {
+            throw new Exception("会员卡数据生成异常，无法生成购买订单，请核实或联系客服。");
+        }
+
+
+        return consumerOrder.getId();
     }
 }

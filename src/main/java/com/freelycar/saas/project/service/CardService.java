@@ -8,7 +8,6 @@ import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.CardServiceRepository;
 import com.freelycar.saas.project.repository.ClientRepository;
-import com.freelycar.saas.project.repository.ConsumerOrderRepository;
 import com.freelycar.saas.util.TimestampUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class CardService {
     private ClientRepository clientRepository;
 
     @Autowired
-    private ConsumerOrderRepository consumerOrderRepository;
+    private ConsumerOrderService consumerOrderService;
 
     /**
      * 办理会员卡
@@ -46,7 +45,7 @@ public class CardService {
      * @param card
      * @return
      */
-    public ResultJsonObject handleCard(Card card) {
+    public ResultJsonObject handleCard(Card card) throws Exception {
         if (null == card) {
             return ResultJsonObject.getErrorResult(null, "开卡失败！参数card为Null！");
         }
@@ -55,10 +54,10 @@ public class CardService {
         String clientId = card.getClientId();
         String cardServiceId = card.getCardServiceId();
         String cardNumber = card.getCardNumber();
-
+/*
         if (StringUtils.isEmpty(clientId)) {
             return ResultJsonObject.getErrorResult(null, "开卡失败！clientId为Null！");
-        }
+        }*/
 
         if (StringUtils.isEmpty(cardServiceId)) {
             return ResultJsonObject.getErrorResult(null, "开卡失败！cardServiceId为Null！");
@@ -162,10 +161,8 @@ public class CardService {
      * @param card
      * @param client
      */
-    public void autoGenerateOrderForHandleCard(Card card, Client client) {
+    public void autoGenerateOrderForHandleCard(Card card, Client client) throws Exception {
         ConsumerOrder cardOrder = new ConsumerOrder();
-        cardOrder.setDelStatus(Constants.DelStatus.NORMAL.isValue());
-        cardOrder.setCreateTime(card.getCreateTime());
         cardOrder.setPayState(Constants.PayState.FINISH_PAY.getValue());
         cardOrder.setOrderType(Constants.OrderType.CARD.getValue());
         cardOrder.setCardOrCouponId(card.getId());
@@ -179,7 +176,7 @@ public class CardService {
         cardOrder.setGender(client.getGender());
         cardOrder.setStoreId(client.getStoreId());
 
-        consumerOrderRepository.save(cardOrder);
+        consumerOrderService.saveOrUpdate(cardOrder);
     }
 
 
