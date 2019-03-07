@@ -29,7 +29,14 @@ public class CardController {
     @LoggerManage(description = "调用方法：开卡")
     public ResultJsonObject handleCard(@RequestBody Card card) {
 
-        return cardService.handleCard(card);
+        try {
+            return cardService.handleCard(card);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult("生成会员卡购买单据失败，无法开卡。");
+
+        }
     }
 
     /**
