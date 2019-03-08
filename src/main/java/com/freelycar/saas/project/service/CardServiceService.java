@@ -245,7 +245,7 @@ public class CardServiceService {
 
         //生成订单
         ConsumerOrder consumerOrder = consumerOrderService.generateOrderForBuyCardOrCoupon(client, price);
-        
+
         String orderId = consumerOrder.getId();
         //生成card对象（未支付前是不可用的：delStatus是1）
         Card card = new Card();
@@ -259,6 +259,7 @@ public class CardServiceService {
         card.setName(cardServiceObject.getName());
         card.setPrice(cardServiceObject.getPrice());
         card.setStoreId(cardServiceStoreId);
+        card.setCardServiceId(cardServiceId);
 
         Card cardRes = cardRepository.saveAndFlush(card);
         if (null == cardRes) {
