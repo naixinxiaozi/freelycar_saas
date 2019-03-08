@@ -8,6 +8,7 @@ import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.CardServiceRepository;
 import com.freelycar.saas.project.repository.ClientRepository;
+import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.TimestampUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -162,15 +164,23 @@ public class CardService {
      * @param client
      */
     public void autoGenerateOrderForHandleCard(Card card, Client client) throws Exception {
+        //价格精度格式化
+        double price = RoundTool.round(card.getPrice().doubleValue(), 2, BigDecimal.ROUND_HALF_UP);
+
         ConsumerOrder cardOrder = new ConsumerOrder();
         cardOrder.setPayState(Constants.PayState.FINISH_PAY.getValue());
         cardOrder.setOrderType(Constants.OrderType.CARD.getValue());
         cardOrder.setCardOrCouponId(card.getId());
         cardOrder.setClientId(card.getClientId());
-        cardOrder.setTotalPrice(card.getPrice().doubleValue());
-        cardOrder.setActualPrice(card.getPrice().doubleValue());
+        cardOrder.setTotalPrice(price);
+        cardOrder.setActualPrice(price);
 
-        cardOrder.setClientName(client.getName());
+        String clientName = client.getTrueName();
+        if (StringUtils.isEmpty(clientName)) {
+            clientName = client.getName();
+        }
+
+        cardOrder.setClientName(clientName);
         cardOrder.setPhone(client.getPhone());
         cardOrder.setIsMember(client.getMember());
         cardOrder.setGender(client.getGender());

@@ -243,7 +243,7 @@ public class WechatTemplateMessage {
         //车型
         data.put("keyword3", keywordFactory(consumerOrder.getCarBrand(), "#173177"));
         //报价
-        data.put("keyword4", keywordFactory(String.valueOf(RoundTool.round(consumerOrder.getTotalPrice(), 2, BigDecimal.ROUND_DOWN)), "#173177"));
+        data.put("keyword4", keywordFactory(String.valueOf(RoundTool.round(consumerOrder.getTotalPrice(), 2, BigDecimal.ROUND_HALF_UP)), "#173177"));
         //详情
         data.put("keyword5", keywordFactory("智能柜：" + door.getArkSn() + "-" + door.getDoorSn(), "#173177"));
 

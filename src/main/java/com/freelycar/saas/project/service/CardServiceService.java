@@ -9,6 +9,7 @@ import com.freelycar.saas.project.entity.Client;
 import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.repository.CardRepository;
 import com.freelycar.saas.project.repository.CardServiceRepository;
+import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -235,17 +237,21 @@ public class CardServiceService {
             throw new Exception("用户信息与会员卡信息所属门店不同，无法生成购买订单，请核实或联系客服。");
         }
 
-        Float price = cardServiceObject.getPrice();
+        double price = RoundTool.round(cardServiceObject.getPrice().doubleValue(), 2, BigDecimal.ROUND_HALF_UP);
+        String clientName = client.getTrueName();
+        if (StringUtils.isEmpty(clientName)) {
+            clientName = client.getName();
+        }
 
         //生成订单
         ConsumerOrder cardOrder = new ConsumerOrder();
         cardOrder.setPayState(Constants.PayState.NOT_PAY.getValue());
         cardOrder.setOrderType(Constants.OrderType.CARD.getValue());
         cardOrder.setClientId(clientId);
-        cardOrder.setTotalPrice(price.doubleValue());
-        cardOrder.setActualPrice(price.doubleValue());
+        cardOrder.setTotalPrice(price);
+        cardOrder.setActualPrice(price);
 
-        cardOrder.setClientName(client.getName());
+        cardOrder.setClientName(clientName);
         cardOrder.setPhone(client.getPhone());
         cardOrder.setIsMember(client.getMember());
         cardOrder.setGender(client.getGender());

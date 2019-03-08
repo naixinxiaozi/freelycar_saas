@@ -831,7 +831,7 @@ public class ConsumerOrderService {
         Float balance = cardRepository.sumBalanceByClientId(clientId);
         if (null != balance) {
             //格式化精度
-            carBalance = RoundTool.round(balance.doubleValue(), 2, BigDecimal.ROUND_DOWN);
+            carBalance = RoundTool.round(balance.doubleValue(), 2, BigDecimal.ROUND_HALF_UP);
         } else {
             carBalance = 0.0;
         }
@@ -851,7 +851,7 @@ public class ConsumerOrderService {
         orderClientInfo.setClientName(client.getName());
         orderClientInfo.setPhone(client.getPhone());
         orderClientInfo.setIsMember(client.getMember());
-        orderClientInfo.setHistoryConsumption(RoundTool.round(consumeAmount, 2, BigDecimal.ROUND_DOWN));
+        orderClientInfo.setHistoryConsumption(RoundTool.round(consumeAmount, 2, BigDecimal.ROUND_HALF_UP));
 
         orderClientInfo.setBalance(carBalance);
 

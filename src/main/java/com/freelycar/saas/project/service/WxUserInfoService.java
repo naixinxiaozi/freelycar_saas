@@ -110,7 +110,7 @@ public class WxUserInfoService {
                 Float balance = cardRepository.sumBalanceByClientId(clientId);
                 if (null != balance) {
                     //格式化精度
-                    carBalance = RoundTool.round(balance, 2, BigDecimal.ROUND_DOWN);
+                    carBalance = RoundTool.round(balance, 2, BigDecimal.ROUND_HALF_UP);
                 }
             } else {
                 carList = carRepository.listCarsByStoreIdAndPhone(defaultStoreId, phone);
