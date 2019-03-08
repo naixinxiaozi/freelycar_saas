@@ -331,16 +331,19 @@ public class ConsumerOrderService {
         //获取配件
         List<AutoParts> autoPartsList = autoPartsService.getAllAutoPartsByOrderId(id);
 
+
         //获取相关的卡信息或券信息
-        String cardOrCouponId = consumerOrder.getCardOrCouponId();
-        if (StringUtils.hasText(cardOrCouponId)) {
-            Card card = cardRepository.findById(cardOrCouponId).orElse(null);
-            Coupon coupon = couponRepository.findById(cardOrCouponId).orElse(null);
-            if (null != card) {
-                orderObject.setCard(card);
-            }
-            if (null != coupon) {
-                orderObject.setCoupon(coupon);
+        if (Constants.OrderIdSn.CARD.getName().equals(id.substring(0, 1))) {
+            String cardOrCouponId = consumerOrder.getCardOrCouponId();
+            if (StringUtils.hasText(cardOrCouponId)) {
+                Card card = cardRepository.findById(cardOrCouponId).orElse(null);
+                Coupon coupon = couponRepository.findById(cardOrCouponId).orElse(null);
+                if (null != card) {
+                    orderObject.setCard(card);
+                }
+                if (null != coupon) {
+                    orderObject.setCoupon(coupon);
+                }
             }
         }
 
