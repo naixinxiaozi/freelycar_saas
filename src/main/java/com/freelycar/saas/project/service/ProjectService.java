@@ -242,7 +242,6 @@ public class ProjectService {
      * @return
      */
     public List<Project> getShowProjects(String storeId) {
-//        return projectRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
         StringBuilder sql = new StringBuilder();
         sql.append(" select p.*,pt.`name` as projectTypeName from project p LEFT JOIN projectType pt on p.projectTypeId=pt.id where p.bookOnline=1 and p.delStatus=0 ")
                 .append("  and p.storeId= '").append(storeId).append("' ORDER BY p.createTime asc ");

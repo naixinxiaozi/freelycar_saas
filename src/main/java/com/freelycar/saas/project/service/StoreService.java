@@ -6,14 +6,15 @@ import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.PageableTools;
 import com.freelycar.saas.basic.wrapper.ResultCode;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.project.entity.CardService;
-import com.freelycar.saas.project.entity.CouponService;
 import com.freelycar.saas.project.entity.*;
 import com.freelycar.saas.project.repository.SpecialOfferRepository;
 import com.freelycar.saas.project.repository.StoreImgRepository;
 import com.freelycar.saas.project.repository.StoreRepository;
 import com.freelycar.saas.util.SpringContextUtils;
 import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.wechat.model.CouponInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -179,7 +180,14 @@ public class StoreService {
         List<CardService> cardServices = cardServiceService.findOnSaleCards(id);
 
         //获取在售的优惠券
-        List<CouponService> couponServices = couponServiceService.findOnSaleCoupons(id);
+        List<CouponInfo> couponServices;
+        try {
+            couponServices = couponServiceService.findOnSaleCoupons(id);
+        } catch (ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            couponServices = new ArrayList<>();
+        }
 
         //获取门店展示的服务项目
         List<Project> projectsList = projectService.getShowProjects(id);

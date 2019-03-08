@@ -1,17 +1,24 @@
 package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
+import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.project.entity.CouponService;
 import com.freelycar.saas.project.repository.CouponServiceRepository;
 import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.wechat.model.CouponInfo;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +32,9 @@ public class CouponServiceService {
 
     @Autowired
     private CouponServiceRepository couponServiceRepository;
+
+    @Autowired
+    private LocalContainerEntityManagerFactoryBean entityManagerFactory;
 
     /**
      * 新增/修改抵用券对象
@@ -186,7 +196,24 @@ public class CouponServiceService {
      * @param storeId
      * @return
      */
-    public List<CouponService> findOnSaleCoupons(String storeId) {
-        return couponServiceRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
+    public List<CouponInfo> findOnSaleCoupons(String storeId) throws ArgumentMissingException {
+//        return couponServiceRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
+        if (StringUtils.isEmpty(storeId)) {
+            throw new ArgumentMissingException("参数storeId值位空");
+        }
+
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT cs.id, cs.price, cs.`name`, p.price AS originalPrice FROM couponService cs LEFT JOIN project p ON p.id = cs.projectId WHERE cs.storeId = ").append(storeId).append(" AND cs.bookOnline = 1 AND cs.delStatus = 0 ORDER BY cs.createTime DESC ");
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(CouponInfo.class));
+        @SuppressWarnings({"unused", "unchecked"})
+        List<CouponInfo> couponInfos = nativeQuery.getResultList();
+
+        //关闭em
+        em.close();
+
+        return couponInfos;
     }
 }
