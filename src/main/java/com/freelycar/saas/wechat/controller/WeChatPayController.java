@@ -156,7 +156,8 @@ public class WeChatPayController {
                     //支付成功，处理支付结果，同步到数据库
                     logger.info("支付成功，处理支付结果，更新订单状态到数据库------------------------");
                     logger.info("orderId：" + orderId);
-                    ResultJsonObject resultJsonObject = consumerOrderService.arkPaySuccess(orderId);
+
+                    ResultJsonObject resultJsonObject = consumerOrderService.wechatPaySuccess(orderId);
 
                     logger.info("paySuccess本地处理结果:" + resultJsonObject.toString());
                     if (resultJsonObject.getCode() != ResultCode.SUCCESS.code()) {

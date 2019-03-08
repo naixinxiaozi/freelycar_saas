@@ -1,20 +1,16 @@
 package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
-import com.freelycar.saas.exception.ArgumentMissingException;
-import com.freelycar.saas.exception.OpenArkDoorFailedException;
-import com.freelycar.saas.exception.OpenArkDoorTimeOutException;
+import com.freelycar.saas.exception.*;
 import com.freelycar.saas.project.entity.*;
 import com.freelycar.saas.project.model.OrderClientInfo;
 import com.freelycar.saas.project.model.OrderListParam;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
-import com.freelycar.saas.project.repository.CardRepository;
-import com.freelycar.saas.project.repository.ConsumerOrderRepository;
-import com.freelycar.saas.project.repository.CouponRepository;
-import com.freelycar.saas.project.repository.DoorRepository;
+import com.freelycar.saas.project.repository.*;
 import com.freelycar.saas.util.OrderIDGenerator;
 import com.freelycar.saas.util.RoundTool;
+import com.freelycar.saas.util.TimestampUtil;
 import com.freelycar.saas.util.UpdateTool;
 import com.freelycar.saas.wechat.model.BaseOrderInfo;
 import com.freelycar.saas.wechat.model.FinishOrderInfo;
@@ -98,6 +94,12 @@ public class ConsumerOrderService {
 
     @Autowired
     private DoorService doorService;
+
+    @Autowired
+    private CardServiceRepository cardServiceRepository;
+
+    @Autowired
+    private CouponServiceRepository couponServiceRepository;
 
     /**
      * 保存和修改
@@ -991,6 +993,36 @@ public class ConsumerOrderService {
         return ResultJsonObject.getDefaultResult(orderId);
     }
 
+    /**
+     * 微信支付成功后回调，处理订单业务
+     *
+     * @param orderId
+     * @return
+     */
+    public ResultJsonObject wechatPaySuccess(String orderId) {
+        if (StringUtils.hasText(orderId)) {
+            //判断是哪种订单
+            String firstCharacter = orderId.substring(0, 1);
+            switch (firstCharacter) {
+                case "A":
+                    return this.arkPaySuccess(orderId);
+                case "C":
+                    try {
+                        return this.buyCardPaySuccess(orderId);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        e.printStackTrace();
+                        return ResultJsonObject.getErrorResult(null);
+                    }
+                default:
+                    return ResultJsonObject.getErrorResult(null, "该类型的订单不支持微信支付，请联系平台管理员核实。");
+            }
+        }
+        String msg = "orderId为空，无法执行回调业务，会出现重复支付的情况，请联系门店或管理平台处理。";
+        logger.error(msg);
+        return ResultJsonObject.getErrorResult(null, msg);
+    }
+
 
     /**
      * 智能柜服订单支付成功后更新支付状态
@@ -1008,6 +1040,55 @@ public class ConsumerOrderService {
         if (null == orderRes) {
             ResultJsonObject.getErrorResult(null, "单据数据更新失败");
         }
+        return ResultJsonObject.getDefaultResult(orderId);
+    }
+
+    /**
+     * 购买卡券的订单支付成功后更新支付状态，并更新对应的卡券信息
+     *
+     * @param orderId
+     * @return
+     */
+    public ResultJsonObject buyCardPaySuccess(String orderId) throws Exception {
+        ConsumerOrder consumerOrder = consumerOrderRepository.findById(orderId).orElse(null);
+        if (null == consumerOrder) {
+            throw new ObjectNotFoundException("订单数据未查询到");
+        }
+        consumerOrder.setPayState(Constants.PayState.FINISH_PAY.getValue());
+
+        //更新卡/券的状态，是其可以使用
+        String cardOrCouponId = consumerOrder.getCardOrCouponId();
+        if (StringUtils.isEmpty(cardOrCouponId)) {
+            throw new ArgumentMissingException("订单中的卡券ID为空，无法更新订单状态");
+        }
+        Card card = cardRepository.findById(cardOrCouponId).orElse(null);
+        Coupon coupon = couponRepository.findById(cardOrCouponId).orElse(null);
+        if (null == card && null == coupon) {
+            throw new ObjectNotFoundException("未找到卡/券的对象，无法更新卡券状态和订单状态");
+        }
+        if (null != card) {
+            card.setDelStatus(Constants.DelStatus.NORMAL.isValue());
+
+            com.freelycar.saas.project.entity.CardService cardServiceObject = cardServiceRepository.findById(card.getCardServiceId()).orElse(null);
+            assert cardServiceObject != null;
+            card.setExpirationDate(TimestampUtil.getExpirationDateForYear(cardServiceObject.getValidTime()));
+            cardRepository.save(card);
+        }
+        if (null != coupon) {
+            coupon.setDelStatus(Constants.DelStatus.NORMAL.isValue());
+            com.freelycar.saas.project.entity.CouponService couponServiceObject = couponServiceRepository.findById(coupon.getCouponServiceId()).orElse(null);
+            assert couponServiceObject != null;
+            coupon.setDeadline(TimestampUtil.getExpirationDateForMonth(couponServiceObject.getValidTime()));
+            couponRepository.save(coupon);
+        }
+
+        //更新订单状态
+        ConsumerOrder orderRes = updateOrder(consumerOrder);
+        if (null == orderRes) {
+            throw new UpdateDataErrorException("单据数据更新失败");
+        }
+
+
         return ResultJsonObject.getDefaultResult(orderId);
     }
 
