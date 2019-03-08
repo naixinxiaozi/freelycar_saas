@@ -243,15 +243,11 @@ public class CardServiceService {
 
         double price = RoundTool.round(cardServiceObject.getPrice().doubleValue(), 2, BigDecimal.ROUND_HALF_UP);
 
-        //生成订单
-        ConsumerOrder consumerOrder = consumerOrderService.generateOrderForBuyCardOrCoupon(client, price);
-
-        String orderId = consumerOrder.getId();
         //生成card对象（未支付前是不可用的：delStatus是1）
         Card card = new Card();
         card.setDelStatus(Constants.DelStatus.DELETE.isValue());
         //为字段赋默认值
-        card.setCreateTime(consumerOrder.getCreateTime());
+        card.setCreateTime(new Timestamp(System.currentTimeMillis()));
         card.setClientId(clientId);
         card.setBalance(cardServiceObject.getActualPrice());
         card.setActualPrice(cardServiceObject.getActualPrice());
@@ -266,7 +262,9 @@ public class CardServiceService {
             throw new Exception("会员卡数据生成异常，无法生成购买订单，请核实或联系客服。");
         }
 
+        //生成订单
+        ConsumerOrder consumerOrder = consumerOrderService.generateOrderForBuyCardOrCoupon(client, price, cardRes.getId());
 
-        return orderId;
+        return consumerOrder.getId();
     }
 }

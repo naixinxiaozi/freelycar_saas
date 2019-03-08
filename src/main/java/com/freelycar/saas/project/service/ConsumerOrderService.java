@@ -1053,26 +1053,39 @@ public class ConsumerOrderService {
         doorRepository.save(door);
     }
 
-    public ConsumerOrder generateOrderForBuyCardOrCoupon(Client client, double price) throws Exception {
+    /**
+     * 生成购买卡券的订单
+     *
+     * @param client
+     * @param price
+     * @param cardOrCouponId
+     * @return
+     * @throws Exception
+     */
+    public ConsumerOrder generateOrderForBuyCardOrCoupon(Client client, double price, String cardOrCouponId) throws Exception {
+        if (null == client || StringUtils.isEmpty(cardOrCouponId)) {
+            throw new ArgumentMissingException("生成购买卡券的订单失败，原因：参数缺失");
+        }
 
         String clientName = client.getTrueName();
         if (StringUtils.isEmpty(clientName)) {
             clientName = client.getName();
         }
 
-        ConsumerOrder cardOrder = new ConsumerOrder();
-        cardOrder.setPayState(Constants.PayState.NOT_PAY.getValue());
-        cardOrder.setOrderType(Constants.OrderType.CARD.getValue());
-        cardOrder.setClientId(client.getId());
-        cardOrder.setTotalPrice(price);
-        cardOrder.setActualPrice(price);
+        ConsumerOrder order = new ConsumerOrder();
+        order.setPayState(Constants.PayState.NOT_PAY.getValue());
+        order.setOrderType(Constants.OrderType.CARD.getValue());
+        order.setClientId(client.getId());
+        order.setTotalPrice(price);
+        order.setActualPrice(price);
 
-        cardOrder.setClientName(clientName);
-        cardOrder.setPhone(client.getPhone());
-        cardOrder.setIsMember(client.getMember());
-        cardOrder.setGender(client.getGender());
-        cardOrder.setStoreId(client.getStoreId());
+        order.setClientName(clientName);
+        order.setPhone(client.getPhone());
+        order.setIsMember(client.getMember());
+        order.setGender(client.getGender());
+        order.setStoreId(client.getStoreId());
+        order.setCardOrCouponId(cardOrCouponId);
 
-        return this.saveOrUpdate(cardOrder);
+        return this.saveOrUpdate(order);
     }
 }

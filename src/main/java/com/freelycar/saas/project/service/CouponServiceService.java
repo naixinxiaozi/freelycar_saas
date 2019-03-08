@@ -262,27 +262,27 @@ public class CouponServiceService {
 
         double price = RoundTool.round(couponServiceObject.getPrice(), 2, BigDecimal.ROUND_HALF_UP);
 
-        //生成订单
-        ConsumerOrder consumerOrder = consumerOrderService.generateOrderForBuyCardOrCoupon(client, price);
-
-        String orderId = consumerOrder.getId();
-
         //生成coupon对象（未支付前是不可用的：delStatus是1）
         Coupon coupon = new Coupon();
         coupon.setDelStatus(Constants.DelStatus.DELETE.isValue());
-        coupon.setCreateTime(consumerOrder.getCreateTime());
+        coupon.setCreateTime(new Timestamp(System.currentTimeMillis()));
         coupon.setClientId(clientId);
         coupon.setStatus(Constants.CouponStatus.NOT_USE.getValue());
         coupon.setName(couponServiceObject.getName());
         coupon.setProjectId(couponServiceObject.getProjectId());
         coupon.setStoreId(couponServiceStoreId);
         coupon.setCouponServiceId(couponServiceId);
+        coupon.setProjectId(couponServiceObject.getProjectId());
+        coupon.setPrice(price);
 
         Coupon couponRes = couponRepository.saveAndFlush(coupon);
         if (null == couponRes) {
             throw new Exception("抵用券数据生成异常，无法生成购买订单，请核实或联系客服。");
         }
 
-        return orderId;
+        //生成订单
+        ConsumerOrder consumerOrder = consumerOrderService.generateOrderForBuyCardOrCoupon(client, price, couponRes.getId());
+
+        return consumerOrder.getId();
     }
 }
