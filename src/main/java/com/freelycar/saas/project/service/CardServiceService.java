@@ -256,6 +256,7 @@ public class CardServiceService {
         card.setPrice(cardServiceObject.getPrice());
         card.setStoreId(cardServiceStoreId);
         card.setCardServiceId(cardServiceId);
+        card.setContent(cardServiceObject.getComment());
 
         Card cardRes = cardRepository.saveAndFlush(card);
         if (null == cardRes) {

@@ -88,38 +88,13 @@ public class Coupon implements Serializable {
     @Column(nullable = false, columnDefinition = "int default 0")
     private Integer status;
 
-    public Coupon() {
-    }
+    /**
+     * 备注
+     */
+    @Column
+    private String content;
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"id\":\"")
-                .append(id).append('\"');
-        sb.append(",\"delStatus\":")
-                .append(delStatus);
-        sb.append(",\"createTime\":\"")
-                .append(createTime).append('\"');
-        sb.append(",\"storeId\":\"")
-                .append(storeId).append('\"');
-        sb.append(",\"couponServiceId\":\"")
-                .append(couponServiceId).append('\"');
-        sb.append(",\"clientId\":\"")
-                .append(clientId).append('\"');
-        sb.append(",\"name\":\"")
-                .append(name).append('\"');
-        sb.append(",\"deadline\":\"")
-                .append(deadline).append('\"');
-        sb.append(",\"price\":")
-                .append(price);
-        sb.append(",\"projectId\":\"")
-                .append(projectId).append('\"');
-        sb.append(",\"orderId\":\"")
-                .append(orderId).append('\"');
-        sb.append(",\"status\":")
-                .append(status);
-        sb.append('}');
-        return sb.toString();
+    public Coupon() {
     }
 
     public String getId() {
@@ -216,5 +191,46 @@ public class Coupon implements Serializable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append(",\"couponServiceId\":\"")
+                .append(couponServiceId).append('\"');
+        sb.append(",\"clientId\":\"")
+                .append(clientId).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"deadline\":\"")
+                .append(deadline).append('\"');
+        sb.append(",\"price\":")
+                .append(price);
+        sb.append(",\"projectId\":\"")
+                .append(projectId).append('\"');
+        sb.append(",\"orderId\":\"")
+                .append(orderId).append('\"');
+        sb.append(",\"status\":")
+                .append(status);
+        sb.append(",\"content\":\"")
+                .append(content).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 }

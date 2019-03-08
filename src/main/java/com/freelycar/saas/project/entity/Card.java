@@ -111,6 +111,9 @@ public class Card implements Serializable {
     @Column
     private Integer validTime;
 
+    @Column
+    private String content;
+
     public Card() {
     }
 
@@ -156,49 +159,6 @@ public class Card implements Serializable {
 
     public Timestamp getExpirationDate() {
         return expirationDate;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"id\":\"")
-                .append(id).append('\"');
-        sb.append(",\"delStatus\":")
-                .append(delStatus);
-        sb.append(",\"createTime\":\"")
-                .append(createTime).append('\"');
-        sb.append(",\"storeId\":\"")
-                .append(storeId).append('\"');
-        sb.append(",\"cardNumber\":\"")
-                .append(cardNumber).append('\"');
-        sb.append(",\"expirationDate\":\"")
-                .append(expirationDate).append('\"');
-        sb.append(",\"payDate\":\"")
-                .append(payDate).append('\"');
-        sb.append(",\"payMethod\":")
-                .append(payMethod);
-        sb.append(",\"cardServiceId\":\"")
-                .append(cardServiceId).append('\"');
-        sb.append(",\"clientId\":\"")
-                .append(clientId).append('\"');
-        sb.append(",\"failed\":")
-                .append(failed);
-        sb.append(",\"balance\":")
-                .append(balance);
-        sb.append(",\"staffId\":\"")
-                .append(staffId).append('\"');
-        sb.append(",\"name\":\"")
-                .append(name).append('\"');
-        sb.append(",\"price\":")
-                .append(price);
-        sb.append(",\"actualPrice\":")
-                .append(actualPrice);
-        sb.append(",\"type\":")
-                .append(type);
-        sb.append(",\"validTime\":")
-                .append(validTime);
-        sb.append('}');
-        return sb.toString();
     }
 
     public void setExpirationDate(Timestamp expirationDate) {
@@ -299,5 +259,58 @@ public class Card implements Serializable {
 
     public void setValidTime(Integer validTime) {
         this.validTime = validTime;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"id\":\"")
+                .append(id).append('\"');
+        sb.append(",\"delStatus\":")
+                .append(delStatus);
+        sb.append(",\"createTime\":\"")
+                .append(createTime).append('\"');
+        sb.append(",\"storeId\":\"")
+                .append(storeId).append('\"');
+        sb.append(",\"cardNumber\":\"")
+                .append(cardNumber).append('\"');
+        sb.append(",\"expirationDate\":\"")
+                .append(expirationDate).append('\"');
+        sb.append(",\"payDate\":\"")
+                .append(payDate).append('\"');
+        sb.append(",\"payMethod\":")
+                .append(payMethod);
+        sb.append(",\"cardServiceId\":\"")
+                .append(cardServiceId).append('\"');
+        sb.append(",\"clientId\":\"")
+                .append(clientId).append('\"');
+        sb.append(",\"failed\":")
+                .append(failed);
+        sb.append(",\"balance\":")
+                .append(balance);
+        sb.append(",\"staffId\":\"")
+                .append(staffId).append('\"');
+        sb.append(",\"name\":\"")
+                .append(name).append('\"');
+        sb.append(",\"price\":")
+                .append(price);
+        sb.append(",\"actualPrice\":")
+                .append(actualPrice);
+        sb.append(",\"type\":")
+                .append(type);
+        sb.append(",\"validTime\":")
+                .append(validTime);
+        sb.append(",\"content\":\"")
+                .append(content).append('\"');
+        sb.append('}');
+        return sb.toString();
     }
 }

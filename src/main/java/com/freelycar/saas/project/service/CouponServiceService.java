@@ -274,6 +274,7 @@ public class CouponServiceService {
         coupon.setCouponServiceId(couponServiceId);
         coupon.setProjectId(couponServiceObject.getProjectId());
         coupon.setPrice(price);
+        coupon.setContent(couponServiceObject.getContent());
 
         Coupon couponRes = couponRepository.saveAndFlush(coupon);
         if (null == couponRes) {

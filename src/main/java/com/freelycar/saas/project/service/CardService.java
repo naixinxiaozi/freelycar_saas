@@ -98,6 +98,7 @@ public class CardService {
         card.setName(cardServiceObject.getName());
         card.setPrice(cardServiceObject.getPrice());
         card.setExpirationDate(TimestampUtil.getExpirationDateForYear(cardServiceObject.getValidTime()));
+        card.setContent(cardServiceObject.getComment());
 
         Card cardRes = cardRepository.saveAndFlush(card);
 
