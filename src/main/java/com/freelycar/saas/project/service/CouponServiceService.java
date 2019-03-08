@@ -2,8 +2,14 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.ObjectNotFoundException;
+import com.freelycar.saas.project.entity.Client;
+import com.freelycar.saas.project.entity.ConsumerOrder;
+import com.freelycar.saas.project.entity.Coupon;
 import com.freelycar.saas.project.entity.CouponService;
+import com.freelycar.saas.project.repository.CouponRepository;
 import com.freelycar.saas.project.repository.CouponServiceRepository;
+import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
 import com.freelycar.saas.wechat.model.CouponInfo;
 import org.hibernate.query.NativeQuery;
@@ -19,6 +25,7 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +38,16 @@ public class CouponServiceService {
     private Logger logger = LoggerFactory.getLogger(CouponServiceService.class);
 
     @Autowired
+    private ConsumerOrderService consumerOrderService;
+
+    @Autowired
     private CouponServiceRepository couponServiceRepository;
+
+    @Autowired
+    private ClientService clientService;
+
+    @Autowired
+    private CouponRepository couponRepository;
 
     @Autowired
     private LocalContainerEntityManagerFactoryBean entityManagerFactory;
@@ -54,7 +70,7 @@ public class CouponServiceService {
             if (StringUtils.isEmpty(id)) {
                 couponService.setDelStatus(Constants.DelStatus.NORMAL.isValue());
                 couponService.setCreateTime(new Timestamp(System.currentTimeMillis()));
-               // couponService.setBookOnline(false);
+                // couponService.setBookOnline(false);
             } else {
                 Optional<CouponService> optional = couponServiceRepository.findById(id);
                 //判断数据库中是否有该对象
@@ -191,7 +207,7 @@ public class CouponServiceService {
     }
 
     /**
-     * 查找上架在售的会员卡
+     * 查找上架在售的抵用券
      *
      * @param storeId
      * @return
@@ -215,5 +231,57 @@ public class CouponServiceService {
         em.close();
 
         return couponInfos;
+    }
+
+    //
+    public String generateCouponOrder(String clientId, String couponServiceId) throws Exception {
+        if (StringUtils.isEmpty(clientId)) {
+            throw new ArgumentMissingException("参数clientId为空，生成抵用券购买订单失败！");
+        }
+        if (StringUtils.isEmpty(couponServiceId)) {
+            throw new ArgumentMissingException("参数couponServiceId为空，生成抵用券购买订单失败！");
+        }
+
+        Client client = clientService.findById(clientId);
+        if (null == client) {
+            throw new ObjectNotFoundException("用户信息查找失败，无法生成购买订单，请稍后再试或联系客服。");
+        }
+
+        CouponService couponServiceObject = couponServiceRepository.findById(couponServiceId).orElse(null);
+        if (null == couponServiceObject) {
+            throw new ObjectNotFoundException("抵用券信息查找失败，无法生成购买订单，请稍后再试或联系客服。");
+        }
+
+        String clientStoreId = client.getStoreId();
+        String couponServiceStoreId = couponServiceObject.getStoreId();
+        if (null != clientStoreId && null != couponServiceStoreId && !clientStoreId.equals(couponServiceStoreId)) {
+            logger.error("clientStoreId:" + clientStoreId);
+            logger.error("couponServiceStoreId:" + couponServiceStoreId);
+            throw new Exception("用户信息与抵用券信息所属门店不同，无法生成购买订单，请核实或联系客服。");
+        }
+
+        double price = RoundTool.round(couponServiceObject.getPrice(), 2, BigDecimal.ROUND_HALF_UP);
+
+        //生成订单
+        ConsumerOrder consumerOrder = consumerOrderService.generateOrderForBuyCardOrCoupon(client, price);
+
+        String orderId = consumerOrder.getId();
+
+        //生成coupon对象（未支付前是不可用的：delStatus是1）
+        Coupon coupon = new Coupon();
+        coupon.setDelStatus(Constants.DelStatus.DELETE.isValue());
+        coupon.setCreateTime(consumerOrder.getCreateTime());
+        coupon.setClientId(clientId);
+        coupon.setStatus(Constants.CouponStatus.NOT_USE.getValue());
+        coupon.setName(couponServiceObject.getName());
+        coupon.setProjectId(couponServiceObject.getProjectId());
+        coupon.setStoreId(couponServiceStoreId);
+
+        Coupon couponRes = couponRepository.saveAndFlush(coupon);
+        if (null == couponRes) {
+            throw new Exception("抵用券数据生成异常，无法生成购买订单，请核实或联系客服。");
+        }
+
+        return orderId;
     }
 }

@@ -233,43 +233,32 @@ public class CardServiceService {
             throw new ObjectNotFoundException("会员卡信息查找失败，无法生成购买订单，请稍后再试或联系客服。");
         }
 
-        if (null != client.getStoreId() && null != cardServiceObject.getStoreId() && !client.getStoreId().equals(cardServiceObject.getStoreId())) {
+        String clientStoreId = client.getStoreId();
+        String cardServiceStoreId = cardServiceObject.getStoreId();
+        if (null != clientStoreId && null != cardServiceStoreId && !clientStoreId.equals(cardServiceStoreId)) {
+            logger.error("clientStoreId:" + clientStoreId);
+            logger.error("cardServiceStoreId:" + cardServiceStoreId);
             throw new Exception("用户信息与会员卡信息所属门店不同，无法生成购买订单，请核实或联系客服。");
         }
 
         double price = RoundTool.round(cardServiceObject.getPrice().doubleValue(), 2, BigDecimal.ROUND_HALF_UP);
-        String clientName = client.getTrueName();
-        if (StringUtils.isEmpty(clientName)) {
-            clientName = client.getName();
-        }
 
         //生成订单
-        ConsumerOrder cardOrder = new ConsumerOrder();
-        cardOrder.setPayState(Constants.PayState.NOT_PAY.getValue());
-        cardOrder.setOrderType(Constants.OrderType.CARD.getValue());
-        cardOrder.setClientId(clientId);
-        cardOrder.setTotalPrice(price);
-        cardOrder.setActualPrice(price);
-
-        cardOrder.setClientName(clientName);
-        cardOrder.setPhone(client.getPhone());
-        cardOrder.setIsMember(client.getMember());
-        cardOrder.setGender(client.getGender());
-        cardOrder.setStoreId(client.getStoreId());
-
-        ConsumerOrder consumerOrder = consumerOrderService.saveOrUpdate(cardOrder);
-
+        ConsumerOrder consumerOrder = consumerOrderService.generateOrderForBuyCardOrCoupon(client, price);
+        
         String orderId = consumerOrder.getId();
         //生成card对象（未支付前是不可用的：delStatus是1）
         Card card = new Card();
         card.setDelStatus(Constants.DelStatus.DELETE.isValue());
         //为字段赋默认值
         card.setCreateTime(consumerOrder.getCreateTime());
+        card.setClientId(clientId);
         card.setBalance(cardServiceObject.getActualPrice());
         card.setActualPrice(cardServiceObject.getActualPrice());
         card.setFailed(false);
         card.setName(cardServiceObject.getName());
         card.setPrice(cardServiceObject.getPrice());
+        card.setStoreId(cardServiceStoreId);
 
         Card cardRes = cardRepository.saveAndFlush(card);
         if (null == cardRes) {
@@ -277,6 +266,6 @@ public class CardServiceService {
         }
 
 
-        return consumerOrder.getId();
+        return orderId;
     }
 }

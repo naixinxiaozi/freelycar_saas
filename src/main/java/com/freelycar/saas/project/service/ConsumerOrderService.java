@@ -1052,4 +1052,27 @@ public class ConsumerOrderService {
         door.setState(doorState);
         doorRepository.save(door);
     }
+
+    public ConsumerOrder generateOrderForBuyCardOrCoupon(Client client, double price) throws Exception {
+
+        String clientName = client.getTrueName();
+        if (StringUtils.isEmpty(clientName)) {
+            clientName = client.getName();
+        }
+
+        ConsumerOrder cardOrder = new ConsumerOrder();
+        cardOrder.setPayState(Constants.PayState.NOT_PAY.getValue());
+        cardOrder.setOrderType(Constants.OrderType.CARD.getValue());
+        cardOrder.setClientId(client.getId());
+        cardOrder.setTotalPrice(price);
+        cardOrder.setActualPrice(price);
+
+        cardOrder.setClientName(clientName);
+        cardOrder.setPhone(client.getPhone());
+        cardOrder.setIsMember(client.getMember());
+        cardOrder.setGender(client.getGender());
+        cardOrder.setStoreId(client.getStoreId());
+
+        return this.saveOrUpdate(cardOrder);
+    }
 }
