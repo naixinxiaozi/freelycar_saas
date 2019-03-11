@@ -1069,12 +1069,17 @@ public class ConsumerOrderService {
         if (null == card && null == coupon) {
             throw new ObjectNotFoundException("未找到卡/券的对象，无法更新卡券状态和订单状态");
         }
+
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
         if (null != card) {
             card.setDelStatus(Constants.DelStatus.NORMAL.isValue());
-
+            card.setPayDate(currentTime);
+            card.setPayMethod(Constants.PayMethod.WECHAT_PAY.getCode());
             com.freelycar.saas.project.entity.CardService cardServiceObject = cardServiceRepository.findById(card.getCardServiceId()).orElse(null);
             assert cardServiceObject != null;
             card.setExpirationDate(TimestampUtil.getExpirationDateForYear(cardServiceObject.getValidTime()));
+            card.setPayDate(currentTime);
             cardRepository.save(card);
         }
         if (null != coupon) {
