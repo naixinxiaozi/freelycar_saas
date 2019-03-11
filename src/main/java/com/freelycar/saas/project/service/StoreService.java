@@ -14,7 +14,7 @@ import com.freelycar.saas.project.repository.StoreImgRepository;
 import com.freelycar.saas.project.repository.StoreRepository;
 import com.freelycar.saas.util.SpringContextUtils;
 import com.freelycar.saas.util.UpdateTool;
-import com.freelycar.saas.wechat.model.CouponInfo;
+import com.freelycar.saas.wechat.model.CouponServiceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -180,7 +180,7 @@ public class StoreService {
         List<CardService> cardServices = cardServiceService.findOnSaleCards(id);
 
         //获取在售的优惠券
-        List<CouponInfo> couponServices;
+        List<CouponServiceInfo> couponServices;
         try {
             couponServices = couponServiceService.findOnSaleCoupons(id);
         } catch (ArgumentMissingException e) {

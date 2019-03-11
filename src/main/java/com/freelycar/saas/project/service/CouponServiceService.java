@@ -11,7 +11,7 @@ import com.freelycar.saas.project.repository.CouponRepository;
 import com.freelycar.saas.project.repository.CouponServiceRepository;
 import com.freelycar.saas.util.RoundTool;
 import com.freelycar.saas.util.UpdateTool;
-import com.freelycar.saas.wechat.model.CouponInfo;
+import com.freelycar.saas.wechat.model.CouponServiceInfo;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
@@ -212,7 +212,7 @@ public class CouponServiceService {
      * @param storeId
      * @return
      */
-    public List<CouponInfo> findOnSaleCoupons(String storeId) throws ArgumentMissingException {
+    public List<CouponServiceInfo> findOnSaleCoupons(String storeId) throws ArgumentMissingException {
 //        return couponServiceRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
         if (StringUtils.isEmpty(storeId)) {
             throw new ArgumentMissingException("参数storeId值位空");
@@ -223,9 +223,9 @@ public class CouponServiceService {
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());
-        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(CouponInfo.class));
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(CouponServiceInfo.class));
         @SuppressWarnings({"unused", "unchecked"})
-        List<CouponInfo> couponInfos = nativeQuery.getResultList();
+        List<CouponServiceInfo> couponInfos = nativeQuery.getResultList();
 
         //关闭em
         em.close();

@@ -94,6 +94,12 @@ public class Coupon implements Serializable {
     @Column
     private String content;
 
+    /**
+     * 办卡的支付方式
+     */
+    @Column
+    private Integer payMethod;
+
     public Coupon() {
     }
 
@@ -201,6 +207,14 @@ public class Coupon implements Serializable {
         this.content = content;
     }
 
+    public Integer getPayMethod() {
+        return payMethod;
+    }
+
+    public void setPayMethod(Integer payMethod) {
+        this.payMethod = payMethod;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -230,6 +244,8 @@ public class Coupon implements Serializable {
                 .append(status);
         sb.append(",\"content\":\"")
                 .append(content).append('\"');
+        sb.append(",\"payMethod\":")
+                .append(payMethod);
         sb.append('}');
         return sb.toString();
     }

@@ -660,7 +660,7 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(clientId, "参数clientId为空值");
         }
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT co.id, co.licensePlate AS licensePlate, co.carBrand AS carBrand, co.carType AS carType, co.clientName AS clientName, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) AS projectNames, co.createTime AS createTime, co.pickTime AS pickTime, co.finishTime AS finishTime, co.state, co.actualPrice as actualPrice, co.totalPrice as totalPrice FROM consumerOrder co WHERE co.delStatus = 0 AND co.state < 3 ")
+        sql.append(" SELECT co.id, co.licensePlate AS licensePlate, co.carBrand AS carBrand, co.carType AS carType, co.clientName AS clientName, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) AS projectNames, co.createTime AS createTime, co.pickTime AS pickTime, co.finishTime AS finishTime, co.state, co.actualPrice as actualPrice, co.totalPrice as totalPrice FROM consumerOrder co WHERE co.orderType=2 AND co.delStatus = 0 AND co.state < 3 ")
                 .append(" AND co.clientId = '").append(clientId).append("' ORDER BY co.createTime DESC ");
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
@@ -1084,6 +1084,7 @@ public class ConsumerOrderService {
         }
         if (null != coupon) {
             coupon.setDelStatus(Constants.DelStatus.NORMAL.isValue());
+            coupon.setPayMethod(Constants.PayMethod.WECHAT_PAY.getCode());
             com.freelycar.saas.project.entity.CouponService couponServiceObject = couponServiceRepository.findById(coupon.getCouponServiceId()).orElse(null);
             assert couponServiceObject != null;
             coupon.setDeadline(TimestampUtil.getExpirationDateForMonth(couponServiceObject.getValidTime()));
