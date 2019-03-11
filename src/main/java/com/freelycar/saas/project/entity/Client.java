@@ -60,7 +60,7 @@ public class Client implements Serializable {
     /**
      * 消费总额
      */
-    @Column
+    @Column(columnDefinition = "double default 0")
     private Double consumeAmount;
 
     /**

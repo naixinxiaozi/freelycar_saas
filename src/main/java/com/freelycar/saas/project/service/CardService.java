@@ -106,7 +106,8 @@ public class CardService {
         Client client = clientOptional.get();
         client.setMember(true);
         client.setMemberDate(currentTime);
-        client.setConsumeAmount(client.getConsumeAmount() + cardRes.getPrice());
+        double consumeAmount = client.getConsumeAmount() == null ? 0 : client.getConsumeAmount();
+        client.setConsumeAmount(consumeAmount + cardRes.getPrice());
         Client clientRes = clientRepository.save(client);
 
         // 办卡成功后需要自动添加一条订单，且是自动结算的
