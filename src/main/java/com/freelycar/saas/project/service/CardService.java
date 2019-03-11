@@ -56,10 +56,9 @@ public class CardService {
         String clientId = card.getClientId();
         String cardServiceId = card.getCardServiceId();
         String cardNumber = card.getCardNumber();
-/*
         if (StringUtils.isEmpty(clientId)) {
             return ResultJsonObject.getErrorResult(null, "开卡失败！clientId为Null！");
-        }*/
+        }
 
         if (StringUtils.isEmpty(cardServiceId)) {
             return ResultJsonObject.getErrorResult(null, "开卡失败！cardServiceId为Null！");
