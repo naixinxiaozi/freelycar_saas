@@ -5,11 +5,17 @@ import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.project.entity.ConsumerProjectInfo;
 import com.freelycar.saas.project.repository.ConsumerProjectInfoRepository;
 import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.wechat.model.CardRecordInfo;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +30,9 @@ import java.util.Optional;
 public class ConsumerProjectInfoService {
     @Autowired
     private ConsumerProjectInfoRepository consumerProjectInfoRepository;
+
+    @Autowired
+    private LocalContainerEntityManagerFactoryBean entityManagerFactory;
 
     /**
      * 保存消费订单服务项目对象
@@ -90,11 +99,26 @@ public class ConsumerProjectInfoService {
      * @return
      * @throws ArgumentMissingException
      */
-    public List<ConsumerProjectInfo> getProjectInfosByCardId(String cardId) throws ArgumentMissingException {
+    public List<CardRecordInfo> getProjectInfosByCardId(String cardId) throws ArgumentMissingException {
         if (StringUtils.isEmpty(cardId)) {
             throw new ArgumentMissingException("参数cardId为空值。查询会员卡项目消费记录失败。");
         }
-        return consumerProjectInfoRepository.findAllByDelStatusAndAndCardIdOrderByCreateTimeDesc(Constants.DelStatus.NORMAL.isValue(), cardId);
+//        return consumerProjectInfoRepository.findAllByDelStatusAndAndCardIdOrderByCreateTimeDesc(Constants.DelStatus.NORMAL.isValue(), cardId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT co.id, co.actualPrice AS price, co.createTime, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) AS projectName FROM consumerorder co WHERE ( co.firstCardId = '").append(cardId).append("' OR co.secondCardId = '").append(cardId).append("' ) AND co.payState = 2 AND co.delStatus = 0 ")
+                .append(" ORDER BY co.createTime DESC ");
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(CardRecordInfo.class));
+        @SuppressWarnings({"unused", "unchecked"})
+        List<CardRecordInfo> cardRecordInfos = nativeQuery.getResultList();
+
+        //关闭em
+        em.close();
+
+        return cardRecordInfos;
     }
 
     /**
