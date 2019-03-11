@@ -167,17 +167,17 @@ public class WechatTemplateMessage {
                 stateString = "已接车";
                 first = "已接到您的爱车" + consumerOrder.getLicensePlate() + "，我们将马上为您服务。";
                 if (StringUtils.hasText(staffName)) {
-                    remark += "服务人员：" + staffName + "/n";
+                    remark += "服务人员：" + staffName + "\n";
                 }
                 break;
             case 2:
                 stateString = "已完工";
                 first = "您的爱车" + consumerOrder.getLicensePlate() + "已服务完成，等待您的取回。";
                 if (StringUtils.hasText(staffName)) {
-                    remark += "服务人员：" + staffName + "/n";
+                    remark += "服务人员：" + staffName + "\n";
                 }
                 if (StringUtils.hasText(parkingLocation)) {
-                    remark += "停车位置：" + parkingLocation + "/n";
+                    remark += "停车位置：" + parkingLocation + "\n";
                 }
                 break;
             case 3:
@@ -247,7 +247,7 @@ public class WechatTemplateMessage {
         //详情
         data.put("keyword5", keywordFactory("智能柜：" + door.getArkSn() + "-" + door.getDoorSn(), "#173177"));
 
-        data.put("remark", keywordFactory("智能柜名称：" + ark.getName() + "；地址：" + ark.getLocation() + "。"));
+        data.put("remark", keywordFactory("智能柜名称：" + ark.getName() + "\n地址：" + ark.getLocation() + "\n请前往对应的智能柜扫码查看（取车）"));
         params.put("data", data);
         String result = invokeTemplateMessage(params);
         log.info("微信订单更新模版消息结果：" + result);
