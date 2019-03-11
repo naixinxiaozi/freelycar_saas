@@ -266,6 +266,12 @@ public class CardServiceService {
         //生成订单
         ConsumerOrder consumerOrder = consumerOrderService.generateOrderForBuyCardOrCoupon(client, price, cardRes.getId());
 
-        return consumerOrder.getId();
+        String orderId = consumerOrder.getId();
+
+        //更新卡号为订单id
+        cardRes.setCardNumber(orderId);
+        cardRepository.save(cardRes);
+
+        return orderId;
     }
 }
