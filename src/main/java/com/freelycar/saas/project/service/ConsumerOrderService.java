@@ -1055,7 +1055,7 @@ public class ConsumerOrderService {
     public ResultJsonObject buyCardPaySuccess(String orderId) throws Exception {
         ConsumerOrder consumerOrder = consumerOrderRepository.findById(orderId).orElse(null);
         if (null == consumerOrder) {
-            throw new ObjectNotFoundException("订单数据未查询到");
+            throw new ObjectNotFoundException("订单数据未查询到，无法更新卡券状态和订单状态");
         }
         consumerOrder.setPayState(Constants.PayState.FINISH_PAY.getValue());
 
