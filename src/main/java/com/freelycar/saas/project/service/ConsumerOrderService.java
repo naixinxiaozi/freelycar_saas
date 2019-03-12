@@ -1077,7 +1077,9 @@ public class ConsumerOrderService {
             card.setPayDate(currentTime);
             card.setPayMethod(Constants.PayMethod.WECHAT_PAY.getCode());
             com.freelycar.saas.project.entity.CardService cardServiceObject = cardServiceRepository.findById(card.getCardServiceId()).orElse(null);
-            assert cardServiceObject != null;
+            if (cardServiceObject == null) {
+                throw new ObjectNotFoundException("对象cardServiceObject为空值，无法更新卡券状态和订单状态");
+            }
             card.setExpirationDate(TimestampUtil.getExpirationDateForYear(cardServiceObject.getValidTime()));
             card.setPayDate(currentTime);
             cardRepository.save(card);
@@ -1086,7 +1088,9 @@ public class ConsumerOrderService {
             coupon.setDelStatus(Constants.DelStatus.NORMAL.isValue());
             coupon.setPayMethod(Constants.PayMethod.WECHAT_PAY.getCode());
             com.freelycar.saas.project.entity.CouponService couponServiceObject = couponServiceRepository.findById(coupon.getCouponServiceId()).orElse(null);
-            assert couponServiceObject != null;
+            if (couponServiceObject == null) {
+                throw new ObjectNotFoundException("对象couponServiceObject为空值，无法更新卡券状态和订单状态");
+            }
             coupon.setDeadline(TimestampUtil.getExpirationDateForMonth(couponServiceObject.getValidTime()));
             couponRepository.save(coupon);
         }
@@ -1094,7 +1098,7 @@ public class ConsumerOrderService {
         //更新订单状态
         ConsumerOrder orderRes = updateOrder(consumerOrder);
         if (null == orderRes) {
-            throw new UpdateDataErrorException("单据数据更新失败");
+            throw new UpdateDataErrorException("单据数据更新失败，无法更新卡券状态和订单状态");
         }
 
 
