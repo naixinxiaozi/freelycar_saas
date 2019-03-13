@@ -26,3 +26,8 @@ logging:
 
 swagger:
   enable: true
+
+upload:
+  picture:
+    path: C:\nginx\html\upload\storeimg
+    url: https://freelycar.com/upload/storeimg/
