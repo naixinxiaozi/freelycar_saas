@@ -4,10 +4,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.ObjectNotFoundException;
+import com.freelycar.saas.exception.UpdateDataErrorException;
 import com.freelycar.saas.project.entity.Store;
+import com.freelycar.saas.project.model.StoreInfo;
 import com.freelycar.saas.project.service.StoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/store")
 public class StoreController {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private StoreService storeService;
@@ -74,7 +81,7 @@ public class StoreController {
     }
 
     /**
-     * 查询
+     * 获取门店列表（分页）
      *
      * @param name
      * @param currentPage
@@ -92,5 +99,31 @@ public class StoreController {
             name = "";
         }
         return ResultJsonObject.getDefaultResult(PaginationRJO.of(storeService.list(name, currentPage, pageSize)));
+    }
+
+    @ApiOperation(value = "修改门店信息（门店端）", produces = "application/json")
+    @PostMapping("/confirmInfo")
+    @LoggerManage(description = "调用方法：修改门店信息（门店端）")
+    public ResultJsonObject confirmInfo(@RequestBody StoreInfo storeInfo) {
+        try {
+            return storeService.confirmInfo(storeInfo);
+        } catch (UpdateDataErrorException | ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "查询门店信息（门店端）", produces = "application/json")
+    @GetMapping("/detail")
+    @LoggerManage(description = "调用方法：查询门店信息（门店端）")
+    public ResultJsonObject detail(@RequestParam String id) {
+        try {
+            return ResultJsonObject.getDefaultResult(storeService.detail(id));
+        } catch (ArgumentMissingException | ObjectNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
     }
 }

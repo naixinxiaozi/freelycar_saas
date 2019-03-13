@@ -57,9 +57,9 @@ public class WeChatStoreController {
      *
      * @return
      */
-    @GetMapping("/listWeCahtImgs")
-    public ResultJsonObject listWeCahtImgs() {
-        return storeService.listWeCahtImgs();
+    @GetMapping("/listWeChatImgs")
+    public ResultJsonObject listWeChatImgs() {
+        return storeService.listWeChatImgs();
     }
 
     /**

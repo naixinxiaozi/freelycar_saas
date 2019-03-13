@@ -7,8 +7,11 @@ import com.freelycar.saas.basic.wrapper.PageableTools;
 import com.freelycar.saas.basic.wrapper.ResultCode;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.ObjectNotFoundException;
+import com.freelycar.saas.exception.UpdateDataErrorException;
 import com.freelycar.saas.project.entity.CardService;
 import com.freelycar.saas.project.entity.*;
+import com.freelycar.saas.project.model.StoreInfo;
 import com.freelycar.saas.project.repository.SpecialOfferRepository;
 import com.freelycar.saas.project.repository.StoreImgRepository;
 import com.freelycar.saas.project.repository.StoreRepository;
@@ -155,7 +158,7 @@ public class StoreService {
 
 
     /**
-     * 通过ID查询门店信息
+     * 通过ID查询门店信息（微信端）
      *
      * @param id
      * @return
@@ -264,9 +267,80 @@ public class StoreService {
         return storeImgRepository.findByStoreIdAndDelStatusOrderByCreateTimeAsc(storeId, Constants.DelStatus.NORMAL.isValue());
     }
 
-    public ResultJsonObject listWeCahtImgs() {
+    /**
+     * 获取公众号共用宣传图
+     *
+     * @return
+     */
+    public ResultJsonObject listWeChatImgs() {
         List<SpecialOffer> specialOffers = specialOfferRepository.findByDelStatusOrderBySort(Constants.DelStatus.NORMAL.isValue());
         return ResultJsonObject.getDefaultResult(specialOffers);
     }
 
+    /**
+     * 更改门店信息（包含宣传图的关联）
+     *
+     * @param storeInfo
+     * @return
+     * @throws UpdateDataErrorException
+     */
+    public ResultJsonObject confirmInfo(StoreInfo storeInfo) throws UpdateDataErrorException, ArgumentMissingException {
+        Store store = storeInfo.getStore();
+        List<String> storeImgIds = storeInfo.getStoreImgIds();
+
+        String storeId = store.getId();
+
+        //保存门店信息
+        if (StringUtils.isEmpty(storeId)) {
+            throw new ArgumentMissingException("storeId参数为空，无法执行更新");
+        }
+        Store storeRes = this.saveOrUpdate(store);
+        if (null == storeRes) {
+            throw new UpdateDataErrorException("保存门店信息失败");
+        }
+
+        //取消掉所有的关联
+        List<StoreImg> oldImgs = getImgList(storeId);
+        for (StoreImg storeImg : oldImgs) {
+            storeImg.setStoreId(null);
+            storeImgRepository.save(storeImg);
+        }
+
+        //关联storeImg对象（设置其storeId）
+        for (String storeImgId : storeImgIds) {
+            StoreImg storeImg = storeImgRepository.findById(storeImgId).orElse(null);
+            if (null == storeImg) {
+                logger.error("未找到id为：" + storeImgId + "的storeImg对象，无法关联该对象");
+            } else {
+                storeImg.setStoreId(storeId);
+                storeImgRepository.save(storeImg);
+            }
+        }
+
+        return ResultJsonObject.getDefaultResult(storeId);
+    }
+
+
+    /**
+     * 查询门店信息（门店端）
+     *
+     * @param id
+     * @return
+     * @throws ArgumentMissingException
+     * @throws ObjectNotFoundException
+     */
+    public StoreInfo detail(String id) throws ArgumentMissingException, ObjectNotFoundException {
+        if (StringUtils.isEmpty(id)) {
+            throw new ArgumentMissingException("参数id为空，无法查询门店信息");
+        }
+        Store store = storeRepository.findById(id).orElseThrow(ObjectNotFoundException::new);
+
+        List<StoreImg> storeImgs = getImgList(id);
+
+        StoreInfo storeInfo = new StoreInfo();
+        storeInfo.setStore(store);
+        storeInfo.setStoreImgs(storeImgs);
+
+        return storeInfo;
+    }
 }
