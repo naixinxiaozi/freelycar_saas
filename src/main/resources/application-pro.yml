@@ -27,6 +27,7 @@ logging:
 swagger:
   enable: true
 
+# 自定义的上传路径和映射路径参数
 upload:
   picture:
     path: C:\nginx\html\upload\storeimg
