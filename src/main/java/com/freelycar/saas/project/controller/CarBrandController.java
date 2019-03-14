@@ -1,7 +1,9 @@
 package com.freelycar.saas.project.controller;
 
+import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.service.CarBrandService;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +26,15 @@ public class CarBrandController {
     @Autowired
     private CarBrandService carBrandService;
 
+    @ApiOperation(value = "初始化车牌数据", produces = "application/json")
     @GetMapping("/init")
+    @LoggerManage(description = "调用方法：初始化车牌数据")
     public ResultJsonObject initBrandData() {
         carBrandService.initCarBrand();
         return ResultJsonObject.getDefaultResult("执行完毕，没有错误，请检查数据库！");
     }
 
+    @ApiOperation(value = "获取所有车牌信息", produces = "application/json")
     @GetMapping("/getAllCarBrand")
     public ResultJsonObject getAllCarBrand() {
         return ResultJsonObject.getDefaultResult(carBrandService.getAllCarBrand());

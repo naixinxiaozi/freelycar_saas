@@ -1,10 +1,12 @@
 package com.freelycar.saas.project.controller;
 
+import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.exception.DataIsExistException;
 import com.freelycar.saas.project.entity.Ark;
 import com.freelycar.saas.project.service.ArkService;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,9 @@ public class ArkController {
      * @param ark
      * @return
      */
+    @ApiOperation(value = "新增智能柜（含生成状态表数据）", produces = "application/json")
     @PostMapping("/add")
+    @LoggerManage(description = "调用接口：新增智能柜（含生成状态表数据）")
     public ResultJsonObject addArk(@RequestBody Ark ark) {
         try {
             return ResultJsonObject.getDefaultResult(arkService.addArk(ark));
