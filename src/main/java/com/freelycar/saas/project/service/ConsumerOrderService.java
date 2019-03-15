@@ -3,15 +3,9 @@ package com.freelycar.saas.project.service;
 import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.exception.*;
 import com.freelycar.saas.project.entity.*;
-import com.freelycar.saas.project.model.OrderClientInfo;
-import com.freelycar.saas.project.model.OrderListParam;
-import com.freelycar.saas.project.model.OrderObject;
-import com.freelycar.saas.project.model.PayOrder;
+import com.freelycar.saas.project.model.*;
 import com.freelycar.saas.project.repository.*;
-import com.freelycar.saas.util.OrderIDGenerator;
-import com.freelycar.saas.util.RoundTool;
-import com.freelycar.saas.util.TimestampUtil;
-import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.util.*;
 import com.freelycar.saas.wechat.model.BaseOrderInfo;
 import com.freelycar.saas.wechat.model.FinishOrderInfo;
 import com.freelycar.saas.wechat.model.ReservationOrderInfo;
@@ -23,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Service;
@@ -604,6 +600,116 @@ public class ConsumerOrderService {
         resultPage = consumerOrderRepository.findAll(querySpecification, PageableTools.basicPage(currentPage, pageSize));
         return ResultJsonObject.getDefaultResult(PaginationRJO.of(resultPage));
     }
+
+    // 单据列表条件查询
+    public ResultJsonObject listSql(String storeId, Integer currentPage, Integer pageSize, OrderListParam params) {
+        String orderId = params.getOrderId();
+        String licensePlate = params.getLicensePlate();
+
+        String projectId = params.getProjectId();
+
+        Integer orderState = params.getOrderState();
+        Integer orderType = params.getOrderType();
+        Integer payState = params.getPayState();
+
+        Integer dateType = params.getDateType();
+        String startTime = params.getStartTime();
+        String endTime = params.getEndTime();
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT group_concat( co.id ) AS id, co.createTime,co.licensePlate,co.orderType,co.totalPrice,co.actualPrice,co.state,co.payState,co.phone, group_concat(pt.name) AS projectType,co.parkingLocation,co.pickTime,co.finishTime,co.deliverTime FROM consumerorder co JOIN consumerprojectinfo cpi ON cpi.consumerOrderId = co.id LEFT JOIN project p ON p.id = cpi.projectId LEFT JOIN projectType pt on pt.id=p.projectTypeId WHERE co.delStatus = 0 ");
+        sql.append(" AND co.storeId = '").append(storeId).append("' ");
+
+        //订单号模糊查询
+        if (StringUtils.hasText(orderId)) {
+            sql.append(" AND co.id like '%").append(orderId).append("%' ");
+        }
+        //车牌号模糊查询
+        if (StringUtils.hasText(licensePlate)) {
+            sql.append(" AND co.licensePlate like '%").append(licensePlate).append("%' ");
+        }
+        //订单状态条件查询
+        if (null != orderState) {
+            sql.append(" AND co.orderState = ").append(orderState).append(" ");
+        }
+        //订单类型条件查询（如果没传，默认是查询出非办卡类的）
+        if (null != orderType) {
+            sql.append(" AND co.orderType=").append(orderType).append(" ");
+        } else {
+            sql.append(" AND co.orderType !=").append(Constants.OrderType.CARD.getValue()).append(" ");
+        }
+        //支付状态条件查询
+        if (null != payState) {
+            sql.append(" AND co.payState=").append(payState).append(" ");
+        }
+        //时间范围条件查询
+        if (null != dateType) {
+            String start = null;
+            String end = null;
+
+            if (StringUtils.hasText(startTime)) {
+                start = startTime + " 00:00:00";
+            }
+            if (StringUtils.hasText(endTime)) {
+                end = endTime + " 23:59:59";
+            }
+
+            if (Constants.DateType.ORDER.getValue().intValue() == dateType) {
+                if (StringUtils.hasText(start)) {
+                    sql.append(" AND co.createTime >= '").append(start).append("' ");
+                }
+                if (StringUtils.hasText(end)) {
+                    sql.append(" AND co.createTime <= '").append(end).append("' ");
+                }
+            }
+
+            if (Constants.DateType.PICK.getValue().intValue() == dateType) {
+                if (StringUtils.hasText(start)) {
+                    sql.append(" AND co.pickTime >= '").append(start).append("' ");
+                }
+                if (StringUtils.hasText(end)) {
+                    sql.append(" AND co.pickTime <= '").append(end).append("' ");
+                }
+            }
+
+            if (Constants.DateType.FINISH.getValue().intValue() == dateType) {
+                if (StringUtils.hasText(start)) {
+                    sql.append(" AND co.finishTime >= '").append(start).append("' ");
+                }
+                if (StringUtils.hasText(end)) {
+                    sql.append(" AND co.finishTime <= '").append(end).append("' ");
+                }
+            }
+
+            if (Constants.DateType.DELIVER.getValue().intValue() == dateType) {
+                if (StringUtils.hasText(start)) {
+                    sql.append(" AND co.deliverTime >= '").append(start).append("' ");
+                }
+                if (StringUtils.hasText(end)) {
+                    sql.append(" AND co.deliverTime <= '").append(end).append("' ");
+                }
+            }
+        }
+        sql.append(" GROUP BY co.id ORDER BY co.createTime DESC");
+
+        Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(CustomerOrderListObject.class));
+
+        int total = nativeQuery.getResultList().size();
+        @SuppressWarnings({"unused", "unchecked"})
+        List<CustomerOrderListObject> customerOrderListObjects = nativeQuery.setFirstResult(MySQLPageTool.getStartPosition(currentPage, pageSize)).setMaxResults(pageSize).getResultList();
+
+        //关闭em
+        em.close();
+        @SuppressWarnings("unchecked")
+        Page<CustomerOrderListObject> page = new PageImpl(customerOrderListObjects, pageable, total);
+
+        return ResultJsonObject.getDefaultResult(PaginationRJO.of(page));
+    }
+
 
 
     /**

@@ -86,7 +86,7 @@ public class ConsumerOrderController {
             @RequestParam(required = false) Integer pageSize,
             @RequestBody OrderListParam params
     ) {
-        return consumerOrderService.list(storeId, currentPage, pageSize, params);
+        return consumerOrderService.listSql(storeId, currentPage, pageSize, params);
     }
 
     /**
