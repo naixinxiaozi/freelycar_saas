@@ -617,7 +617,7 @@ public class ConsumerOrderService {
         String endTime = params.getEndTime();
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT group_concat( co.id ) AS id, co.createTime,co.licensePlate,co.orderType,co.totalPrice,co.actualPrice,co.state,co.payState,co.phone, group_concat(pt.name) AS projectType,co.parkingLocation,co.pickTime,co.finishTime,co.deliverTime FROM consumerorder co JOIN consumerprojectinfo cpi ON cpi.consumerOrderId = co.id LEFT JOIN project p ON p.id = cpi.projectId LEFT JOIN projectType pt on pt.id=p.projectTypeId WHERE co.delStatus = 0 ");
+        sql.append("SELECT group_concat( co.id ) AS id, co.createTime,co.licensePlate,co.orderType,co.totalPrice,co.actualPrice,co.state,co.payState,co.phone, group_concat(pt.name) AS project,co.parkingLocation,co.pickTime,co.finishTime,co.deliverTime FROM consumerorder co JOIN consumerprojectinfo cpi ON cpi.consumerOrderId = co.id LEFT JOIN project p ON p.id = cpi.projectId LEFT JOIN projectType pt on pt.id=p.projectTypeId WHERE co.delStatus = 0 ");
         sql.append(" AND co.storeId = '").append(storeId).append("' ");
 
         //订单号模糊查询
@@ -628,6 +628,11 @@ public class ConsumerOrderService {
         if (StringUtils.hasText(licensePlate)) {
             sql.append(" AND co.licensePlate like '%").append(licensePlate).append("%' ");
         }
+        //项目类型查询
+        if (StringUtils.hasText(projectId)) {
+            sql.append(" AND p.projectTypeId = '").append(projectId).append("' ");
+        }
+
         //订单状态条件查询
         if (null != orderState) {
             sql.append(" AND co.orderState = ").append(orderState).append(" ");

@@ -64,7 +64,7 @@ public class CustomerOrderListObject {
     /**
      * 项目类别
      */
-    private String projectType;
+    private String project;
 
     /**
      * 停车位置
