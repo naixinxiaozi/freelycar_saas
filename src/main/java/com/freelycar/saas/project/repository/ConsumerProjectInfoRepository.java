@@ -16,5 +16,5 @@ public interface ConsumerProjectInfoRepository extends JpaRepository<ConsumerPro
 
     List<ConsumerProjectInfo> findAllByDelStatusAndAndCardIdOrderByCreateTimeDesc(boolean delStatus, String cardId);
 
-    List<ConsumerProjectInfo> findAllByDelStatusAndAndCouponIdOrderByCreateTimeDesc(boolean delStatus, String couponId);
+    List<ConsumerProjectInfo> findAllByDelStatusAndCouponIdOrderByCreateTimeDesc(boolean delStatus, String couponId);
 }

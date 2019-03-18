@@ -130,6 +130,6 @@ public class ConsumerProjectInfoService {
         if (StringUtils.isEmpty(couponId)) {
             throw new ArgumentMissingException("参数couponId为空值。查询抵用券项目消费记录失败。");
         }
-        return consumerProjectInfoRepository.findAllByDelStatusAndAndCouponIdOrderByCreateTimeDesc(Constants.DelStatus.NORMAL.isValue(), couponId);
+        return consumerProjectInfoRepository.findAllByDelStatusAndCouponIdOrderByCreateTimeDesc(Constants.DelStatus.NORMAL.isValue(), couponId);
     }
 }

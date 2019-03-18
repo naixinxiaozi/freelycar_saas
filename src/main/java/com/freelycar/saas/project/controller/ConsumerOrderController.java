@@ -2,13 +2,18 @@ package com.freelycar.saas.project.controller;
 
 import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.ObjectNotFoundException;
 import com.freelycar.saas.project.entity.ConsumerOrder;
 import com.freelycar.saas.project.model.OrderListParam;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
 import com.freelycar.saas.project.service.ConsumerOrderService;
+import com.freelycar.saas.project.service.CouponService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +27,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/order")
 public class ConsumerOrderController {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private ConsumerOrderService consumerOrderService;
+
+    @Autowired
+    private CouponService couponService;
 
     /**
      * 开单
@@ -121,6 +131,19 @@ public class ConsumerOrderController {
     @LoggerManage(description = "调用方法：根据车牌查出相关信息")
     public ResultJsonObject loadClientInfoByLicensePlate(@RequestParam String licensePlate, @RequestParam String storeId) {
         return consumerOrderService.loadClientInfoByLicensePlate(licensePlate, storeId);
+    }
+
+    @ApiOperation(value = "查询某订单下，所有项目对应的抵用券")
+    @GetMapping("/getCouponsForOrder")
+    @LoggerManage(description = "调用方法：查询某订单下，所有项目对应的抵用券")
+    public ResultJsonObject getCouponsForOrder(@RequestParam String orderId) {
+        try {
+            return ResultJsonObject.getDefaultResult(couponService.findAllUsefulCouponForOneOrder(orderId));
+        } catch (ObjectNotFoundException | ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
     }
 
 
