@@ -15,7 +15,11 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author tangwei - Toby
@@ -146,7 +150,34 @@ public class ConsumerOrderController {
         }
     }
 
-
+    @ApiOperation(value = "查询某用户的消费记录")
+    @GetMapping("/orderRecord")
+    @LoggerManage(description = "调用方法：查询某用户的消费记录")
+    public ResultJsonObject orderRecord(
+            @RequestParam String clientId,
+            @RequestParam(required = false) String startTime,
+            @RequestParam(required = false) String endTime,
+            @RequestParam Integer currentPage,
+            @RequestParam(required = false) Integer pageSize
+    ) {
+        Map<String, Object> params = new HashMap<>();
+        if (StringUtils.hasText(clientId)) {
+            params.put("clientId", clientId);
+        }
+        if (StringUtils.hasText(startTime)) {
+            params.put("startTime", clientId);
+        }
+        if (StringUtils.hasText(endTime)) {
+            params.put("endTime", endTime);
+        }
+        try {
+            return ResultJsonObject.getDefaultResult(consumerOrderService.orderRecord(params, currentPage, pageSize));
+        } catch (ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
+    }
 
 
 }

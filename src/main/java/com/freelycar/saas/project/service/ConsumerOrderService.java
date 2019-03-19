@@ -31,10 +31,7 @@ import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author tangwei - Toby
@@ -716,7 +713,6 @@ public class ConsumerOrderService {
     }
 
 
-
     /**
      * 完工
      *
@@ -1292,5 +1288,56 @@ public class ConsumerOrderService {
         order.setCardOrCouponId(cardOrCouponId);
 
         return this.saveOrUpdate(order);
+    }
+
+
+    /**
+     * 查询消费记录（分页）
+     *
+     * @param params
+     * @param currentPage
+     * @param pageSize
+     * @return
+     * @throws ArgumentMissingException
+     */
+    public PaginationRJO orderRecord(Map<String, Object> params, Integer currentPage, Integer pageSize) throws ArgumentMissingException {
+        if (null == params) {
+            throw new ArgumentMissingException("参数params为空值，无法查询消费记录");
+        }
+        String clientId = (String) params.get("clientId");
+        String startTime = (String) params.get("startTime");
+        String endTime = (String) params.get("endTime");
+
+        if (StringUtils.isEmpty(clientId)) {
+            throw new ArgumentMissingException("参数clientId为空值，无法查询消费记录");
+        }
+
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT co.id, ( SELECT group_concat( cpi.projectName ) FROM consumerprojectinfo cpi WHERE cpi.consumerOrderId = co.id ) AS projectNames, co.actualPrice AS cost, CONCAT((CASE co.firstPayMethod WHEN 0 THEN '储值卡' WHEN 1 THEN '现金' WHEN 2 THEN '微信' WHEN 3 THEN '支付宝' WHEN 4 THEN '易付宝' WHEN 5 THEN '刷卡' ELSE '无' END ), (CASE co.secondPayMethod WHEN 0 THEN '，储值卡' WHEN 1 THEN '，现金' WHEN 2 THEN '，微信' WHEN 3 THEN '，支付宝' WHEN 4 THEN '，易付宝' WHEN 5 THEN '，刷卡' ELSE '' END ) ) AS payMethod, (CASE (( CASE co.firstPayMethod WHEN 0 THEN TRUE ELSE FALSE END ) OR ( CASE co.secondPayMethod WHEN 0 THEN TRUE ELSE FALSE END )) WHEN TRUE THEN '是' ELSE '否' END) AS useCard, co.createTime AS serviceTime FROM consumerorder co WHERE co.clientId = '").append(clientId).append("' AND co.delStatus = 0 AND payState = 2 ");
+        if (StringUtils.hasText(startTime)) {
+            sql.append(" AND co.createTime > '").append(startTime).append(" 00:00:00' ");
+        }
+        if (StringUtils.hasText(endTime)) {
+            sql.append(" AND co.createTime <= '").append(endTime).append(" 23:59:59' ");
+        }
+        sql.append(" ORDER BY createTime DESC ");
+
+        Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(OrderRecordObject.class));
+
+        int total = nativeQuery.getResultList().size();
+        @SuppressWarnings({"unused", "unchecked"})
+        List<OrderRecordObject> orderRecordObjects = nativeQuery.setFirstResult(MySQLPageTool.getStartPosition(currentPage, pageSize)).setMaxResults(pageSize).getResultList();
+
+        //关闭em
+        em.close();
+
+        @SuppressWarnings("unchecked")
+        Page<OrderRecordObject> page = new PageImpl(orderRecordObjects, pageable, total);
+
+        return PaginationRJO.of(page);
     }
 }
