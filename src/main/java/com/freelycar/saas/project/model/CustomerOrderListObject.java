@@ -38,7 +38,7 @@ public class CustomerOrderListObject {
     /**
      * 智能柜订单
      */
-    @Excel(name = "智能柜订单", replace = {"是_1", "否_0"}, orderNum = "3")
+    @Excel(name = "智能柜订单", replace = {"否_1", "是_2", "否_3"}, orderNum = "3")
     private Integer orderType;
 
     /**
@@ -68,31 +68,37 @@ public class CustomerOrderListObject {
     /**
      * 手机号码
      */
+    @Excel(name = "手机号码", orderNum = "8")
     private String phone;
 
     /**
      * 项目类别
      */
+    @Excel(name = "项目类别", orderNum = "9")
     private String project;
 
     /**
      * 停车位置
      */
+    @Excel(name = "停车位置", orderNum = "10")
     private String parkingLocation;
 
     /**
      * 接车时间
      */
+    @Excel(name = "接车时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "11")
     private Date pickTime;
 
     /**
      * 完工时间
      */
+    @Excel(name = "完工时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "12")
     private Date finishTime;
 
     /**
      * 交车时间
      */
+    @Excel(name = "交车时间", exportFormat = "yyyy-MM-dd HH:mm:ss", orderNum = "13")
     private Date deliverTime;
 
 }
