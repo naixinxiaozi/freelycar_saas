@@ -489,16 +489,17 @@ public class ConsumerOrderService {
 
 
     /**
-     * 单据列表条件查询
+     * 单据列表条件查询（作废）
      *
      * @param params
      * @return
      */
+    @Deprecated
     public ResultJsonObject list(String storeId, Integer currentPage, Integer pageSize, OrderListParam params) {
         String orderId = params.getOrderId();
         String licensePlate = params.getLicensePlate();
 
-        //TODO 如何查出订单类型，还得考虑一下
+        // 如何查出订单类型，还得考虑一下
         String projectId = params.getProjectId();
 
         Integer orderState = params.getOrderState();
@@ -598,8 +599,17 @@ public class ConsumerOrderService {
         return ResultJsonObject.getDefaultResult(PaginationRJO.of(resultPage));
     }
 
-    // 单据列表条件查询
-    public ResultJsonObject listSql(String storeId, Integer currentPage, Integer pageSize, OrderListParam params) {
+    /**
+     * 单据列表条件查询
+     * （替代原方法）
+     *
+     * @param storeId
+     * @param currentPage
+     * @param pageSize
+     * @param params
+     * @return
+     */
+    public ResultJsonObject listSql(String storeId, Integer currentPage, Integer pageSize, OrderListParam params, boolean export) {
         String orderId = params.getOrderId();
         String licensePlate = params.getLicensePlate();
 
@@ -694,22 +704,33 @@ public class ConsumerOrderService {
         }
         sql.append(" GROUP BY co.id ORDER BY co.createTime DESC");
 
-        Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
-
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());
         nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(CustomerOrderListObject.class));
 
-        int total = nativeQuery.getResultList().size();
-        @SuppressWarnings({"unused", "unchecked"})
-        List<CustomerOrderListObject> customerOrderListObjects = nativeQuery.setFirstResult(MySQLPageTool.getStartPosition(currentPage, pageSize)).setMaxResults(pageSize).getResultList();
+        // 如果是导出EXCEL方法，就不分页
+        if (export) {
+            @SuppressWarnings({"unused", "unchecked"})
+            List<CustomerOrderListObject> customerOrderListObjects = nativeQuery.getResultList();
 
-        //关闭em
-        em.close();
-        @SuppressWarnings("unchecked")
-        Page<CustomerOrderListObject> page = new PageImpl(customerOrderListObjects, pageable, total);
+            //关闭em
+            em.close();
 
-        return ResultJsonObject.getDefaultResult(PaginationRJO.of(page));
+            return ResultJsonObject.getDefaultResult(customerOrderListObjects);
+        } else {
+            Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
+            int total = nativeQuery.getResultList().size();
+            @SuppressWarnings({"unused", "unchecked"})
+            List<CustomerOrderListObject> customerOrderListObjects = nativeQuery.setFirstResult(MySQLPageTool.getStartPosition(currentPage, pageSize)).setMaxResults(pageSize).getResultList();
+
+            //关闭em
+            em.close();
+            @SuppressWarnings("unchecked")
+            Page<CustomerOrderListObject> page = new PageImpl(customerOrderListObjects, pageable, total);
+
+
+            return ResultJsonObject.getDefaultResult(PaginationRJO.of(page));
+        }
     }
 
 

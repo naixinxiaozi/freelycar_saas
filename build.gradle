@@ -75,6 +75,17 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     compile group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
 
+    // easypoi
+    compile group: 'cn.afterturn', name: 'easypoi-base', version: '4.0.0'
+    compile group: 'cn.afterturn', name: 'easypoi-annotation', version: '4.0.0'
+    compile group: 'cn.afterturn', name: 'easypoi-web', version: '4.0.0'
+
+
+
+
+
+
+
 
     //devtools
     compile('org.springframework.boot:spring-boot-devtools')

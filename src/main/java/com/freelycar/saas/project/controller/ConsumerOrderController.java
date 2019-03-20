@@ -3,13 +3,16 @@ package com.freelycar.saas.project.controller;
 import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.NormalException;
 import com.freelycar.saas.exception.ObjectNotFoundException;
 import com.freelycar.saas.project.entity.ConsumerOrder;
+import com.freelycar.saas.project.model.CustomerOrderListObject;
 import com.freelycar.saas.project.model.OrderListParam;
 import com.freelycar.saas.project.model.OrderObject;
 import com.freelycar.saas.project.model.PayOrder;
 import com.freelycar.saas.project.service.ConsumerOrderService;
 import com.freelycar.saas.project.service.CouponService;
+import com.freelycar.saas.util.ExcelTool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -18,7 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -100,7 +105,7 @@ public class ConsumerOrderController {
             @RequestParam(required = false) Integer pageSize,
             @RequestBody OrderListParam params
     ) {
-        return consumerOrderService.listSql(storeId, currentPage, pageSize, params);
+        return consumerOrderService.listSql(storeId, currentPage, pageSize, params, false);
     }
 
     /**
@@ -180,4 +185,28 @@ public class ConsumerOrderController {
     }
 
 
+    @ApiOperation(value = "导出单据列表", produces = "application/json")
+    @PostMapping("/exportOrder")
+    @LoggerManage(description = "调用方法：导出单据列表")
+    public void export(
+            @RequestParam String storeId,
+            @RequestParam Integer currentPage,
+            @RequestParam(required = false) Integer pageSize,
+            @RequestBody OrderListParam params,
+            HttpServletResponse response
+    ) {
+        ResultJsonObject resultJsonObject = consumerOrderService.listSql(storeId, currentPage, pageSize, params, true);
+        //模拟从数据库获取需要导出的数据
+        @SuppressWarnings({"unused", "unchecked"})
+        List<CustomerOrderListObject> personList = (List<CustomerOrderListObject>) resultJsonObject.getData();
+
+
+        //导出操作
+        try {
+            ExcelTool.exportExcel(personList, "单据列表", "单据列表", CustomerOrderListObject.class, "小易车单据列表.xls", response);
+        } catch (NormalException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
+    }
 }
