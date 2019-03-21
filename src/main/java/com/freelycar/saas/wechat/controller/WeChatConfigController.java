@@ -65,7 +65,10 @@ public class WeChatConfigController {
     @GetMapping("/getWeChatUserInfo")
     public JSONObject getWeChatUserInfo(String code) {
         logger.debug("weChat code: " + code);
-        return WechatLoginUse.wechatInfo(code);
+        // 获取微信用户信息
+        JSONObject jsonObject = WechatLoginUse.wechatInfo(code);
+        logger.info("获取微信用户信息：", jsonObject);
+        return jsonObject;
     }
 
     @GetMapping("/isSubscribe")
