@@ -67,7 +67,8 @@ public class WeChatConfigController {
         logger.debug("weChat code: " + code);
         // 获取微信用户信息
         JSONObject jsonObject = WechatLoginUse.wechatInfo(code);
-        logger.info("获取微信用户信息：", jsonObject);
+        logger.info("获取微信用户信息：");
+        logger.info(jsonObject.toString());
         return jsonObject;
     }
 
