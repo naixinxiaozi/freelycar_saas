@@ -179,7 +179,7 @@ public class ClientService {
      * @param params
      * @return
      */
-    public ResultJsonObject list(String storeId, Integer currentPage, Integer pageSize, Map params) {
+    public ResultJsonObject list(String storeId, Integer currentPage, Integer pageSize, Map params, boolean export) {
         String name = null;
         String phone = null;
         Boolean isMember = null;
@@ -217,22 +217,32 @@ public class ClientService {
 
         sql.append(" ORDER BY client.createTime ASC ");
 
-        Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
-
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());
         nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(CustomerList.class));
-        int total = nativeQuery.getResultList().size();
-        @SuppressWarnings({"unused", "unchecked"})
-        List<CustomerList> customerInfos = nativeQuery.setFirstResult(MySQLPageTool.getStartPosition(currentPage, pageSize)).setMaxResults(pageSize).getResultList();
 
-        //关闭em
-        em.close();
+        if (export) {
+            @SuppressWarnings({"unused", "unchecked"})
+            List<CustomerList> customerInfos = nativeQuery.getResultList();
 
-        @SuppressWarnings("unchecked")
-        Page<CustomerList> page = new PageImpl(customerInfos, pageable, total);
+            //关闭em
+            em.close();
 
-        return ResultJsonObject.getDefaultResult(PaginationRJO.of(page));
+            return ResultJsonObject.getDefaultResult(customerInfos);
+        } else {
+            Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
+            int total = nativeQuery.getResultList().size();
+            @SuppressWarnings({"unused", "unchecked"})
+            List<CustomerList> customerInfos = nativeQuery.setFirstResult(MySQLPageTool.getStartPosition(currentPage, pageSize)).setMaxResults(pageSize).getResultList();
+
+            //关闭em
+            em.close();
+
+            @SuppressWarnings("unchecked")
+            Page<CustomerList> page = new PageImpl(customerInfos, pageable, total);
+
+            return ResultJsonObject.getDefaultResult(PaginationRJO.of(page));
+        }
     }
 
 

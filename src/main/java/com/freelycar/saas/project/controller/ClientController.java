@@ -3,9 +3,12 @@ package com.freelycar.saas.project.controller;
 import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.CarNumberValidationException;
+import com.freelycar.saas.exception.NormalException;
 import com.freelycar.saas.project.entity.Client;
+import com.freelycar.saas.project.model.CustomerList;
 import com.freelycar.saas.project.model.NewClientInfo;
 import com.freelycar.saas.project.service.ClientService;
+import com.freelycar.saas.util.ExcelTool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -14,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -121,7 +126,7 @@ public class ClientController {
         if (StringUtils.hasText(StringUtils.trimWhitespace(phone))) {
             params.put("licensePlate", licensePlate);
         }
-        return clientService.list(storeId, currentPage, pageSize, params);
+        return clientService.list(storeId, currentPage, pageSize, params, false);
     }
 
     @ApiOperation(value = "会员统计", produces = "application/json")
@@ -138,6 +143,47 @@ public class ClientController {
     @LoggerManage(description = "删除单个客户信息")
     public ResultJsonObject delete(@RequestParam String id) {
         return clientService.delete(id);
+    }
+
+    @ApiOperation(value = "客户列表导出excel", produces = "application/json")
+    @GetMapping(value = "/exportExcel")
+    @LoggerManage(description = "调用方法：客户列表导出excel")
+    public void exportExcel(
+            @RequestParam String storeId,
+            @RequestParam Integer currentPage,
+            @RequestParam Integer pageSize,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) Boolean isMember,
+            @RequestParam(required = false) String licensePlate,
+            HttpServletResponse response
+    ) {
+        Map<String, Object> params = new HashMap<>();
+        if (StringUtils.hasText(StringUtils.trimWhitespace(name))) {
+            params.put("name", name);
+        }
+        if (StringUtils.hasText(StringUtils.trimWhitespace(phone))) {
+            params.put("phone", phone);
+        }
+        if (null != isMember) {
+            params.put("isMember", isMember);
+        }
+        if (StringUtils.hasText(StringUtils.trimWhitespace(phone))) {
+            params.put("licensePlate", licensePlate);
+        }
+        ResultJsonObject resultJsonObject = clientService.list(storeId, currentPage, pageSize, params, true);
+        //模拟从数据库获取需要导出的数据
+        @SuppressWarnings({"unused", "unchecked"})
+        List<CustomerList> list = (List<CustomerList>) resultJsonObject.getData();
+
+
+        //导出操作
+        try {
+            ExcelTool.exportExcel(list, "客户信息列表", "客户信息列表", CustomerList.class, "小易车客户信息列表.xls", response);
+        } catch (NormalException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
     }
 
 }

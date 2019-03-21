@@ -198,12 +198,12 @@ public class ConsumerOrderController {
         ResultJsonObject resultJsonObject = consumerOrderService.listSql(storeId, currentPage, pageSize, params, true);
         //模拟从数据库获取需要导出的数据
         @SuppressWarnings({"unused", "unchecked"})
-        List<CustomerOrderListObject> personList = (List<CustomerOrderListObject>) resultJsonObject.getData();
+        List<CustomerOrderListObject> list = (List<CustomerOrderListObject>) resultJsonObject.getData();
 
 
         //导出操作
         try {
-            ExcelTool.exportExcel(personList, "单据列表", "单据列表", CustomerOrderListObject.class, "小易车单据列表.xls", response);
+            ExcelTool.exportExcel(list, "单据列表", "单据列表", CustomerOrderListObject.class, "小易车单据列表.xls", response);
         } catch (NormalException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
