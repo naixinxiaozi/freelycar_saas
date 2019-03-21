@@ -68,6 +68,10 @@ public class WeChatLoginController {
             @RequestParam String openId,
             @RequestParam String headimgurl,
             @RequestParam String nickName) {
+        log.info("验证短信码方法接收到的微信用户信息：");
+        log.info("openId:" + openId);
+        log.info("headimgurl:" + headimgurl);
+        log.info("nickName:" + nickName);
         JSONObject json = this.verifySmsCode(phone, smscode);
         if (StringUtils.hasText(json.getString("error"))) {
             log.debug(phone + ";code:" + smscode + " 验证失败。。。");
