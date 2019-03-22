@@ -37,7 +37,7 @@ class CustomAuthenticationProvider implements AuthenticationProvider {
         SysUser sysUser = sysUserService.login(name, password);
 
         // 认证逻辑
-        if (null != sysUser || name.equals("admin") && password.equals("freelyC@r2019")) {
+        if (null != sysUser) {
 
             // 这里设置权限和角色
             // TODO 这里第二版需要改成从库里面去关联
