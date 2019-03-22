@@ -4,6 +4,7 @@ import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.permission.entity.SysUser;
 import com.freelycar.saas.permission.repository.SysUserRepository;
 import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.wxutils.MD5;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +36,8 @@ public class SysUserService {
      * @return
      */
     public SysUser login(String userName, String password) {
-        return sysUserRepository.findByDelStatusAndUsernameAndPassword(Constants.DelStatus.NORMAL.isValue(), userName, password);
+        String hashpw = MD5.compute(password);
+        return sysUserRepository.findByDelStatusAndUsernameAndPassword(Constants.DelStatus.NORMAL.isValue(), userName, hashpw);
     }
 
     /**
@@ -49,10 +51,20 @@ public class SysUserService {
             return null;
         }
         Long id = sysUser.getId();
+
+        //处理密码的问题
+//        String userName = sysUser.getUsername();
+        String password = sysUser.getPassword();
+        if (StringUtils.hasText(password)) {
+            String hashpw = MD5.compute(password);
+            sysUser.setPassword(hashpw);
+        }
+
         if (null == id) {
             sysUser.setCreateTime(new Timestamp(System.currentTimeMillis()));
             sysUser.setDelStatus(Constants.DelStatus.NORMAL.isValue());
             sysUser.setRoles(new ArrayList<>());
+
         } else {
             SysUser source = sysUserRepository.getOne(id);
             UpdateTool.copyNullProperties(source, sysUser);
