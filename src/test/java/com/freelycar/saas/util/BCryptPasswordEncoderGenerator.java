@@ -7,7 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  * @author tangwei [toby911115@gmail.com]
  * @date 2018/9/29
  */
-public class BCryptPasswordEncoderGenertor {
+public class BCryptPasswordEncoderGenerator {
     /**
      * 加密密码(BCrypt)
      */
