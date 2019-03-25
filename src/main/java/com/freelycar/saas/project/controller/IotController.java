@@ -2,6 +2,8 @@ package com.freelycar.saas.project.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.freelycar.saas.project.model.ArkDevice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/iot/ark")
 public class IotController {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     /**
      * 接收设备状态变化
      *
@@ -24,11 +28,13 @@ public class IotController {
      */
     @PostMapping("/deviceStateChange")
     public JSONObject deviceStateChange(@RequestBody ArkDevice deviceState) {
-        //TODO 接收到数据后进行数据推送等处理
+        logger.info("接收到智能柜离线推送信息：");
+        logger.info(deviceState.toString());
+        // 接收到数据后进行数据推送等处理
         String deviceId = deviceState.getDeviceId();
         boolean online = deviceState.getOnline();
 
-        System.out.println(deviceState);
+
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", 0);
@@ -37,13 +43,14 @@ public class IotController {
     }
 
     /**
-     * 接收柜门关闭
+     * 接收柜门关闭（已作废）
      * @param arkDevice
      * @return
      */
+    @Deprecated
     @PostMapping("/boxClosed")
     public JSONObject boxClosed(@RequestBody ArkDevice arkDevice) {
-        //TODO 接收到数据后进行数据推送等处理
+        // 接收到数据后进行数据推送等处理
         String deviceId = arkDevice.getDeviceId();
         String boardId = arkDevice.getBoardId();
         int boxId = arkDevice.getBoxId();
