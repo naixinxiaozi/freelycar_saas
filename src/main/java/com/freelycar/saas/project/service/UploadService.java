@@ -101,4 +101,19 @@ public class UploadService {
         }
         return ResultJsonObject.getErrorResult(null, "上传失败");
     }
+
+    public ResultJsonObject importProjects(String storeId, MultipartFile file, HttpServletRequest request) {
+        // TODO 上传Excel导入门店项目
+
+        //判断storeId和file文件是否为空
+
+        //根据storeId查询出有效的项目类型
+
+        //解析excel文件
+
+        //遍历
+
+
+        return null;
+    }
 }

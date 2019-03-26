@@ -1,8 +1,10 @@
 package com.freelycar.saas.project.controller;
 
+import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.project.service.UploadService;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ public class UploadController {
     @Autowired
     private UploadService uploadService;
 
+    @ApiOperation(value = "上传门店宣传图片", produces = "application/json")
+    @LoggerManage(description = "调用方法：上传门店宣传图片")
     @PostMapping("/storeimg")
     public ResultJsonObject uploadStoreImg(MultipartFile file, HttpServletRequest request) {
         try {
@@ -36,5 +40,12 @@ public class UploadController {
             e.printStackTrace();
             return ResultJsonObject.getErrorResult(null, e.getMessage());
         }
+    }
+
+    @ApiOperation(value = "上传Excel-门店项目导入", produces = "application/json")
+    @LoggerManage(description = "调用方法-上传Excel-门店项目导入")
+    @PostMapping("/importProjects")
+    public ResultJsonObject importProjects(String storeId, MultipartFile file, HttpServletRequest request) {
+        return uploadService.importProjects(storeId, file, request);
     }
 }
