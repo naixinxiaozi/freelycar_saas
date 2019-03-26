@@ -6,10 +6,7 @@ import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.exception.NormalException;
 import com.freelycar.saas.exception.ObjectNotFoundException;
 import com.freelycar.saas.project.entity.ConsumerOrder;
-import com.freelycar.saas.project.model.CustomerOrderListObject;
-import com.freelycar.saas.project.model.OrderListParam;
-import com.freelycar.saas.project.model.OrderObject;
-import com.freelycar.saas.project.model.PayOrder;
+import com.freelycar.saas.project.model.*;
 import com.freelycar.saas.project.service.ConsumerOrderService;
 import com.freelycar.saas.project.service.CouponService;
 import com.freelycar.saas.util.ExcelTool;
@@ -188,7 +185,7 @@ public class ConsumerOrderController {
     @ApiOperation(value = "导出单据列表", produces = "application/json")
     @PostMapping("/exportOrder")
     @LoggerManage(description = "调用方法：导出单据列表")
-    public void export(
+    public void exportOrder(
             @RequestParam String storeId,
             @RequestParam Integer currentPage,
             @RequestParam(required = false) Integer pageSize,
@@ -204,6 +201,58 @@ public class ConsumerOrderController {
         //导出操作
         try {
             ExcelTool.exportExcel(list, "单据列表", "单据列表", CustomerOrderListObject.class, "小易车单据列表.xls", response);
+        } catch (NormalException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
+    }
+
+    @ApiOperation(value = "查询流水明细（分页）", produces = "application/json")
+    @LoggerManage(description = "调用方法：查询流水明细（分页）")
+    @GetMapping("/listOrderParticulars")
+    public ResultJsonObject listOrderParticulars(
+            @RequestParam String storeId,
+            @RequestParam String startTime,
+            @RequestParam String endTime,
+            @RequestParam Integer currentPage,
+            @RequestParam(required = false) Integer pageSize
+    ) {
+        try {
+            return consumerOrderService.listOrderParticulars(storeId, startTime, endTime, currentPage, pageSize, false);
+        } catch (ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "导出流水明细Excel", produces = "application/json")
+    @LoggerManage(description = "调用方法：导出流水明细Excel")
+    @GetMapping("/exportOrderParticularsExcel")
+    public void exportOrderParticularsExcel(
+            @RequestParam String storeId,
+            @RequestParam String startTime,
+            @RequestParam String endTime,
+            @RequestParam Integer currentPage,
+            @RequestParam(required = false) Integer pageSize,
+            HttpServletResponse response
+    ) {
+        ResultJsonObject resultJsonObject;
+        try {
+            resultJsonObject = consumerOrderService.listOrderParticulars(storeId, startTime, endTime, currentPage, pageSize, true);
+        } catch (ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return;
+        }
+        //模拟从数据库获取需要导出的数据
+        @SuppressWarnings({"unused", "unchecked"})
+        List<OrderParticulars> list = (List<OrderParticulars>) resultJsonObject.getData();
+
+
+        //导出操作
+        try {
+            ExcelTool.exportExcel(list, "流水明细", "流水明细", OrderParticulars.class, "小易车流水明细.xls", response);
         } catch (NormalException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();

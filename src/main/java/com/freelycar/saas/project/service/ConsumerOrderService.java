@@ -1341,7 +1341,7 @@ public class ConsumerOrderService {
         if (StringUtils.hasText(endTime)) {
             sql.append(" AND co.createTime <= '").append(endTime).append(" 23:59:59' ");
         }
-        sql.append(" ORDER BY createTime DESC ");
+        sql.append(" ORDER BY co.createTime DESC ");
 
         Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
 
@@ -1360,5 +1360,51 @@ public class ConsumerOrderService {
         Page<OrderRecordObject> page = new PageImpl(orderRecordObjects, pageable, total);
 
         return PaginationRJO.of(page);
+    }
+
+
+    public ResultJsonObject listOrderParticulars(String storeId, String startTime, String endTime, Integer currentPage, Integer pageSize, boolean export) throws ArgumentMissingException {
+
+        if (StringUtils.isEmpty(storeId)) {
+            throw new ArgumentMissingException("参数storeId为空值，无法查询流水明细");
+        }
+
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT co.id, co.carBrand, co.licensePlate, co.clientName, co.phone, ( SELECT group_concat( cpi.projectName ) FROM consumerprojectinfo cpi WHERE cpi.consumerOrderId = co.id ) AS projectNames, co.actualPrice AS cost, co.createTime AS serviceTime, (case co.isMember when 1 then '是' else '否' end) as isMember FROM consumerorder co WHERE co.storeId = '").append(storeId).append("' AND co.delStatus = 0 AND payState = 2 ");
+        if (StringUtils.hasText(startTime)) {
+            sql.append(" AND co.createTime > '").append(startTime).append(" 00:00:00' ");
+        }
+        if (StringUtils.hasText(endTime)) {
+            sql.append(" AND co.createTime <= '").append(endTime).append(" 23:59:59' ");
+        }
+        sql.append(" ORDER BY co.createTime DESC ");
+
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(OrderParticulars.class));
+
+        if (export) {
+            @SuppressWarnings({"unused", "unchecked"})
+            List<OrderParticulars> orderParticulars = nativeQuery.getResultList();
+
+            //关闭em
+            em.close();
+
+            return ResultJsonObject.getDefaultResult(orderParticulars);
+        } else {
+            Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
+            int total = nativeQuery.getResultList().size();
+            @SuppressWarnings({"unused", "unchecked"})
+            List<OrderParticulars> orderParticulars = nativeQuery.setFirstResult(MySQLPageTool.getStartPosition(currentPage, pageSize)).setMaxResults(pageSize).getResultList();
+
+            //关闭em
+            em.close();
+
+            @SuppressWarnings("unchecked")
+            Page<OrderRecordObject> page = new PageImpl(orderParticulars, pageable, total);
+
+            return ResultJsonObject.getDefaultResult(PaginationRJO.of(page));
+        }
     }
 }
