@@ -1,5 +1,8 @@
 package com.freelycar.saas.jwt;
 
+import com.freelycar.saas.jwt.bean.JSONResult;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
@@ -20,9 +23,20 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        Authentication authentication = TokenAuthenticationUtil.getAuthentication((HttpServletRequest) request);
+        try {
+            Authentication authentication = TokenAuthenticationUtil.getAuthentication((HttpServletRequest) request);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (ExpiredJwtException eje) {
+            logger.error("JWT过期异常捕获，返回前端提示信息");
+            response.setContentType("application/json");
+            response.getOutputStream().print(JSONResult.fillResultString(-1, "JWT Expired", null));
+        } catch (JwtException je) {
+            logger.error("JWT其他异常捕获，返回前端提示信息");
+            response.setContentType("application/json");
+            response.getOutputStream().print(JSONResult.fillResultString(-1, "JWT Error", null));
+        }
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         filterChain.doFilter(request, response);
     }
 }
