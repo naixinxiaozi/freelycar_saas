@@ -28,12 +28,16 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (ExpiredJwtException eje) {
             logger.error("JWT过期异常捕获，返回前端提示信息");
+            logger.error(eje.getMessage(), eje);
             response.setContentType("application/json");
             response.getOutputStream().print(JSONResult.fillResultString(-1, "JWT Expired", null));
+            return;
         } catch (JwtException je) {
             logger.error("JWT其他异常捕获，返回前端提示信息");
+            logger.error(je.getMessage(), je);
             response.setContentType("application/json");
             response.getOutputStream().print(JSONResult.fillResultString(-1, "JWT Error", null));
+            return;
         }
 
 
