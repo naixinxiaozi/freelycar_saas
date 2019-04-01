@@ -295,15 +295,23 @@ public class WxUserInfoService {
             wxUser.setOpenId(openId);
             res = wxUserInfoRepository.save(wxUser);
 
-            // 如果trueName不为空，更新其所有client中所有相关
-            String trueName = res.getTrueName();
-            String gender = res.getGender();
-            List<Client> clients = clientRepository.findByPhoneAndDelStatusOrderByCreateTimeAsc(phone, Constants.DelStatus.NORMAL.isValue());
-            for (Client client : clients) {
-                client.setTrueName(trueName);
-                client.setNickName(nickName);
-                client.setGender(gender);
-                clientRepository.save(client);
+            try {
+                // 如果trueName不为空，更新其所有client中所有相关
+                String trueName = res.getTrueName();
+                String gender = res.getGender();
+                List<Client> clients = clientRepository.findByPhoneAndDelStatusOrderByCreateTimeAsc(phone, Constants.DelStatus.NORMAL.isValue());
+                for (Client client : clients) {
+                    if (StringUtils.hasText(trueName)) {
+                        client.setTrueName(trueName);
+                        client.setName(trueName);
+                    }
+                    client.setNickName(nickName);
+                    client.setGender(gender);
+                    clientRepository.save(client);
+                }
+                logger.info("微信登录时同步client表信息结束");
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
             }
         }
 

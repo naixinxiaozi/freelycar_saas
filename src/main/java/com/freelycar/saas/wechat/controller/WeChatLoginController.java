@@ -74,7 +74,7 @@ public class WeChatLoginController {
         log.info("nickName:" + nickName);
         JSONObject json = this.verifySmsCode(phone, smscode);
         if (StringUtils.hasText(json.getString("error"))) {
-            log.debug(phone + ";code:" + smscode + " 验证失败。。。");
+            log.error(phone + ";code:" + smscode + " 验证失败。。。");
             return ResultJsonObject.getErrorResult(json);
         } else {
             return wxUserInfoService.wechatLogin(phone, openId, headimgurl, nickName);
