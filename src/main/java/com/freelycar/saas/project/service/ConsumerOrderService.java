@@ -252,7 +252,7 @@ public class ConsumerOrderService {
     public List<ReservationOrderInfo> listReservationOrders(String licensePlate, String storeId) {
         StringBuilder sql = new StringBuilder();
         sql.append(" SELECT co.id, co.licensePlate as licensePlate, co.carBrand as carBrand, co.carType as carType, co.clientName AS clientName, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) AS projectNames, co.createTime AS createTime, co.parkingLocation AS parkingLocation, d.arkSn AS arkSn, d.doorSn AS doorSn, concat( ( SELECT ark.`name` FROM ark WHERE ark.id = d.arkId ), '-', d.doorSn, '门' ) AS keyLocation FROM door d LEFT JOIN consumerOrder co ON co.id = d.orderId WHERE co.state = 0 ")
-                .append(" AND co.storeId = ").append(storeId);
+                .append(" AND co.storeId = '").append(storeId).append("' ");
         if (StringUtils.hasText(licensePlate)) {
             sql.append(" and co.licensePlate like '%").append(licensePlate).append("%' ");
         }
@@ -281,7 +281,7 @@ public class ConsumerOrderService {
     public List<FinishOrderInfo> listServicingOrders(String licensePlate, String storeId) {
         StringBuilder sql = new StringBuilder();
         sql.append(" SELECT co.id, co.clientName AS clientName, co.licensePlate as licensePlate, co.carBrand as carBrand, co.carType as carType, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) projectNames, co.pickTime as pickTime FROM consumerOrder co WHERE co.delStatus = 0 AND co.orderType = 2 AND co.state = 1 ")
-                .append(" AND co.storeId = ").append(storeId);
+                .append(" AND co.storeId = '").append(storeId).append("' ");
         if (StringUtils.hasText(licensePlate)) {
             sql.append(" AND co.licensePlate LIKE '%").append(licensePlate).append("%' ");
         }

@@ -294,6 +294,17 @@ public class WxUserInfoService {
             wxUser.setNickName(nickName);
             wxUser.setOpenId(openId);
             res = wxUserInfoRepository.save(wxUser);
+
+            // 如果trueName不为空，更新其所有client中所有相关
+            String trueName = res.getTrueName();
+            String gender = res.getGender();
+            List<Client> clients = clientRepository.findByPhoneAndDelStatusOrderByCreateTimeAsc(phone, Constants.DelStatus.NORMAL.isValue());
+            for (Client client : clients) {
+                client.setTrueName(trueName);
+                client.setNickName(nickName);
+                client.setGender(gender);
+                clientRepository.save(client);
+            }
         }
 
         // 去获取jwt
