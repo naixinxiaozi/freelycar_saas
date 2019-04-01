@@ -25,6 +25,7 @@ import java.util.List;
  * @email toby911115@gmail.com
  */
 public class TokenAuthenticationUtil {
+
     private static Logger logger = LoggerFactory.getLogger(TokenAuthenticationUtil.class);
 
     private static final long EXPIRATIONTIME = 432_000_000;     // 5天

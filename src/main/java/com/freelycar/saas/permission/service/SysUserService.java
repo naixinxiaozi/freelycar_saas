@@ -41,6 +41,16 @@ public class SysUserService {
     }
 
     /**
+     * 根据用户名查询用户信息
+     *
+     * @param userName
+     * @return
+     */
+    public SysUser getUserInfoByUserName(String userName) {
+        return sysUserRepository.findTopByUsernameAndDelStatus(userName, Constants.DelStatus.NORMAL.isValue());
+    }
+
+    /**
      * 保存
      *
      * @param sysUser
@@ -153,4 +163,5 @@ public class SysUserService {
         return sysUserRepository.findByDelStatus(Constants.DelStatus.NORMAL.isValue(), pageable);
     }
 
+    //
 }

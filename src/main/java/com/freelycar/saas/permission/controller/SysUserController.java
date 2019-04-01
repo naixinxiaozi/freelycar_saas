@@ -70,4 +70,8 @@ public class SysUserController {
         return ResultJsonObject.getDefaultResult(PaginationRJO.of(sysUserService.list(storeId, currentPage, pageSize)));
     }
 
+    @GetMapping("/getUserInfoByUserName")
+    public ResultJsonObject getUserInfoByUserName(@RequestParam String userName) {
+        return ResultJsonObject.getDefaultResult(sysUserService.getUserInfoByUserName(userName));
+    }
 }

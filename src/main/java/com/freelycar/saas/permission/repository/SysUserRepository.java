@@ -23,6 +23,8 @@ public interface SysUserRepository extends JpaRepository<SysUser, Long> {
 
     SysUser findByDelStatusAndUsernameAndPassword(boolean delStatus, String username, String password);
 
+    SysUser findTopByUsernameAndDelStatus(String username, boolean delStatus);
+
     @Transactional
     @Modifying
     @Query(value = "update sysUser set delStatus=1 where id=:id", nativeQuery = true)
