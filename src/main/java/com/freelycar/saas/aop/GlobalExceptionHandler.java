@@ -16,13 +16,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class GlobalExceptionHandler {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @ExceptionHandler(Exception.class)
-    public String handleException(Exception e, RedirectAttributes redirectAttributes) {
-        logger.error("捕获到通用的异常：");
-        logger.error(e.getMessage(), e);
-        redirectAttributes.addFlashAttribute("message", e.getCause().getMessage());
-        return "捕获到通用的异常";
-    }
+//    @ExceptionHandler(Exception.class)
+//    public String handleException(Exception e, RedirectAttributes redirectAttributes) {
+//        logger.error("捕获到通用的异常：");
+//        logger.error(e.getMessage(), e);
+//        redirectAttributes.addFlashAttribute("message", e.getCause().getMessage());
+//        return "捕获到通用的异常";
+//    }
 
     @ExceptionHandler(MultipartException.class)
     public String handleMultipartError(MultipartException e, RedirectAttributes redirectAttributes) {

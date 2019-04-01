@@ -219,7 +219,7 @@ public class CouponServiceService {
         }
 
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT cs.id, cs.price, cs.`name`, p.price AS originalPrice FROM couponService cs LEFT JOIN project p ON p.id = cs.projectId WHERE cs.storeId = ").append(storeId).append(" AND cs.bookOnline = 1 AND cs.delStatus = 0 ORDER BY cs.createTime DESC ");
+        sql.append(" SELECT cs.id, cs.price, cs.`name`, p.price AS originalPrice FROM couponService cs LEFT JOIN project p ON p.id = cs.projectId WHERE cs.storeId = '").append(storeId).append("' AND cs.bookOnline = 1 AND cs.delStatus = 0 ORDER BY cs.createTime DESC ");
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());
