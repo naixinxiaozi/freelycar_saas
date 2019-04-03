@@ -48,11 +48,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/wechat/staff/login").permitAll()
                 .antMatchers("/wechat/staff/logout").permitAll()
                 //测试请求mobile
-//                .antMatchers(HttpMethod.GET, "/mobile/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/mobile/**").hasRole("ADMIN")
                 // 添加权限检测
-//                .antMatchers("/hello").hasAuthority("AUTH_WRITE")
+                .antMatchers("/hello").hasAuthority("AUTH_WRITE")
                 // 角色检测
-//                .antMatchers("/world").hasRole("ADMIN")
+                .antMatchers("/world").hasRole("ADMIN")
                 // 所有请求需要身份认证
                 .anyRequest().authenticated()
                 .and()
