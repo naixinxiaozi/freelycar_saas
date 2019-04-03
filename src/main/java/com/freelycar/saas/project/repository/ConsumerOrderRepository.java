@@ -5,8 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author tangwei - Toby
@@ -27,4 +29,11 @@ public interface ConsumerOrderRepository extends JpaRepository<ConsumerOrder, St
     List<ConsumerOrder> findAllByStoreIdAndOrderTypeAndStateAndDelStatusAndLicensePlateContainingOrderByCreateTimeAsc(String storeId, int orderType, int state, boolean delStatus, String licensePlate);
 
     List<ConsumerOrder> findAllByStoreIdAndOrderTypeAndStateAndDelStatusAndLicensePlateContainingOrderByPickTimeAsc(String storeId, int orderType, int state, boolean delStatus, String licensePlate);
+
+    @Query(value = "SELECT cast( sum( co.actualPrice ) AS DECIMAL ( 15, 2 ) ) AS result FROM consumerorder co WHERE co.delStatus = 0 AND co.payState = 2 AND co.storeId = :storeId AND co.isMember = :isMember", nativeQuery = true)
+    Map sumIncomeForOneStoreByMember(String storeId, int isMember);
+
+    @Query(value = "SELECT cast( sum( co.actualPrice ) AS DECIMAL ( 15, 2 ) ) AS result FROM consumerorder co WHERE co.delStatus = 0 AND co.payState = 2 AND co.storeId = :storeId ", nativeQuery = true)
+    Map sumAllIncomeForOneStore(String storeId);
+
 }

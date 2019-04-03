@@ -1,5 +1,6 @@
 package com.freelycar.saas.project.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.exception.*;
 import com.freelycar.saas.project.entity.*;
@@ -1167,6 +1168,11 @@ public class ConsumerOrderService {
             return ResultJsonObject.getCustomResult(null, ResultCode.RESULT_DATA_NONE);
         }
         consumerOrder.setPayState(Constants.PayState.FINISH_PAY.getValue());
+
+        //设置支付方式一为微信支付，且支付方式一的金额为订单总体实付金额
+        consumerOrder.setFirstPayMethod(Constants.PayMethod.WECHAT_PAY.getCode());
+        consumerOrder.setFirstActualPrice(consumerOrder.getActualPrice());
+
         ConsumerOrder orderRes = updateOrder(consumerOrder);
         if (null == orderRes) {
             ResultJsonObject.getErrorResult(null, "单据数据更新失败");
@@ -1186,6 +1192,9 @@ public class ConsumerOrderService {
             throw new ObjectNotFoundException("订单数据未查询到，无法更新卡券状态和订单状态");
         }
         consumerOrder.setPayState(Constants.PayState.FINISH_PAY.getValue());
+        //设置支付方式一为微信支付，且支付方式一的金额为订单总体实付金额
+        consumerOrder.setFirstPayMethod(Constants.PayMethod.WECHAT_PAY.getCode());
+        consumerOrder.setFirstActualPrice(consumerOrder.getActualPrice());
 
         //更新卡/券的状态，是其可以使用
         String cardOrCouponId = consumerOrder.getCardOrCouponId();
@@ -1362,7 +1371,18 @@ public class ConsumerOrderService {
         return PaginationRJO.of(page);
     }
 
-
+    /**
+     * 查询/导出流水明细
+     *
+     * @param storeId
+     * @param startTime
+     * @param endTime
+     * @param currentPage
+     * @param pageSize
+     * @param export
+     * @return
+     * @throws ArgumentMissingException
+     */
     public ResultJsonObject listOrderParticulars(String storeId, String startTime, String endTime, Integer currentPage, Integer pageSize, boolean export) throws ArgumentMissingException {
 
         if (StringUtils.isEmpty(storeId)) {
@@ -1407,4 +1427,54 @@ public class ConsumerOrderService {
             return ResultJsonObject.getDefaultResult(PaginationRJO.of(page));
         }
     }
+
+    /**
+     * 获取某门店实际收入
+     *
+     * @param storeId
+     * @param isMember null：所有；true：会员消费；false：散客消费
+     * @return
+     * @throws ArgumentMissingException
+     */
+    public BigDecimal getStoreIncome(String storeId, Boolean isMember) throws ArgumentMissingException {
+        if (StringUtils.hasText(storeId)) {
+            Map result;
+            if (null == isMember) {
+                result = consumerOrderRepository.sumAllIncomeForOneStore(storeId);
+            } else {
+                if (isMember) {
+                    result = consumerOrderRepository.sumIncomeForOneStoreByMember(storeId, 1);
+                } else {
+                    result = consumerOrderRepository.sumIncomeForOneStoreByMember(storeId, 0);
+                }
+            }
+            BigDecimal income = (BigDecimal) result.get("result");
+            if (null == income) {
+                income = BigDecimal.valueOf(0);
+            }
+            return income;
+        } else {
+            throw new ArgumentMissingException("参数storeId值为空");
+        }
+    }
+
+    /**
+     * 获取门店的收入总计（总体、会员、散客）
+     *
+     * @param storeId
+     * @return
+     * @throws ArgumentMissingException
+     */
+    public JSONObject getStoreIncome(String storeId) throws ArgumentMissingException {
+        BigDecimal allActualIncome = getStoreIncome(storeId, null);
+        BigDecimal memberActualIncome = getStoreIncome(storeId, true);
+        BigDecimal nonMemberActualIncome = getStoreIncome(storeId, false);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("allActualIncome", allActualIncome);
+        jsonObject.put("memberActualIncome", memberActualIncome);
+        jsonObject.put("nonMemberActualIncome", nonMemberActualIncome);
+        return jsonObject;
+    }
+
+
 }

@@ -258,4 +258,18 @@ public class ConsumerOrderController {
             e.printStackTrace();
         }
     }
+
+
+    @ApiOperation(value = "获取某门店的收入统计", produces = "application/json")
+    @LoggerManage(description = "调用方法：获取某门店的收入统计")
+    @GetMapping("/getStoreIncome")
+    public ResultJsonObject getStoreIncome(@RequestParam String storeId) {
+        try {
+            return ResultJsonObject.getDefaultResult(consumerOrderService.getStoreIncome(storeId));
+        } catch (ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
+    }
 }
