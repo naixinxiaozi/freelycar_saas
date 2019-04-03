@@ -72,6 +72,15 @@ public class WeChatLoginController {
         log.info("openId:" + openId);
         log.info("headimgurl:" + headimgurl);
         log.info("nickName:" + nickName);
+
+        //添加后台验证，阻断前端传送字符串“undefined”到后台
+        if (StringUtils.hasText(openId) && "undefined".equalsIgnoreCase(openId)) {
+            String paramMsg = "接收到参数openId为undefined，请重新微信授权后再试。";
+            log.error(paramMsg);
+            return ResultJsonObject.getErrorResult(null, paramMsg);
+        }
+
+        //验证码验证
         JSONObject json = this.verifySmsCode(phone, smscode);
         if (StringUtils.hasText(json.getString("error"))) {
             log.error(phone + ";code:" + smscode + " 验证失败。。。");
