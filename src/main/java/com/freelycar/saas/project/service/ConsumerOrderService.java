@@ -1436,7 +1436,7 @@ public class ConsumerOrderService {
      * @return
      * @throws ArgumentMissingException
      */
-    public BigDecimal getStoreIncome(String storeId, Boolean isMember) throws ArgumentMissingException {
+    public BigDecimal sumStoreIncome(String storeId, Boolean isMember) throws ArgumentMissingException {
         if (StringUtils.hasText(storeId)) {
             Map result;
             if (null == isMember) {
@@ -1466,9 +1466,9 @@ public class ConsumerOrderService {
      * @throws ArgumentMissingException
      */
     public JSONObject getStoreIncome(String storeId) throws ArgumentMissingException {
-        BigDecimal allActualIncome = getStoreIncome(storeId, null);
-        BigDecimal memberActualIncome = getStoreIncome(storeId, true);
-        BigDecimal nonMemberActualIncome = getStoreIncome(storeId, false);
+        BigDecimal allActualIncome = sumStoreIncome(storeId, null);
+        BigDecimal memberActualIncome = sumStoreIncome(storeId, true);
+        BigDecimal nonMemberActualIncome = sumStoreIncome(storeId, false);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("allActualIncome", allActualIncome);
         jsonObject.put("memberActualIncome", memberActualIncome);
@@ -1476,5 +1476,51 @@ public class ConsumerOrderService {
         return jsonObject;
     }
 
+    /**
+     * 获取某门店、某种支付方式的总和
+     *
+     * @param storeId
+     * @param payMethodCode
+     * @return
+     * @throws ArgumentMissingException
+     */
+    public double sumIncomeForOneStoreByPayMethod(String storeId, int payMethodCode) throws ArgumentMissingException {
+        BigDecimal firstIncome;
+        BigDecimal secondIncome;
+        if (StringUtils.hasText(storeId)) {
+            Map firstIncomeResult = consumerOrderRepository.sumFirstIncomeForOneStoreByPayMethod(storeId, payMethodCode);
+            Map secondIncomeResult = consumerOrderRepository.sumSecondIncomeForOneStoreByPayMethod(storeId, payMethodCode);
+            firstIncome = (BigDecimal) firstIncomeResult.get("result");
+            secondIncome = (BigDecimal) secondIncomeResult.get("result");
+            if (null == firstIncome) {
+                firstIncome = BigDecimal.valueOf(0);
+            }
+            if (null == secondIncome) {
+                secondIncome = BigDecimal.valueOf(0);
+            }
 
+            double result = firstIncome.doubleValue() + secondIncome.doubleValue();
+            return RoundTool.round(result, 2, BigDecimal.ROUND_HALF_UP);
+        } else {
+            throw new ArgumentMissingException("参数storeId值为空");
+        }
+    }
+
+    /**
+     * 获取某门店所有支付方式的总和
+     *
+     * @param storeId
+     * @return
+     * @throws ArgumentMissingException
+     */
+    public JSONObject getAllPayMethodIncomeForOneStore(String storeId) throws ArgumentMissingException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("cash", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.CASH.getCode()));
+        jsonObject.put("creditCard", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.CREDIT_CARD.getCode()));
+        jsonObject.put("suningPay", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.SUNING_PAY.getCode()));
+        jsonObject.put("alipay", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.ALIPAY.getCode()));
+        jsonObject.put("wechatPay", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.WECHAT_PAY.getCode()));
+        jsonObject.put("card", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.CARD.getCode()));
+        return jsonObject;
+    }
 }

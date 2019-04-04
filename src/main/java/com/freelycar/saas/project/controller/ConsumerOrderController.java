@@ -1,5 +1,6 @@
 package com.freelycar.saas.project.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
@@ -265,7 +266,14 @@ public class ConsumerOrderController {
     @GetMapping("/getStoreIncome")
     public ResultJsonObject getStoreIncome(@RequestParam String storeId) {
         try {
-            return ResultJsonObject.getDefaultResult(consumerOrderService.getStoreIncome(storeId));
+            JSONObject resultJSON = new JSONObject();
+            JSONObject memberIncomeJSON = consumerOrderService.getStoreIncome(storeId);
+            JSONObject payMethodIncomeJSON = consumerOrderService.getAllPayMethodIncomeForOneStore(storeId);
+
+            resultJSON.put("memberIncome", memberIncomeJSON);
+            resultJSON.put("payMethodIncome", payMethodIncomeJSON);
+
+            return ResultJsonObject.getDefaultResult(resultJSON);
         } catch (ArgumentMissingException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
