@@ -29,7 +29,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException eje) {
             logger.error("JWT过期异常捕获，返回前端提示信息");
-            logger.error(eje.getMessage(), eje);
+            logger.error(eje.getMessage());
             response.setContentType("application/json");
             response.getOutputStream().print(JSONResult.fillResultString(-1, "JWT Expired", null));
         } catch (JwtException je) {
