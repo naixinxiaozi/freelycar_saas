@@ -22,9 +22,9 @@ public class PrintTest {
     static final Logger logger = LoggerFactory.getLogger(PrintTest.class);
 
     public static void main(String[] args) {
-        BoxCommand cmd = new BoxCommand("869696048118504", 1, 5);
+        BoxCommand cmd = new BoxCommand("", 1, 1);
         try {
-            BoxCommandResponse response = SafeConnection.postAndGetResponse(URL_QUERY_BOARD, cmd, BoxCommandResponse.class);
+            BoxCommandResponse response = SafeConnection.postAndGetResponse(URL_OPEN_BOX, cmd, BoxCommandResponse.class);
             System.out.println(response);
         } catch (IOException e) {
             e.printStackTrace();
