@@ -1531,7 +1531,7 @@ public class ConsumerOrderService {
      * @return
      * @throws ArgumentMissingException
      */
-    public JSONObject getProjectPieChart(String storeId) throws ArgumentMissingException {
+    public List<ProjectPieChart> getProjectPieChart(String storeId) throws ArgumentMissingException {
 
         if (StringUtils.isEmpty(storeId)) {
             throw new ArgumentMissingException("参数storeId为空值，无法查询流水明细");
@@ -1550,11 +1550,6 @@ public class ConsumerOrderService {
         //关闭em
         em.close();
 
-        //处理成json
-        JSONObject pieChartJSON = new JSONObject();
-        for (ProjectPieChart projectPieChart : projectPieCharts) {
-            pieChartJSON.put(projectPieChart.getProjectId(), JSONObject.parseObject(String.valueOf(projectPieChart)));
-        }
-        return pieChartJSON;
+        return projectPieCharts;
     }
 }

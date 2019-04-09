@@ -269,7 +269,7 @@ public class ConsumerOrderController {
             JSONObject resultJSON = new JSONObject();
             JSONObject memberIncomeJSON = consumerOrderService.getStoreIncome(storeId);
             JSONObject payMethodIncomeJSON = consumerOrderService.getAllPayMethodIncomeForOneStore(storeId);
-            JSONObject pieChartJSON = consumerOrderService.getProjectPieChart(storeId);
+            List pieChartJSON = consumerOrderService.getProjectPieChart(storeId);
 
             resultJSON.put("memberIncome", memberIncomeJSON);
             resultJSON.put("payMethodIncome", payMethodIncomeJSON);
