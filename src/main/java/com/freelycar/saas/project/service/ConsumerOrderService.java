@@ -1523,4 +1523,38 @@ public class ConsumerOrderService {
         jsonObject.put("card", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.CARD.getCode()));
         return jsonObject;
     }
+
+    /**
+     * 获取按项目的收入统计饼图数据
+     *
+     * @param storeId
+     * @return
+     * @throws ArgumentMissingException
+     */
+    public JSONObject getProjectPieChart(String storeId) throws ArgumentMissingException {
+
+        if (StringUtils.isEmpty(storeId)) {
+            throw new ArgumentMissingException("参数storeId为空值，无法查询流水明细");
+        }
+
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(" SELECT cpi.projectId, cpi.projectName, ROUND(sum( cpi.price ), 2 ) AS projectPrice, ROUND( sum( cpi.price ) / t.totalPrice, 4 ) AS percent, COUNT(1) AS `count` FROM consumerprojectinfo cpi LEFT JOIN consumerorder co ON cpi.consumerOrderId = co.id, (SELECT round( sum( cpi.price ), 2 ) AS totalPrice FROM consumerprojectinfo cpi LEFT JOIN consumerorder co ON cpi.consumerOrderId = co.id WHERE cpi.delStatus = 0 AND co.storeId = '" + storeId + "' AND co.payState = 2 ) AS t WHERE cpi.delStatus = 0 AND co.storeId = '" + storeId + "' AND co.payState = 2 GROUP BY cpi.projectId ");
+
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(ProjectPieChart.class));
+
+
+        @SuppressWarnings({"unused", "unchecked"})
+        List<ProjectPieChart> projectPieCharts = nativeQuery.getResultList();
+
+        //关闭em
+        em.close();
+
+        //处理成json
+        JSONObject pieChartJSON = new JSONObject();
+        for (ProjectPieChart projectPieChart : projectPieCharts) {
+            pieChartJSON.put(projectPieChart.getProjectId(), JSONObject.parseObject(String.valueOf(projectPieChart)));
+        }
+        return pieChartJSON;
+    }
 }
