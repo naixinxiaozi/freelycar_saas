@@ -20,7 +20,7 @@ public class ArkOps {
 //        openBox(deviceId,boxId);
 
         //打开所有柜门
-        openAllBox(deviceId, boxCount);
+//        openAllBox(deviceId, boxCount);
 
         //查询某个柜门状态
 //        queryBox(deviceId, boxId);
