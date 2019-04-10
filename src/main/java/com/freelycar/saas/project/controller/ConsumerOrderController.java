@@ -20,6 +20,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -264,12 +266,30 @@ public class ConsumerOrderController {
     @ApiOperation(value = "获取某门店的收入统计", produces = "application/json")
     @LoggerManage(description = "调用方法：获取某门店的收入统计")
     @GetMapping("/getStoreIncome")
-    public ResultJsonObject getStoreIncome(@RequestParam String storeId) {
+    public ResultJsonObject getStoreIncome(
+            @RequestParam String storeId,
+            @RequestParam(required = false) String startTime,
+            @RequestParam(required = false) String endTime
+    ) {
         try {
+            if (StringUtils.hasText(startTime)) {
+                startTime += " 00:00:00";
+            } else {
+                startTime = "2019-01-01 00:00:00";
+            }
+
+            if (StringUtils.hasText(endTime)) {
+                endTime += " 00:00:00";
+            } else {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                endTime = dateFormat.format(new Date());
+            }
+
+
             JSONObject resultJSON = new JSONObject();
-            JSONObject memberIncomeJSON = consumerOrderService.getStoreIncome(storeId);
-            JSONObject payMethodIncomeJSON = consumerOrderService.getAllPayMethodIncomeForOneStore(storeId);
-            List pieChartJSON = consumerOrderService.getProjectPieChart(storeId);
+            JSONObject memberIncomeJSON = consumerOrderService.getStoreIncome(storeId, startTime, endTime);
+            JSONObject payMethodIncomeJSON = consumerOrderService.getAllPayMethodIncomeForOneStore(storeId, startTime, endTime);
+            List pieChartJSON = consumerOrderService.getProjectPieChart(storeId, startTime, endTime);
 
             resultJSON.put("memberIncome", memberIncomeJSON);
             resultJSON.put("payMethodIncome", payMethodIncomeJSON);

@@ -1436,16 +1436,18 @@ public class ConsumerOrderService {
      * @return
      * @throws ArgumentMissingException
      */
-    public BigDecimal sumStoreIncome(String storeId, Boolean isMember) throws ArgumentMissingException {
+    public BigDecimal sumStoreIncome(String storeId, Boolean isMember, String startTime, String endTime) throws ArgumentMissingException {
         if (StringUtils.hasText(storeId)) {
+
+
             Map result;
             if (null == isMember) {
-                result = consumerOrderRepository.sumAllIncomeForOneStore(storeId);
+                result = consumerOrderRepository.sumAllIncomeForOneStore(storeId, startTime, endTime);
             } else {
                 if (isMember) {
-                    result = consumerOrderRepository.sumIncomeForOneStoreByMember(storeId, 1);
+                    result = consumerOrderRepository.sumIncomeForOneStoreByMember(storeId, 1, startTime, endTime);
                 } else {
-                    result = consumerOrderRepository.sumIncomeForOneStoreByMember(storeId, 0);
+                    result = consumerOrderRepository.sumIncomeForOneStoreByMember(storeId, 0, startTime, endTime);
                 }
             }
             BigDecimal income = (BigDecimal) result.get("result");
@@ -1462,13 +1464,15 @@ public class ConsumerOrderService {
      * 获取门店的收入总计（总体、会员、散客）
      *
      * @param storeId
+     * @param startTime
+     * @param endTime
      * @return
      * @throws ArgumentMissingException
      */
-    public JSONObject getStoreIncome(String storeId) throws ArgumentMissingException {
-        BigDecimal allActualIncome = sumStoreIncome(storeId, null);
-        BigDecimal memberActualIncome = sumStoreIncome(storeId, true);
-        BigDecimal nonMemberActualIncome = sumStoreIncome(storeId, false);
+    public JSONObject getStoreIncome(String storeId, String startTime, String endTime) throws ArgumentMissingException {
+        BigDecimal allActualIncome = sumStoreIncome(storeId, null, startTime, endTime);
+        BigDecimal memberActualIncome = sumStoreIncome(storeId, true, startTime, endTime);
+        BigDecimal nonMemberActualIncome = sumStoreIncome(storeId, false, startTime, endTime);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("allActualIncome", allActualIncome);
         jsonObject.put("memberActualIncome", memberActualIncome);
@@ -1484,12 +1488,12 @@ public class ConsumerOrderService {
      * @return
      * @throws ArgumentMissingException
      */
-    public double sumIncomeForOneStoreByPayMethod(String storeId, int payMethodCode) throws ArgumentMissingException {
+    public double sumIncomeForOneStoreByPayMethod(String storeId, int payMethodCode, String startTime, String endTime) throws ArgumentMissingException {
         BigDecimal firstIncome;
         BigDecimal secondIncome;
         if (StringUtils.hasText(storeId)) {
-            Map firstIncomeResult = consumerOrderRepository.sumFirstIncomeForOneStoreByPayMethod(storeId, payMethodCode);
-            Map secondIncomeResult = consumerOrderRepository.sumSecondIncomeForOneStoreByPayMethod(storeId, payMethodCode);
+            Map firstIncomeResult = consumerOrderRepository.sumFirstIncomeForOneStoreByPayMethod(storeId, payMethodCode, startTime, endTime);
+            Map secondIncomeResult = consumerOrderRepository.sumSecondIncomeForOneStoreByPayMethod(storeId, payMethodCode, startTime, endTime);
             firstIncome = (BigDecimal) firstIncomeResult.get("result");
             secondIncome = (BigDecimal) secondIncomeResult.get("result");
             if (null == firstIncome) {
@@ -1510,17 +1514,19 @@ public class ConsumerOrderService {
      * 获取某门店所有支付方式的总和
      *
      * @param storeId
+     * @param startTime
+     * @param endTime
      * @return
      * @throws ArgumentMissingException
      */
-    public JSONObject getAllPayMethodIncomeForOneStore(String storeId) throws ArgumentMissingException {
+    public JSONObject getAllPayMethodIncomeForOneStore(String storeId, String startTime, String endTime) throws ArgumentMissingException {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("cash", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.CASH.getCode()));
-        jsonObject.put("creditCard", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.CREDIT_CARD.getCode()));
-        jsonObject.put("suningPay", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.SUNING_PAY.getCode()));
-        jsonObject.put("alipay", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.ALIPAY.getCode()));
-        jsonObject.put("wechatPay", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.WECHAT_PAY.getCode()));
-        jsonObject.put("card", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.CARD.getCode()));
+        jsonObject.put("cash", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.CASH.getCode(), startTime, endTime));
+        jsonObject.put("creditCard", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.CREDIT_CARD.getCode(), startTime, endTime));
+        jsonObject.put("suningPay", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.SUNING_PAY.getCode(), startTime, endTime));
+        jsonObject.put("alipay", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.ALIPAY.getCode(), startTime, endTime));
+        jsonObject.put("wechatPay", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.WECHAT_PAY.getCode(), startTime, endTime));
+        jsonObject.put("card", sumIncomeForOneStoreByPayMethod(storeId, Constants.PayMethod.CARD.getCode(), startTime, endTime));
         return jsonObject;
     }
 
@@ -1528,10 +1534,12 @@ public class ConsumerOrderService {
      * 获取按项目的收入统计饼图数据
      *
      * @param storeId
+     * @param startTime
+     * @param endTime
      * @return
      * @throws ArgumentMissingException
      */
-    public List<ProjectPieChart> getProjectPieChart(String storeId) throws ArgumentMissingException {
+    public List<ProjectPieChart> getProjectPieChart(String storeId, String startTime, String endTime) throws ArgumentMissingException {
 
         if (StringUtils.isEmpty(storeId)) {
             throw new ArgumentMissingException("参数storeId为空值，无法查询流水明细");
@@ -1539,7 +1547,7 @@ public class ConsumerOrderService {
 
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
-        Query nativeQuery = em.createNativeQuery(" SELECT cpi.projectId, cpi.projectName, ROUND(sum( cpi.price ), 2 ) AS projectPrice, ROUND( sum( cpi.price ) / t.totalPrice, 4 ) AS percent, COUNT(1) AS `count` FROM consumerprojectinfo cpi LEFT JOIN consumerorder co ON cpi.consumerOrderId = co.id, (SELECT round( sum( cpi.price ), 2 ) AS totalPrice FROM consumerprojectinfo cpi LEFT JOIN consumerorder co ON cpi.consumerOrderId = co.id WHERE cpi.delStatus = 0 AND co.storeId = '" + storeId + "' AND co.payState = 2 ) AS t WHERE cpi.delStatus = 0 AND co.storeId = '" + storeId + "' AND co.payState = 2 GROUP BY cpi.projectId ");
+        Query nativeQuery = em.createNativeQuery(" SELECT cpi.projectId, cpi.projectName, ROUND(sum( cpi.price ), 2 ) AS projectPrice, ROUND( sum( cpi.price ) / t.totalPrice, 4 ) AS percent, COUNT(1) AS `count` FROM consumerprojectinfo cpi LEFT JOIN consumerorder co ON cpi.consumerOrderId = co.id, (SELECT round( sum( cpi.price ), 2 ) AS totalPrice FROM consumerprojectinfo cpi LEFT JOIN consumerorder co ON cpi.consumerOrderId = co.id WHERE cpi.delStatus = 0 AND co.storeId = '" + storeId + "' AND co.payState = 2 AND co.createTime >= '" + startTime + "' AND co.createTime <= '" + endTime + "' ) AS t WHERE cpi.delStatus = 0 AND co.storeId = '" + storeId + "' AND co.payState = 2 AND co.createTime >= '" + startTime + "' AND co.createTime <= '" + endTime + "' GROUP BY cpi.projectId ");
 
         nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(ProjectPieChart.class));
 

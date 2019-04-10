@@ -30,15 +30,15 @@ public interface ConsumerOrderRepository extends JpaRepository<ConsumerOrder, St
 
     List<ConsumerOrder> findAllByStoreIdAndOrderTypeAndStateAndDelStatusAndLicensePlateContainingOrderByPickTimeAsc(String storeId, int orderType, int state, boolean delStatus, String licensePlate);
 
-    @Query(value = "SELECT cast( sum( co.actualPrice ) AS DECIMAL ( 15, 2 ) ) AS result FROM consumerorder co WHERE co.delStatus = 0 AND co.payState = 2 AND co.storeId = :storeId AND co.isMember = :isMember", nativeQuery = true)
-    Map sumIncomeForOneStoreByMember(String storeId, int isMember);
+    @Query(value = "SELECT cast( sum( co.actualPrice ) AS DECIMAL ( 15, 2 ) ) AS result FROM consumerorder co WHERE co.delStatus = 0 AND co.payState = 2 AND co.storeId = :storeId AND co.isMember = :isMember  AND co.createTime >= :startTime AND co.createTime <= :endTime ", nativeQuery = true)
+    Map sumIncomeForOneStoreByMember(String storeId, int isMember, String startTime, String endTime);
 
-    @Query(value = "SELECT cast( sum( co.actualPrice ) AS DECIMAL ( 15, 2 ) ) AS result FROM consumerorder co WHERE co.delStatus = 0 AND co.payState = 2 AND co.storeId = :storeId ", nativeQuery = true)
-    Map sumAllIncomeForOneStore(String storeId);
+    @Query(value = "SELECT cast( sum( co.actualPrice ) AS DECIMAL ( 15, 2 ) ) AS result FROM consumerorder co WHERE co.delStatus = 0 AND co.payState = 2 AND co.storeId = :storeId AND co.createTime >= :startTime AND co.createTime <= :endTime ", nativeQuery = true)
+    Map sumAllIncomeForOneStore(String storeId, String startTime, String endTime);
 
-    @Query(value = "select cast( sum( co.firstActualPrice ) AS DECIMAL ( 15, 2 ) ) AS result  from consumerorder co where co.delStatus=0 and co.payState=2 and co.storeId = :storeId and co.firstPayMethod = :payMethod ", nativeQuery = true)
-    Map sumFirstIncomeForOneStoreByPayMethod(String storeId, int payMethod);
+    @Query(value = "select cast( sum( co.firstActualPrice ) AS DECIMAL ( 15, 2 ) ) AS result  from consumerorder co where co.delStatus=0 and co.payState=2 and co.storeId = :storeId and co.firstPayMethod = :payMethod AND co.createTime >= :startTime AND co.createTime <= :endTime ", nativeQuery = true)
+    Map sumFirstIncomeForOneStoreByPayMethod(String storeId, int payMethod, String startTime, String endTime);
 
-    @Query(value = "select cast( sum( co.secondActualPrice ) AS DECIMAL ( 15, 2 ) ) AS result  from consumerorder co where co.delStatus=0 and co.payState=2 and co.storeId = :storeId and co.secondPayMethod = :payMethod ", nativeQuery = true)
-    Map sumSecondIncomeForOneStoreByPayMethod(String storeId, int payMethod);
+    @Query(value = "select cast( sum( co.secondActualPrice ) AS DECIMAL ( 15, 2 ) ) AS result  from consumerorder co where co.delStatus=0 and co.payState=2 and co.storeId = :storeId and co.secondPayMethod = :payMethod AND co.createTime >= :startTime AND co.createTime <= :endTime ", nativeQuery = true)
+    Map sumSecondIncomeForOneStoreByPayMethod(String storeId, int payMethod, String startTime, String endTime);
 }
