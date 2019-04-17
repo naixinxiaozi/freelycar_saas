@@ -22,7 +22,7 @@ public class PrintTest {
     static final Logger logger = LoggerFactory.getLogger(PrintTest.class);
 
     public static void main(String[] args) {
-        BoxCommand cmd = new BoxCommand("", 1, 1);
+        BoxCommand cmd = new BoxCommand("", 1, 4);
         try {
             BoxCommandResponse response = SafeConnection.postAndGetResponse(URL_OPEN_BOX, cmd, BoxCommandResponse.class);
             System.out.println(response);

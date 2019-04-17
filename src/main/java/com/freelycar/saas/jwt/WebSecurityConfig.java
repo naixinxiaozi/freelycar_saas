@@ -47,6 +47,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/wechat/login/**").permitAll()
                 .antMatchers("/wechat/staff/login").permitAll()
                 .antMatchers("/wechat/staff/logout").permitAll()
+                // 上传接口
+                .antMatchers("/upload/**").permitAll()
                 //测试请求mobile
                 .antMatchers(HttpMethod.GET, "/mobile/**").hasRole("ADMIN")
                 // 添加权限检测
