@@ -1,21 +1,25 @@
 package com.freelycar.saas.project.service;
 
-import com.freelycar.saas.basic.wrapper.Constants;
-import com.freelycar.saas.basic.wrapper.ResultCode;
-import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.exception.DataIsExistException;
-import com.freelycar.saas.exception.NormalException;
+import com.freelycar.saas.exception.DoorUsingException;
 import com.freelycar.saas.exception.ObjectNotFoundException;
 import com.freelycar.saas.project.entity.Ark;
 import com.freelycar.saas.project.repository.ArkRepository;
 import com.freelycar.saas.util.UpdateTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author tangwei - Toby
@@ -25,6 +29,8 @@ import java.sql.Timestamp;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class ArkService {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private ArkRepository arkRepository;
 
@@ -51,7 +57,7 @@ public class ArkService {
      * @param ark
      * @return
      */
-    public Ark modify(Ark ark) throws ArgumentMissingException, ObjectNotFoundException, NormalException {
+    public Ark modify(Ark ark) throws ArgumentMissingException, ObjectNotFoundException, DoorUsingException {
         if (null == ark) {
             throw new ArgumentMissingException("ark值为空");
         }
@@ -74,7 +80,7 @@ public class ArkService {
 
         //处理子表数据：
         if (doorService.isDoorUsing(id)) {
-            throw new NormalException("该智能柜存在正在使用的格子，暂时无法修改，请确认智能柜不被占用时再更改");
+            throw new DoorUsingException("该智能柜存在正在使用的格子，暂时无法修改，请确认智能柜不被占用时再更改");
         }
         //删除重新生成
         doorService.deleteAllByArkId(id);
@@ -134,14 +140,45 @@ public class ArkService {
         return ResultJsonObject.getCustomResult(arkSn, ResultCode.PARAM_NOT_COMPLETE);
     }
 
-    public void deleteArk(String arkId) throws ArgumentMissingException, ObjectNotFoundException, NormalException {
+    public void delete(String arkId) throws ArgumentMissingException, ObjectNotFoundException, DoorUsingException {
         if (StringUtils.isEmpty(arkId)) {
             throw new ArgumentMissingException("参数arkId为空值，无法执行删除操作");
         }
         if (doorService.isDoorUsing(arkId)) {
-            throw new NormalException("该智能柜存在正在使用的格子，暂时无法删除，请确认智能柜不被占用时再删除");
+            throw new DoorUsingException("智能柜：" + arkId + "存在正在使用的格子，暂时无法删除，请确认智能柜不被占用时再删除");
         }
         doorService.deleteAllByArkId(arkId);
         arkRepository.deleteById(arkId);
+    }
+
+    public ResultJsonObject batchDelete(String ids) throws ArgumentMissingException, ObjectNotFoundException {
+        if (StringUtils.isEmpty(ids)) {
+            throw new ArgumentMissingException("参数ids为空值，无法执行批量删除智能柜操作");
+        }
+
+        //遍历所有id，未占用的删除，占用的放入列表中返回给前端
+        List<String> doorUsingArkSnList = new ArrayList<>();
+        String[] idsList = ids.split(",");
+        for (String id : idsList) {
+            try {
+                delete(id);
+            } catch (DoorUsingException e) {
+                arkRepository.findById(id).ifPresent(ark -> doorUsingArkSnList.add(ark.getSn()));
+            }
+        }
+
+        String sucMsg = "删除操作执行成功。";
+        if (doorUsingArkSnList.size() > 0) {
+            sucMsg += "由于智能柜：" + doorUsingArkSnList.toString() + " 有在使用格口，暂时不能删除。";
+        }
+        return ResultJsonObject.getDefaultResult(sucMsg);
+    }
+
+    public Page<Ark> list(String storeId, Integer currentPage, Integer pageSize, String arkSn) {
+        Pageable pageable = PageableTools.basicPage(currentPage, pageSize, new SortDto("asc", "createTime"));
+        if (StringUtils.hasText(storeId)) {
+            return arkRepository.findAllByStoreIdAndSnContainingAndDelStatus(storeId, arkSn, Constants.DelStatus.NORMAL.isValue(), pageable);
+        }
+        return arkRepository.findAllBySnContainingAndDelStatus(arkSn, Constants.DelStatus.NORMAL.isValue(), pageable);
     }
 }
