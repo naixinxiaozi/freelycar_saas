@@ -1,10 +1,7 @@
 package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.Constants;
-import com.freelycar.saas.exception.ArgumentMissingException;
-import com.freelycar.saas.exception.NoEmptyArkException;
-import com.freelycar.saas.exception.OpenArkDoorFailedException;
-import com.freelycar.saas.exception.OpenArkDoorTimeOutException;
+import com.freelycar.saas.exception.*;
 import com.freelycar.saas.iotcloudcn.ArkOperation;
 import com.freelycar.saas.iotcloudcn.util.ArkThread;
 import com.freelycar.saas.iotcloudcn.util.BoxCommandResponse;
@@ -135,6 +132,39 @@ public class DoorService {
             door.setArkSn(arkSn);
             door.setDoorSn(i + 1);
             doorRepository.save(door);
+        }
+    }
+
+    public List<Door> findAllDoorsByArkId(String arkId) {
+        return doorRepository.findAllByArkIdAndDelStatus(arkId, Constants.DelStatus.NORMAL.isValue());
+    }
+
+    public boolean isDoorUsing(String arkId) throws ObjectNotFoundException {
+        boolean result = false;
+        List<Door> doors = findAllDoorsByArkId(arkId);
+        if (doors.isEmpty()) {
+            throw new ObjectNotFoundException("未找到arkId为：" + arkId + " 的door数据");
+        }
+
+        for (Door door : doors) {
+            int state = door.getState();
+            if (state == Constants.DoorState.USER_RESERVATION.getValue() || state == Constants.DoorState.STAFF_FINISH.getValue()) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+
+    public Door save(Door door) {
+        return doorRepository.save(door);
+    }
+
+    public void deleteAllByArkId(String arkId) {
+        List<Door> doors = findAllDoorsByArkId(arkId);
+        for (Door door : doors) {
+            doorRepository.delete(door);
         }
     }
 }

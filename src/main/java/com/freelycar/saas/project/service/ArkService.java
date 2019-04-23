@@ -5,6 +5,7 @@ import com.freelycar.saas.basic.wrapper.ResultCode;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.exception.DataIsExistException;
+import com.freelycar.saas.exception.NormalException;
 import com.freelycar.saas.exception.ObjectNotFoundException;
 import com.freelycar.saas.project.entity.Ark;
 import com.freelycar.saas.project.repository.ArkRepository;
@@ -44,26 +45,43 @@ public class ArkService {
 
     /**
      * 修改智能柜信息
+     * 1.子表数据中不存在“占用”的数据
+     * 2.子表的数据会删除并重新生成
      *
      * @param ark
      * @return
      */
-    public Ark modify(Ark ark) throws ArgumentMissingException, ObjectNotFoundException, DataIsExistException {
+    public Ark modify(Ark ark) throws ArgumentMissingException, ObjectNotFoundException, NormalException {
         if (null == ark) {
             throw new ArgumentMissingException("ark值为空");
         }
         String id = ark.getId();
         //新增
         if (StringUtils.isEmpty(id)) {
-            return this.addArk(ark);
-        } else {
-            Ark source = arkRepository.findById(id).orElse(null);
-            if (null == source) {
-                throw new ObjectNotFoundException("未找到id为：" + id + " 的ark对象");
-            }
-            UpdateTool.copyNullProperties(source, ark);
+            throw new ArgumentMissingException("arkId为空值，无法修改");
         }
-        return arkRepository.save(ark);
+
+        //修改
+        Ark source = arkRepository.findById(id).orElse(null);
+        if (null == source) {
+            throw new ObjectNotFoundException("未找到id为：" + id + " 的ark对象");
+        }
+
+        //更新主表数据
+        UpdateTool.copyNullProperties(source, ark);
+
+        Ark result = arkRepository.save(ark);
+
+        //处理子表数据：
+        if (doorService.isDoorUsing(id)) {
+            throw new NormalException("该智能柜存在正在使用的格子，暂时无法修改，请确认智能柜不被占用时再更改");
+        }
+        //删除重新生成
+        doorService.deleteAllByArkId(id);
+        doorService.generateDoors(result);
+
+
+        return result;
     }
 
     /**
@@ -114,5 +132,16 @@ public class ArkService {
             return ResultJsonObject.getDefaultResult(ark);
         }
         return ResultJsonObject.getCustomResult(arkSn, ResultCode.PARAM_NOT_COMPLETE);
+    }
+
+    public void deleteArk(String arkId) throws ArgumentMissingException, ObjectNotFoundException, NormalException {
+        if (StringUtils.isEmpty(arkId)) {
+            throw new ArgumentMissingException("参数arkId为空值，无法执行删除操作");
+        }
+        if (doorService.isDoorUsing(arkId)) {
+            throw new NormalException("该智能柜存在正在使用的格子，暂时无法删除，请确认智能柜不被占用时再删除");
+        }
+        doorService.deleteAllByArkId(arkId);
+        arkRepository.deleteById(arkId);
     }
 }
