@@ -1377,20 +1377,15 @@ public class ConsumerOrderService {
      * @param storeId
      * @param startTime
      * @param endTime
-     * @param currentPage
-     * @param pageSize
-     * @param export
      * @return
-     * @throws ArgumentMissingException
      */
-    public ResultJsonObject listOrderParticulars(String storeId, String startTime, String endTime, Integer currentPage, Integer pageSize, boolean export) throws ArgumentMissingException {
-
-        if (StringUtils.isEmpty(storeId)) {
-            throw new ArgumentMissingException("参数storeId为空值，无法查询流水明细");
-        }
+    private String generateOrderParticularsSQL(String storeId, String startTime, String endTime) {
 
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT co.id, co.carBrand, co.licensePlate, co.clientName, co.phone, ( SELECT group_concat( cpi.projectName ) FROM consumerprojectinfo cpi WHERE cpi.consumerOrderId = co.id ) AS projectNames, co.actualPrice AS cost, co.createTime AS serviceTime, (case co.isMember when 1 then '是' else '否' end) as isMember FROM consumerorder co WHERE co.storeId = '").append(storeId).append("' AND co.delStatus = 0 AND payState = 2 ");
+        sql.append(" SELECT co.id, co.carBrand, co.licensePlate, co.clientName, co.phone, ( SELECT group_concat( cpi.projectName ) FROM consumerprojectinfo cpi WHERE cpi.consumerOrderId = co.id ) AS projectNames, co.actualPrice AS cost, co.createTime AS serviceTime, (case co.isMember when 1 then '是' else '否' end) as isMember FROM consumerorder co WHERE co.delStatus = 0 AND payState = 2 ");
+        if (StringUtils.hasText(storeId)) {
+            sql.append(" AND co.storeId = '").append(storeId).append("' ");
+        }
         if (StringUtils.hasText(startTime)) {
             sql.append(" AND co.createTime > '").append(startTime).append(" 00:00:00' ");
         }
@@ -1399,34 +1394,100 @@ public class ConsumerOrderService {
         }
         sql.append(" ORDER BY co.createTime DESC ");
 
+        return sql.toString();
+    }
+
+    //计算总金额
+    public BigDecimal sumOrderParticularsTotalAccount(String storeId, String startTime, String endTime) {
+
+        StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT cast( sum( co.actualPrice ) AS DECIMAL ( 15, 2 ) ) AS result FROM consumerorder co WHERE co.delStatus = 0 AND payState = 2 ");
+        if (StringUtils.hasText(storeId)) {
+            sql.append(" AND co.storeId = '").append(storeId).append("' ");
+        }
+        if (StringUtils.hasText(startTime)) {
+            sql.append(" AND co.createTime > '").append(startTime).append(" 00:00:00' ");
+        }
+        if (StringUtils.hasText(endTime)) {
+            sql.append(" AND co.createTime <= '").append(endTime).append(" 23:59:59' ");
+        }
+
+        logger.error(sql.toString());
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());
+
+        @SuppressWarnings({"unused", "unchecked"})
+        List<BigDecimal> resultList = nativeQuery.getResultList();
+
+        //关闭em
+        em.close();
+
+        if (null != resultList && !resultList.isEmpty()) {
+            return resultList.get(0);
+        } else {
+            return BigDecimal.valueOf(0);
+        }
+
+    }
+
+    /**
+     * 导出流水明细Excel
+     *
+     * @param storeId
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public List<OrderParticulars> exportOrderParticulars(String storeId, String startTime, String endTime) {
+        String sql = generateOrderParticularsSQL(storeId, startTime, endTime);
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql);
         nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(OrderParticulars.class));
 
-        if (export) {
-            @SuppressWarnings({"unused", "unchecked"})
-            List<OrderParticulars> orderParticulars = nativeQuery.getResultList();
+        @SuppressWarnings({"unused", "unchecked"})
+        List<OrderParticulars> orderParticulars = nativeQuery.getResultList();
 
-            //关闭em
-            em.close();
+        //关闭em
+        em.close();
 
-            return ResultJsonObject.getDefaultResult(orderParticulars);
-        } else {
-            Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
-            int total = nativeQuery.getResultList().size();
-            @SuppressWarnings({"unused", "unchecked"})
-            List<OrderParticulars> orderParticulars = nativeQuery.setFirstResult(MySQLPageTool.getStartPosition(currentPage, pageSize)).setMaxResults(pageSize).getResultList();
-
-            //关闭em
-            em.close();
-
-            @SuppressWarnings("unchecked")
-            Page<OrderRecordObject> page = new PageImpl(orderParticulars, pageable, total);
-
-            return ResultJsonObject.getDefaultResult(PaginationRJO.of(page));
-        }
+        return orderParticulars;
     }
+
+    /**
+     * 查询流水明细分页
+     *
+     * @param storeId
+     * @param startTime
+     * @param endTime
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
+    public PaginationRJO listPageOrderParticulars(String storeId, String startTime, String endTime, Integer currentPage, Integer pageSize) {
+        String sql = generateOrderParticularsSQL(storeId, startTime, endTime);
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql);
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(OrderParticulars.class));
+
+        Pageable pageable = PageableTools.basicPage(currentPage, pageSize);
+        int total = nativeQuery.getResultList().size();
+        @SuppressWarnings({"unused", "unchecked"})
+        List<OrderParticulars> orderParticulars = nativeQuery.setFirstResult(MySQLPageTool.getStartPosition(currentPage, pageSize)).setMaxResults(pageSize).getResultList();
+
+        //关闭em
+        em.close();
+
+        @SuppressWarnings("unchecked")
+        Page<OrderRecordObject> page = new PageImpl(orderParticulars, pageable, total);
+
+        return PaginationRJO.of(page);
+    }
+
+
+
 
     /**
      * 获取某门店实际收入

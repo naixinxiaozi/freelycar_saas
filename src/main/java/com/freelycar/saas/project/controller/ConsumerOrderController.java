@@ -2,6 +2,7 @@ package com.freelycar.saas.project.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.freelycar.saas.aop.LoggerManage;
+import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.exception.NormalException;
@@ -220,13 +221,17 @@ public class ConsumerOrderController {
             @RequestParam Integer currentPage,
             @RequestParam(required = false) Integer pageSize
     ) {
-        try {
-            return consumerOrderService.listOrderParticulars(storeId, startTime, endTime, currentPage, pageSize, false);
-        } catch (ArgumentMissingException e) {
-            logger.error(e.getMessage(), e);
-            e.printStackTrace();
-            return ResultJsonObject.getErrorResult(null, e.getMessage());
-        }
+
+        PaginationRJO pageResult = consumerOrderService.listPageOrderParticulars(storeId, startTime, endTime, currentPage, pageSize);
+
+        double totalAccount = consumerOrderService.sumOrderParticularsTotalAccount(storeId, startTime, endTime).doubleValue();
+
+
+        JSONObject jsonResult = new JSONObject();
+        jsonResult.put("pageResult", pageResult);
+        jsonResult.put("totalAccount", totalAccount);
+
+        return ResultJsonObject.getDefaultResult(jsonResult);
     }
 
     @ApiOperation(value = "导出流水明细Excel", produces = "application/json")
@@ -236,22 +241,9 @@ public class ConsumerOrderController {
             @RequestParam String storeId,
             @RequestParam String startTime,
             @RequestParam String endTime,
-            @RequestParam Integer currentPage,
-            @RequestParam(required = false) Integer pageSize,
             HttpServletResponse response
     ) {
-        ResultJsonObject resultJsonObject;
-        try {
-            resultJsonObject = consumerOrderService.listOrderParticulars(storeId, startTime, endTime, currentPage, pageSize, true);
-        } catch (ArgumentMissingException e) {
-            logger.error(e.getMessage(), e);
-            e.printStackTrace();
-            return;
-        }
-        //模拟从数据库获取需要导出的数据
-        @SuppressWarnings({"unused", "unchecked"})
-        List<OrderParticulars> list = (List<OrderParticulars>) resultJsonObject.getData();
-
+        List<OrderParticulars> list = consumerOrderService.exportOrderParticulars(storeId, startTime, endTime);
 
         //导出操作
         try {
