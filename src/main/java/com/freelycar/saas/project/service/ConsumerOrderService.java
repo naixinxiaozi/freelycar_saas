@@ -1487,8 +1487,6 @@ public class ConsumerOrderService {
     }
 
 
-
-
     /**
      * 获取某门店实际收入
      *
@@ -1498,10 +1496,9 @@ public class ConsumerOrderService {
      * @throws ArgumentMissingException
      */
     public BigDecimal sumStoreIncome(String storeId, Boolean isMember, String startTime, String endTime) throws ArgumentMissingException {
+
+        Map result;
         if (StringUtils.hasText(storeId)) {
-
-
-            Map result;
             if (null == isMember) {
                 result = consumerOrderRepository.sumAllIncomeForOneStore(storeId, startTime, endTime);
             } else {
@@ -1511,14 +1508,23 @@ public class ConsumerOrderService {
                     result = consumerOrderRepository.sumIncomeForOneStoreByMember(storeId, 0, startTime, endTime);
                 }
             }
-            BigDecimal income = (BigDecimal) result.get("result");
-            if (null == income) {
-                income = BigDecimal.valueOf(0);
-            }
-            return income;
         } else {
-            throw new ArgumentMissingException("参数storeId值为空");
+//            throw new ArgumentMissingException("参数storeId值为空");
+            if (null == isMember) {
+                result = consumerOrderRepository.sumAllIncomeForAllStore(startTime, endTime);
+            } else {
+                if (isMember) {
+                    result = consumerOrderRepository.sumIncomeForAllStoreByMember(1, startTime, endTime);
+                } else {
+                    result = consumerOrderRepository.sumIncomeForAllStoreByMember(0, startTime, endTime);
+                }
+            }
         }
+        BigDecimal income = (BigDecimal) result.get("result");
+        if (null == income) {
+            income = BigDecimal.valueOf(0);
+        }
+        return income;
     }
 
     /**
@@ -1552,23 +1558,29 @@ public class ConsumerOrderService {
     public double sumIncomeForOneStoreByPayMethod(String storeId, int payMethodCode, String startTime, String endTime) throws ArgumentMissingException {
         BigDecimal firstIncome;
         BigDecimal secondIncome;
+        Map firstIncomeResult;
+        Map secondIncomeResult;
         if (StringUtils.hasText(storeId)) {
-            Map firstIncomeResult = consumerOrderRepository.sumFirstIncomeForOneStoreByPayMethod(storeId, payMethodCode, startTime, endTime);
-            Map secondIncomeResult = consumerOrderRepository.sumSecondIncomeForOneStoreByPayMethod(storeId, payMethodCode, startTime, endTime);
-            firstIncome = (BigDecimal) firstIncomeResult.get("result");
-            secondIncome = (BigDecimal) secondIncomeResult.get("result");
-            if (null == firstIncome) {
-                firstIncome = BigDecimal.valueOf(0);
-            }
-            if (null == secondIncome) {
-                secondIncome = BigDecimal.valueOf(0);
-            }
+            firstIncomeResult = consumerOrderRepository.sumFirstIncomeForOneStoreByPayMethod(storeId, payMethodCode, startTime, endTime);
+            secondIncomeResult = consumerOrderRepository.sumSecondIncomeForOneStoreByPayMethod(storeId, payMethodCode, startTime, endTime);
 
-            double result = firstIncome.doubleValue() + secondIncome.doubleValue();
-            return RoundTool.round(result, 2, BigDecimal.ROUND_HALF_UP);
         } else {
-            throw new ArgumentMissingException("参数storeId值为空");
+//            throw new ArgumentMissingException("参数storeId值为空");
+            firstIncomeResult = consumerOrderRepository.sumFirstIncomeForAllStoreByPayMethod(payMethodCode, startTime, endTime);
+            secondIncomeResult = consumerOrderRepository.sumSecondIncomeForAllStoreByPayMethod(payMethodCode, startTime, endTime);
         }
+
+        firstIncome = (BigDecimal) firstIncomeResult.get("result");
+        secondIncome = (BigDecimal) secondIncomeResult.get("result");
+        if (null == firstIncome) {
+            firstIncome = BigDecimal.valueOf(0);
+        }
+        if (null == secondIncome) {
+            secondIncome = BigDecimal.valueOf(0);
+        }
+
+        double result = firstIncome.doubleValue() + secondIncome.doubleValue();
+        return RoundTool.round(result, 2, BigDecimal.ROUND_HALF_UP);
     }
 
     /**
@@ -1601,14 +1613,26 @@ public class ConsumerOrderService {
      * @throws ArgumentMissingException
      */
     public List<ProjectPieChart> getProjectPieChart(String storeId, String startTime, String endTime) throws ArgumentMissingException {
+        StringBuffer sql = new StringBuffer();
 
-        if (StringUtils.isEmpty(storeId)) {
-            throw new ArgumentMissingException("参数storeId为空值，无法查询流水明细");
+        sql.append(" SELECT cpi.projectId, cpi.projectName, ROUND(sum( cpi.price ), 2 ) AS projectPrice, ROUND( sum( cpi.price ) / t.totalPrice, 4 ) AS percent, COUNT(1) AS `count` FROM consumerprojectinfo cpi LEFT JOIN consumerorder co ON cpi.consumerOrderId = co.id, (SELECT round( sum( cpi.price ), 2 ) AS totalPrice FROM consumerprojectinfo cpi LEFT JOIN consumerorder co ON cpi.consumerOrderId = co.id WHERE cpi.delStatus = 0 ");
+        if (StringUtils.hasText(storeId)) {
+            sql.append(" AND co.storeId = '" + storeId + "' ");
         }
+        sql.append(" AND co.payState = 2 AND co.createTime >= '" + startTime + "' AND co.createTime <= '" + endTime + "' ) AS t WHERE cpi.delStatus = 0 ");
+        if (StringUtils.hasText(storeId)) {
+            sql.append(" AND co.storeId = '" + storeId + "' ");
+        }
+        sql.append(" AND co.payState = 2 AND co.createTime >= '" + startTime + "' AND co.createTime <= '" + endTime + "' GROUP BY cpi.projectId ");
+
+
+//        if (StringUtils.isEmpty(storeId)) {
+//            throw new ArgumentMissingException("参数storeId为空值，无法查询流水明细");
+//        }
 
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
-        Query nativeQuery = em.createNativeQuery(" SELECT cpi.projectId, cpi.projectName, ROUND(sum( cpi.price ), 2 ) AS projectPrice, ROUND( sum( cpi.price ) / t.totalPrice, 4 ) AS percent, COUNT(1) AS `count` FROM consumerprojectinfo cpi LEFT JOIN consumerorder co ON cpi.consumerOrderId = co.id, (SELECT round( sum( cpi.price ), 2 ) AS totalPrice FROM consumerprojectinfo cpi LEFT JOIN consumerorder co ON cpi.consumerOrderId = co.id WHERE cpi.delStatus = 0 AND co.storeId = '" + storeId + "' AND co.payState = 2 AND co.createTime >= '" + startTime + "' AND co.createTime <= '" + endTime + "' ) AS t WHERE cpi.delStatus = 0 AND co.storeId = '" + storeId + "' AND co.payState = 2 AND co.createTime >= '" + startTime + "' AND co.createTime <= '" + endTime + "' GROUP BY cpi.projectId ");
+        Query nativeQuery = em.createNativeQuery(sql.toString());
 
         nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(ProjectPieChart.class));
 
