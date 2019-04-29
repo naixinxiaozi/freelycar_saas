@@ -37,6 +37,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v2/**").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll()
                 .antMatchers("/swagger-ui.html/**").permitAll()
+                //放行Druid监控页面
+                .antMatchers("/druid/**").permitAll()
                 //放行与iotcloudcn通信的接口
                 .antMatchers("/iot/**").permitAll()
                 //放行微信公众号SDK接口
