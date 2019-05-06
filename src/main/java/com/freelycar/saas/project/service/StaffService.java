@@ -142,7 +142,6 @@ public class StaffService {
      */
 
     public ResultJsonObject openArk(String id, String account, String password) {
-        ResultJsonObject.getDefaultResult(staffRepository.findById(id));
         Optional<Staff> optionalStaff = staffRepository.findById(id);
         if (optionalStaff.isPresent()) {
             Staff staff = optionalStaff.get();
@@ -170,11 +169,10 @@ public class StaffService {
 
     private boolean checkRepeatAccount(Staff staff) {
         List<Staff> staffList;
-        if (null != staff.getId()) {
+        if (StringUtils.isEmpty(staff.getId())) {
             staffList = staffRepository.checkRepeatAccount(staff.getAccount());
         } else {
-
-            staffList = staffRepository.checkRepeatAccount(staff.getId(), staff.getAccount());
+            staffList = staffRepository.checkRepeatAccount(staff.getAccount(), staff.getId());
         }
         return staffList.size() != 0;
     }
