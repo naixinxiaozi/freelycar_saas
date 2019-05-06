@@ -51,9 +51,9 @@ public class ConsumerOrderController {
      * @param orderObject
      * @return
      */
-    @ApiOperation(value = "新增/修改员工信息", produces = "application/json")
+    @ApiOperation(value = "开单", produces = "application/json")
     @PostMapping("/handleOrder")
-    @LoggerManage(description = "调用方法：新增/修改员工信息")
+    @LoggerManage(description = "调用方法：开单")
     public ResultJsonObject handleOrder(@RequestBody OrderObject orderObject) {
         return consumerOrderService.handleOrder(orderObject);
     }
@@ -64,9 +64,9 @@ public class ConsumerOrderController {
      * @param id
      * @return
      */
-    @ApiOperation(value = "查询员工信息", produces = "application/json")
+    @ApiOperation(value = "获取单据详情", produces = "application/json")
     @GetMapping("/detail")
-    @LoggerManage(description = "调用方法：查询员工信息")
+    @LoggerManage(description = "调用方法：获取单据详情")
     public ResultJsonObject detail(@RequestParam String id) {
         return consumerOrderService.getOrderObjectDetail(id);
     }

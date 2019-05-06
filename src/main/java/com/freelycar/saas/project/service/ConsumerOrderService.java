@@ -906,6 +906,9 @@ public class ConsumerOrderService {
         //推送微信消息给技师 需要给这个柜子相关的技师都推送
         staffService.sendWeChatMessageToStaff(consumerOrderRes, emptyDoor);
 
+        // 推送微信公众号消息，通知用户订单生成成功
+        sendWeChatMsg(consumerOrderRes);
+
         return ResultJsonObject.getDefaultResult(consumerOrderRes.getId(), "订单生成成功！");
     }
 

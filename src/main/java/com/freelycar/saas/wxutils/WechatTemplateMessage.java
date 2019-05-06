@@ -162,17 +162,23 @@ public class WechatTemplateMessage {
         String parkingLocation = consumerOrder.getParkingLocation();
         String remark = "";
         String remarkSuffix = "小易爱车竭诚为您服务！";
+        String licensePlate = consumerOrder.getLicensePlate();
         switch (state) {
+            case 0:
+                stateString = "待接车";
+                first = "欢迎使用小易爱车智能柜服务，您的智能柜服务订单已生成成功，我们将竭诚为您服务。";
+                remark += "订单编号：" + staffName + "\n";
+                break;
             case 1:
                 stateString = "已接车";
-                first = "已接到您的爱车" + consumerOrder.getLicensePlate() + "，我们将马上为您服务。";
+                first = "已接到您的爱车" + licensePlate + "，我们将马上为您服务。";
                 if (StringUtils.hasText(staffName)) {
                     remark += "服务人员：" + staffName + "\n";
                 }
                 break;
             case 2:
                 stateString = "已完工";
-                first = "您的爱车" + consumerOrder.getLicensePlate() + "已服务完成，等待您的取回。";
+                first = "您的爱车" + licensePlate + "已服务完成，等待您的取回。";
                 if (StringUtils.hasText(staffName)) {
                     remark += "服务人员：" + staffName + "\n";
                 }
@@ -182,11 +188,11 @@ public class WechatTemplateMessage {
                 break;
             case 3:
                 stateString = "已交车";
-                first = "您的爱车" + consumerOrder.getLicensePlate() + "已交车。期待您的再次光临。";
+                first = "您的爱车" + licensePlate + "已交车。期待您的再次光临。";
                 break;
             default:
                 stateString = "已交车";
-                first = "您的爱车" + consumerOrder.getLicensePlate() + "已交车。期待您的再次光临";
+                first = "您的爱车" + licensePlate + "已交车。期待您的再次光临";
         }
 
         JSONObject params = new JSONObject();
