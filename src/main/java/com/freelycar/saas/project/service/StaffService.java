@@ -276,22 +276,35 @@ public class StaffService {
     }
 
     /**
-     * 给所有技师推送微信消息（有用户预约了汽车服务）
+     * 给所有技师推送微信消息
+     * （0：有用户预约了订单，通知该智能柜所有技师）
+     * （1：有技师接单了，通知其余所有技师）
+     * （4：有用户取消了订单，通知所有技师）
      *
      * @param consumerOrder
-     * @param emptyDoor
+     * @param door
+     * @param exceptOpenId
      */
-    public void sendWeChatMessageToStaff(ConsumerOrder consumerOrder, Door emptyDoor) {
+    public void sendWeChatMessageToStaff(ConsumerOrder consumerOrder, Door door, String exceptOpenId) {
         String storeId = consumerOrder.getStoreId();
+        Integer state = consumerOrder.getState();
         //查询门店的地址
-        Ark ark = arkRepository.findTopBySnAndDelStatus(emptyDoor.getArkSn(), Constants.DelStatus.NORMAL.isValue());
+        Ark ark = arkRepository.findTopBySnAndDelStatus(door.getArkSn(), Constants.DelStatus.NORMAL.isValue());
         List<Staff> staffList = this.getAllArkStaffInStore(storeId);
         logger.info("查询到storeId为" + storeId + "的门店有" + staffList.size() + "个技师");
         for (Staff staff : staffList) {
             String openId = staff.getOpenId();
             logger.info("技师openId：" + openId);
             if (StringUtils.hasText(openId)) {
-                WechatTemplateMessage.orderCreated(consumerOrder, openId, emptyDoor, ark);
+                if (state == 0) {
+                    WechatTemplateMessage.orderCreated(consumerOrder, openId, door, ark);
+                }
+                if (state == 4) {
+                    WechatTemplateMessage.orderChangedForStaff(consumerOrder, openId, door, ark);
+                }
+                if (state == 1 && !openId.equals(exceptOpenId)) {
+                    WechatTemplateMessage.orderChangedForStaff(consumerOrder, openId, door, ark);
+                }
             }
         }
     }

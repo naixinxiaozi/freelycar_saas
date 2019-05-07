@@ -11,10 +11,10 @@ package com.freelycar.saas.iotcloudcn;
 public class ArkOps {
 
     public static void main(String[] args) {
-        String deviceId = "";
+        String deviceId = "862057048892555";
         int boxId = 1;
 
-        int boxCount = 16;
+        int boxCount = 8;
 
         //打开一个柜门
 //        openBox(deviceId,boxId);
@@ -23,7 +23,7 @@ public class ArkOps {
 //        openAllBox(deviceId, boxCount);
 
         //查询某个柜门状态
-//        queryBox(deviceId, boxId);
+        queryBox(deviceId, boxId);
 
 
         //查询某个柜子所有柜门

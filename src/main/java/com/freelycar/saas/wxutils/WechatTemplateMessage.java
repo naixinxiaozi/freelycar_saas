@@ -17,7 +17,8 @@ public class WechatTemplateMessage {
 
     private static final String PAY_SUCCESS_TEMPLATE_ID = "F5CyYJ5u9_1wRcapK1ECOYRrjxcLcL3rjB0xUg_VQn0";
     private static final String PAY_FAIL_ID = "o0TOjg7KkxoL4CtQ91j--TVVmxYDSNk-dLWqoUVd8mw";
-    private static final String ORDER_CHANGED_ID = "PeRe0M0iEbm7TpN6NOThhBUjwzy_aHsi6r2E7Pa8J1A";
+    private static final String ORDER_CHANGED_FOR_CLIENT_ID = "PeRe0M0iEbm7TpN6NOThhBUjwzy_aHsi6r2E7Pa8J1A";
+    private static final String ORDER_CHANGED_FOR_STAFF_ID = "il1UVsHA-GesQsFHERczQP9zPvz-od-q240c3fqd9vM";
     private static final String ORDER_CREATE_ID = "C-m3oRNedo3vM6ugQXBa4RhOtW3qwqM7tjWNKuAgYe8";
 
     private static final Logger log = LogManager.getLogger(WechatTemplateMessage.class);
@@ -153,7 +154,7 @@ public class WechatTemplateMessage {
      * {{remark.DATA}}
      */
     public static void orderChanged(ConsumerOrder consumerOrder, String openId) {
-        log.info("准备订单更新模版消息。。。");
+        log.info("准备订单更新模版消息……（推送给用户）");
 
         String staffName = consumerOrder.getPickCarStaffName();
         Integer state = consumerOrder.getState();
@@ -198,7 +199,7 @@ public class WechatTemplateMessage {
         JSONObject params = new JSONObject();
         JSONObject data = new JSONObject();
         params.put("touser", openId);
-        params.put("template_id", ORDER_CHANGED_ID);
+        params.put("template_id", ORDER_CHANGED_FOR_CLIENT_ID);
         params.put("url", WechatConfig.APP_DOMAIN + "#/shop/servicesorder?id=" + consumerOrder.getId());
         data.put("first", keywordFactory(first, "#173177"));
         data.put("OrderSn", keywordFactory(consumerOrder.getId(), "#173177"));
@@ -207,6 +208,54 @@ public class WechatTemplateMessage {
         params.put("data", data);
         String result = invokeTemplateMessage(params);
         log.info("微信订单更新模版消息结果：" + result);
+    }
+
+
+    /**
+     * 推送通知：智能柜用户订单状态变化，推送给技师（客户取消订单和有技师接了某个订单）
+     * {{first.DATA}}
+     * 订单编号： {{OrderSn.DATA}}
+     * 订单状态： {{OrderStatus.DATA}}
+     * {{remark.DATA}}
+     */
+    public static void orderChangedForStaff(ConsumerOrder consumerOrder, String openId, Door door, Ark ark) {
+        log.info("准备订单更新模版消息……（推送给技师）");
+        Integer state = consumerOrder.getState();
+        if (state == 4 || state == 1) {
+            String clientName = consumerOrder.getClientName();
+            String staffName = consumerOrder.getPickCarStaffName();
+            String first;
+            String stateString;
+//            String parkingLocation = consumerOrder.getParkingLocation();
+            String licensePlate = consumerOrder.getLicensePlate();
+            String orderId = consumerOrder.getId();
+            if (state == 4) {
+                stateString = "已取消";
+                first = "客户取消订单通知";
+            } else {
+                stateString = "已接车";
+                first = "技师 " + staffName + " 已接到订单。";
+            }
+
+            String remark = "客户姓名：" + clientName
+                    + "\n车牌：" + licensePlate
+                    + "\n智能柜网格：" + door.getArkSn() + "-" + door.getDoorSn()
+                    + "\n智能柜名称：" + ark.getName()
+                    + "\n智能柜地址：" + ark.getLocation();
+
+            JSONObject params = new JSONObject();
+            JSONObject data = new JSONObject();
+            params.put("touser", openId);
+            params.put("template_id", ORDER_CHANGED_FOR_CLIENT_ID);
+//        params.put("url", WechatConfig.APP_DOMAIN + "#/shop/servicesorder?id=" + consumerOrder.getId());
+            data.put("first", keywordFactory(first, "#173177"));
+            data.put("OrderSn", keywordFactory(orderId, "#173177"));
+            data.put("OrderStatus", keywordFactory(stateString, "#173177"));
+            data.put("remark", keywordFactory(remark));
+            params.put("data", data);
+            String result = invokeTemplateMessage(params);
+            log.info("微信订单更新模版消息结果：" + result);
+        }
     }
 
     /**

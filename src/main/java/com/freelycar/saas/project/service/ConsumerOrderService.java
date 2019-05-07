@@ -904,7 +904,7 @@ public class ConsumerOrderService {
 
 
         //推送微信消息给技师 需要给这个柜子相关的技师都推送
-        staffService.sendWeChatMessageToStaff(consumerOrderRes, emptyDoor);
+        staffService.sendWeChatMessageToStaff(consumerOrderRes, emptyDoor, null);
 
         // 推送微信公众号消息，通知用户订单生成成功
         sendWeChatMsg(consumerOrderRes);
@@ -924,7 +924,7 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(null, "未找到id为：" + orderId + " 的订单");
         }
         consumerOrder.setState(Constants.OrderState.CANCEL.getValue());
-        this.updateOrder(consumerOrder);
+        ConsumerOrder consumerOrderRes = this.updateOrder(consumerOrder);
 
         //获取订单对应的柜子信息
         Door door = doorRepository.findTopByOrderId(orderId);
@@ -933,7 +933,8 @@ public class ConsumerOrderService {
         //打开柜门
         doorService.openDoorByDoorObject(door);
 
-        //TODO 用户取消服务订单的时候推送消息给技师
+        //用户取消服务订单的时候推送消息给技师
+        staffService.sendWeChatMessageToStaff(consumerOrderRes, door, null);
 
         return ResultJsonObject.getDefaultResult(orderId);
     }
@@ -1076,6 +1077,10 @@ public class ConsumerOrderService {
 
         //推送微信公众号消息，通知用户已开始受理服务
         sendWeChatMsg(orderRes);
+
+        //通知其他技师，该订单已经受理
+        String staffOpenId = staff.getOpenId();
+        staffService.sendWeChatMessageToStaff(orderRes, door, staffOpenId);
 
         return ResultJsonObject.getDefaultResult(orderId);
     }
