@@ -167,12 +167,11 @@ public class WechatTemplateMessage {
         switch (state) {
             case 0:
                 stateString = "待接车";
-                first = "欢迎使用小易爱车智能柜服务，您的智能柜服务订单已生成成功，我们将竭诚为您服务。";
-                remark += "订单编号：" + staffName + "\n";
+                first = "欢迎使用小易爱车智能柜服务，您的智能柜服务订单已生成成功。";
                 break;
             case 1:
                 stateString = "已接车";
-                first = "已接到您的爱车" + licensePlate + "，我们将马上为您服务。";
+                first = "已接到您的爱车" + licensePlate + "，我们将立即为您服务。";
                 if (StringUtils.hasText(staffName)) {
                     remark += "服务人员：" + staffName + "\n";
                 }
