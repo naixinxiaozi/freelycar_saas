@@ -19,6 +19,8 @@ public class FinishOrderInfo {
 
     private String clientName;
 
+    private String phone;
+
     private String licensePlate;
 
     private String carBrand;

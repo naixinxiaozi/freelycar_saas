@@ -20,6 +20,7 @@ public class ReservationOrderInfo {
     private String carBrand;
     private String carType;
     private String clientName;
+    private String phone;
     private String projectNames;
     private Date createTime;
     private String parkingLocation;

@@ -7,14 +7,17 @@ import com.freelycar.saas.basic.wrapper.PageableTools;
 import com.freelycar.saas.basic.wrapper.ResultCode;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.NumberOutOfRangeException;
 import com.freelycar.saas.exception.ObjectNotFoundException;
 import com.freelycar.saas.exception.UpdateDataErrorException;
 import com.freelycar.saas.project.entity.CardService;
 import com.freelycar.saas.project.entity.*;
 import com.freelycar.saas.project.model.StoreInfo;
+import com.freelycar.saas.project.repository.OrderSnRepository;
 import com.freelycar.saas.project.repository.SpecialOfferRepository;
 import com.freelycar.saas.project.repository.StoreImgRepository;
 import com.freelycar.saas.project.repository.StoreRepository;
+import com.freelycar.saas.util.Number2StringFormatter;
 import com.freelycar.saas.util.UpdateTool;
 import com.freelycar.saas.wechat.model.CouponServiceInfo;
 import org.slf4j.Logger;
@@ -26,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -56,6 +60,9 @@ public class StoreService {
     @Autowired
     private SpecialOfferRepository specialOfferRepository;
 
+    @Autowired
+    private OrderSnRepository orderSnRepository;
+
 
     /**
      * 新增或更新
@@ -63,9 +70,9 @@ public class StoreService {
      * @param store 门店对象
      * @return Store
      */
-    public Store saveOrUpdate(Store store) {
+    public Store saveOrUpdate(Store store) throws ArgumentMissingException, ObjectNotFoundException, NumberOutOfRangeException {
         if (null == store) {
-            return null;
+            throw new ArgumentMissingException("store对象为空值，门店新增/修改失败");
         }
         String id = store.getId();
         if (StringUtils.isEmpty(id)) {
@@ -73,15 +80,35 @@ public class StoreService {
             store.setCreateTime(new Timestamp(System.currentTimeMillis()));
             store.setSort(this.generateSort());
 
-            //TODO 新增门店成功后需要添加一个orderSn规则
+            Store res = storeRepository.save(store);
+            //新增门店成功后需要添加一个orderSn规则
+            generateOrderSn(res.getId());
+            return res;
         } else {
             Store source = storeRepository.findById(id).orElse(null);
             if (null == source) {
-                return null;
+                throw new ObjectNotFoundException("未找到id为：" + id + " 的store对象，修改失败");
             }
             UpdateTool.copyNullProperties(source, store);
+            return storeRepository.saveAndFlush(store);
         }
-        return storeRepository.saveAndFlush(store);
+    }
+
+    public void generateOrderSn(String storeId) throws ArgumentMissingException, NumberOutOfRangeException {
+        if (StringUtils.isEmpty(storeId)) {
+            throw new ArgumentMissingException("storeId为空值，无法生成orderSn。门店新增失败");
+        }
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMdd");
+        OrderSn orderSn = new OrderSn();
+        orderSn.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        orderSn.setOrderNumber("0001");
+        orderSn.setStoreId(storeId);
+        orderSn.setDateNumber(simpleDateFormat.format(new Date()));
+
+        int sn = orderSnRepository.generateStoreSn();
+        orderSn.setStoreSn(Number2StringFormatter.format3Number2String(sn));
+
+        orderSnRepository.save(orderSn);
     }
 
 
@@ -284,7 +311,7 @@ public class StoreService {
      * @return
      * @throws UpdateDataErrorException
      */
-    public ResultJsonObject confirmInfo(StoreInfo storeInfo) throws UpdateDataErrorException, ArgumentMissingException {
+    public ResultJsonObject confirmInfo(StoreInfo storeInfo) throws UpdateDataErrorException, ArgumentMissingException, ObjectNotFoundException, NumberOutOfRangeException {
         Store store = storeInfo.getStore();
         List<String> storeImgIds = storeInfo.getStoreImgIds();
 

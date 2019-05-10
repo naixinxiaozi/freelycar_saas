@@ -5,6 +5,7 @@ import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.PaginationRJO;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.NumberOutOfRangeException;
 import com.freelycar.saas.exception.ObjectNotFoundException;
 import com.freelycar.saas.exception.UpdateDataErrorException;
 import com.freelycar.saas.project.entity.Store;
@@ -43,9 +44,13 @@ public class StoreController {
     @PostMapping("/modify")
     @LoggerManage(description = "调用方法：新增/修改门店")
     public ResultJsonObject modify(@RequestBody Store store) {
-        Store storeRes = storeService.saveOrUpdate(store);
-        if (null == storeRes) {
-            return ResultJsonObject.getErrorResult(null, "保存失败");
+        Store storeRes;
+        try {
+            storeRes = storeService.saveOrUpdate(store);
+        } catch (ArgumentMissingException | ObjectNotFoundException | NumberOutOfRangeException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
         }
         return ResultJsonObject.getDefaultResult(storeRes);
     }
@@ -107,7 +112,7 @@ public class StoreController {
     public ResultJsonObject confirmInfo(@RequestBody StoreInfo storeInfo) {
         try {
             return storeService.confirmInfo(storeInfo);
-        } catch (UpdateDataErrorException | ArgumentMissingException e) {
+        } catch (UpdateDataErrorException | ArgumentMissingException | ObjectNotFoundException | NumberOutOfRangeException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
             return ResultJsonObject.getErrorResult(null, e.getMessage());

@@ -49,7 +49,7 @@ public class OrderIDGenerator {
             orderIdSn.append(currentDateNumber);
 
             int currentOrderNumber = Integer.valueOf(orderSn.getOrderNumber());
-            String nextOrderNumber = format4Number2String(currentOrderNumber + 1);
+            String nextOrderNumber = Number2StringFormatter.format4Number2String(currentOrderNumber + 1);
             orderIdSn.append(nextOrderNumber);
 
             orderSn.setOrderNumber(nextOrderNumber);
@@ -78,27 +78,5 @@ public class OrderIDGenerator {
         }
 
         return orderIdSn.toString();
-    }
-
-    /**
-     * 格式化数字为四位数字符串格式
-     *
-     * @param number
-     * @return
-     */
-    private String format4Number2String(int number) {
-        if (number < 1) {
-            return "0001";
-        }
-        if (number < 10) {
-            return "000" + number;
-        }
-        if (number < 100) {
-            return "00" + number;
-        }
-        if (number < 1000) {
-            return "0" + number;
-        }
-        return String.valueOf(number);
     }
 }
