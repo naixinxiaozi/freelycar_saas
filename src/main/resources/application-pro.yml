@@ -29,7 +29,7 @@ logging:
       hibernate: error
 
 swagger:
-  enable: true
+  enable: false
 
 # 自定义的上传路径和映射路径参数
 upload:
