@@ -68,6 +68,8 @@ public class SysUserService {
         if (StringUtils.hasText(password)) {
             String hashpw = MD5.compute(password);
             sysUser.setPassword(hashpw);
+        } else {
+            sysUser.setPassword(null);
         }
 
         if (null == id) {
