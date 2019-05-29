@@ -59,7 +59,9 @@ class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
 
         response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getOutputStream().println(JSONResult.fillResultString(500, "Login Failed.", null));
+        response.getWriter().println(JSONResult.fillResultString(500, "登录失败，用户名或密码错误。如有疑问，请联系管理员", null));
+//        response.getOutputStream().println(JSONResult.fillResultString(500, "Login Failed", null));
     }
 }
