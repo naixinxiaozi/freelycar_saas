@@ -60,6 +60,6 @@ class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 
         response.setContentType("application/json");
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getOutputStream().println(JSONResult.fillResultString(500, "登录失败，用户名或密码错误。如有疑问，请联系管理员", null));
+        response.getOutputStream().println(JSONResult.fillResultString(500, "Login Failed.", null));
     }
 }
