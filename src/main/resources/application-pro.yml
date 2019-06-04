@@ -34,5 +34,5 @@ swagger:
 # 自定义的上传路径和映射路径参数
 upload:
   picture:
-    path: C:\nginx\html\upload\storeimg
-    url: https://freelycar.com/upload/storeimg/
+    path: C:\nginx\html\upload
+    url: https://freelycar.com/upload

@@ -1,6 +1,5 @@
 package com.freelycar.saas.menu;
 
-import com.freelycar.saas.project.entity.WxUserInfo;
 import com.freelycar.saas.project.service.WxUserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,7 @@ public class MenuStartupRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         logger.info("startup runner");
-        WxUserInfo wxUserInfo = wxUserInfoService.findById("ea8ecbc5694d1d1d01694d2be8930000");
-        System.out.println(wxUserInfo.getTrueName());
+//        WxUserInfo wxUserInfo = wxUserInfoService.findById("ea8ecbc5694d1d1d01694d2be8930000");
+//        System.out.println(wxUserInfo.getTrueName());
     }
 }

@@ -34,6 +34,19 @@ public class UploadController {
     @PostMapping("/storeimg")
     public ResultJsonObject uploadStoreImg(MultipartFile file, HttpServletRequest request) {
         try {
+            return uploadService.uploadStoreImg(file, request);
+        } catch (FileNotFoundException | ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "用户上传智能柜订单图片", produces = "application/json")
+    @LoggerManage(description = "调用方法：用户上传智能柜订单图片")
+    @PostMapping("/clientorderimg")
+    public ResultJsonObject uploadOrderImg(MultipartFile file, HttpServletRequest request) {
+        try {
             return uploadService.uploadPicture(file, request);
         } catch (FileNotFoundException | ArgumentMissingException e) {
             logger.error(e.getMessage(), e);

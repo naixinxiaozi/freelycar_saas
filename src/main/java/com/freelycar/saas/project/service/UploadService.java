@@ -3,8 +3,11 @@ package com.freelycar.saas.project.service;
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.ObjectNotFoundException;
+import com.freelycar.saas.project.entity.ClientOrderImg;
 import com.freelycar.saas.project.entity.StoreImg;
 import com.freelycar.saas.project.repository.StoreImgRepository;
+import com.freelycar.saas.util.PhotoCompressionUtil;
 import com.freelycar.saas.util.UUIDGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,19 +35,132 @@ import java.util.Calendar;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class UploadService {
+    private static String storeImgFolderName = "storeimg";
+    private static String clientOrderImgFolderName = "clientorderimg";
+    private static String staffOrderImgFolderName = "stafforderimg";
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @Value("${upload.picture.path}")
     private String picturePath;
-
     @Value("${upload.picture.url}")
     private String pictureURL;
-
     @Autowired
     private StoreImgRepository storeImgRepository;
 
-    public ResultJsonObject uploadPicture(MultipartFile file, HttpServletRequest request) throws FileNotFoundException, ArgumentMissingException {
+    /**
+     * 上传门店宣传图片，返回结果中包含图片url
+     *
+     * @param file
+     * @param request
+     * @return
+     * @throws FileNotFoundException
+     * @throws ArgumentMissingException
+     */
+    public ResultJsonObject uploadStoreImg(MultipartFile file, HttpServletRequest request) throws FileNotFoundException, ArgumentMissingException {
+        String resultURL = this.uploadPicture(file, request, storeImgFolderName);
+
+
+        // 文件名与文件URL存入数据库表
+        if (StringUtils.hasText(resultURL)) {
+            StoreImg storeImg = new StoreImg();
+            storeImg.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            storeImg.setDelStatus(Constants.DelStatus.NORMAL.isValue());
+            storeImg.setUrl(resultURL);
+
+            StoreImg result = storeImgRepository.save(storeImg);
+            return ResultJsonObject.getDefaultResult(result);
+        }
+        return ResultJsonObject.getErrorResult(null, "上传失败");
+    }
+
+    public ResultJsonObject uploadClientOrderImg(MultipartFile file, HttpServletRequest request) throws FileNotFoundException, ArgumentMissingException {
+        String resultURL = this.uploadPicture(file, request, clientOrderImgFolderName);
+
+        if (StringUtils.hasText(resultURL)) {
+            ClientOrderImg clientOrderImg = new ClientOrderImg();
+            clientOrderImg.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            clientOrderImg.setDelStatus(Constants.DelStatus.NORMAL.isValue());
+            clientOrderImg.setUrl(resultURL);
+
+
+        }
+        return ResultJsonObject.getErrorResult(null, "上传失败");
+    }
+
+    /**
+     * 上传图片到服务器上，生成图片url
+     *
+     * @param file
+     * @param request
+     * @param folderName 文件夹名称（）
+     * @return
+     * @throws FileNotFoundException
+     * @throws ArgumentMissingException
+     */
+    public String uploadPicture(MultipartFile file, HttpServletRequest request, String folderName) throws FileNotFoundException, ArgumentMissingException {
         if (null == file || file.isEmpty()) {
+            throw new FileNotFoundException("提交的图片流未获取到");
+        }
+
+        // 获取文件名
+        String fileName = file.getOriginalFilename();
+        logger.info("上传的文件名为：" + fileName);
+        // 获取文件的后缀名
+        if (StringUtils.isEmpty(fileName)) {
+            throw new ArgumentMissingException("fileName为空值，上传过程异常。");
+        }
+        String suffixName = fileName.substring(fileName.lastIndexOf("."));
+        logger.info("文件的后缀名为：" + suffixName);
+
+        //保存时的文件名
+        DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        Calendar calendar = Calendar.getInstance();
+        String uuid = new UUIDGenerator().generate();
+        String path = df.format(calendar.getTime()) + uuid + suffixName;
+
+        //压缩后的图片文件名
+        String litePath = df.format(calendar.getTime()) + uuid + "_lite.jpg";
+
+        logger.info(path);
+
+        //保存文件的绝对路径
+        String filePath = picturePath + File.separator + folderName + File.separator + path;
+        String liteFilePath = picturePath + File.separator + folderName + File.separator + litePath;
+        logger.info("绝对路径:" + filePath);
+
+        File newFile = new File(filePath);
+
+        // 检测是否存在目录
+        if (!newFile.getParentFile().exists()) {
+            // 新建文件夹
+            newFile.getParentFile().mkdirs();
+        }
+
+        String url = null;
+
+        //MultipartFile的方法直接写文件
+        try {
+            //上传文件
+            file.transferTo(newFile);
+
+            //执行图片压缩
+            String targetResultPath = PhotoCompressionUtil.compress(filePath, liteFilePath);
+            if (null == targetResultPath) {
+                return null;
+            }
+
+            //数据库存储的相对路径
+            url = pictureURL + File.separator + folderName + File.separator + litePath;
+            logger.info("相对路径:" + url);
+
+        } catch (IllegalStateException | IOException | ObjectNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
+        return url;
+    }
+
+    public ResultJsonObject uploadPicture(MultipartFile file, HttpServletRequest request) throws FileNotFoundException, ArgumentMissingException {
+        /*if (null == file || file.isEmpty()) {
             throw new FileNotFoundException("提交的图片流未获取到");
         }
 
@@ -98,7 +214,7 @@ public class UploadService {
         } catch (IllegalStateException | IOException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
-        }
+        }*/
         return ResultJsonObject.getErrorResult(null, "上传失败");
     }
 
