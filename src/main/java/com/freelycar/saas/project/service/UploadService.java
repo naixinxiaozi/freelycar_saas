@@ -190,7 +190,7 @@ public class UploadService {
             }
 
             //数据库存储的相对路径
-            url = pictureURL + File.separator + folderName + File.separator + litePath;
+            url = pictureURL + "/" + folderName + "/" + litePath;
             logger.info("相对路径:" + url);
 
         } catch (IllegalStateException | IOException | ObjectNotFoundException e) {
