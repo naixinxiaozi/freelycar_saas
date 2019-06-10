@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @email toby911115@gmail.com
  */
 public interface ClientOrderImgRepository extends JpaRepository<ClientOrderImg, Long> {
+
+    ClientOrderImg findTopByOrderIdAndDelStatusOrderByCreateTimeDesc(String orderId, boolean delStatus);
 }

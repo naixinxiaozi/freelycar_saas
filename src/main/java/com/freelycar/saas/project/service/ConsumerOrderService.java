@@ -331,6 +331,11 @@ public class ConsumerOrderService {
         //获取配件
         List<AutoParts> autoPartsList = autoPartsService.getAllAutoPartsByOrderId(id);
 
+        //获取用户上传的智能柜订单图片
+        ClientOrderImg clientOrderImg = clientOrderImgRepository.findTopByOrderIdAndDelStatusOrderByCreateTimeDesc(id, Constants.DelStatus.NORMAL.isValue());
+
+        //获取技师上传的智能柜订单图片
+        StaffOrderImg staffOrderImg = staffOrderImgRepository.findTopByOrderIdAndDelStatusOrderByCreateTimeDesc(id, Constants.DelStatus.NORMAL.isValue());
 
         //获取相关的卡信息或券信息
         if (Constants.OrderIdSn.CARD.getName().equals(id.substring(0, 1))) {
@@ -350,6 +355,15 @@ public class ConsumerOrderService {
         orderObject.setConsumerOrder(consumerOrder);
         orderObject.setConsumerProjectInfos(consumerProjectInfos);
         orderObject.setAutoParts(autoPartsList);
+
+        if (null != clientOrderImg) {
+            orderObject.setClientOrderImg(clientOrderImg);
+        }
+
+        if (null != staffOrderImg) {
+            orderObject.setStaffOrderImg(staffOrderImg);
+        }
+
 
         return ResultJsonObject.getDefaultResult(orderObject);
     }
