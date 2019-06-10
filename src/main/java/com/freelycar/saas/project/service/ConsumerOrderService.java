@@ -95,6 +95,12 @@ public class ConsumerOrderService {
     @Autowired
     private CouponServiceRepository couponServiceRepository;
 
+    @Autowired
+    private ClientOrderImgRepository clientOrderImgRepository;
+
+    @Autowired
+    private StaffOrderImgRepository staffOrderImgRepository;
+
     /**
      * 保存和修改
      *
@@ -893,6 +899,13 @@ public class ConsumerOrderService {
                 consumerProjectInfo.setConsumerOrderId(orderId);
                 consumerProjectInfoService.saveOrUpdate(consumerProjectInfo);
             }
+        }
+
+        //关联用户上传的图片
+        ClientOrderImg clientOrderImg = orderObject.getClientOrderImg();
+        if (null != clientOrderImg) {
+            clientOrderImg.setOrderId(orderId);
+            clientOrderImgRepository.save(clientOrderImg);
         }
 
         // 有效柜子分配逻辑

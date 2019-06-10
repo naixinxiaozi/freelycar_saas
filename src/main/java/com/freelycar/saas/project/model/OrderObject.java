@@ -23,6 +23,10 @@ public class OrderObject {
 
     private Coupon coupon;
 
+    private ClientOrderImg clientOrderImg;
+
+    private StaffOrderImg staffOrderImg;
+
     public OrderObject() {
     }
 
@@ -72,6 +76,22 @@ public class OrderObject {
 
     public void setCoupon(Coupon coupon) {
         this.coupon = coupon;
+    }
+
+    public ClientOrderImg getClientOrderImg() {
+        return clientOrderImg;
+    }
+
+    public void setClientOrderImg(ClientOrderImg clientOrderImg) {
+        this.clientOrderImg = clientOrderImg;
+    }
+
+    public StaffOrderImg getStaffOrderImg() {
+        return staffOrderImg;
+    }
+
+    public void setStaffOrderImg(StaffOrderImg staffOrderImg) {
+        this.staffOrderImg = staffOrderImg;
     }
 
     @Override
