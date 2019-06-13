@@ -41,6 +41,7 @@ public class UploadService {
     private static String STORE_IMG_FOLDER_NAME = "storeimg";
     private static String CLIENT_ORDER_IMG_FOLDER_NAME = "clientorderimg";
     private static String STAFF_ORDER_IMG_FOLDER_NAME = "stafforderimg";
+    private static String CAR_IMG_FOLDER_NAME = "carimg";
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Value("${upload.picture.path}")
     private String picturePath;
@@ -126,6 +127,27 @@ public class UploadService {
         }
         return ResultJsonObject.getErrorResult(null, "上传失败");
     }
+
+
+    /**
+     * 上传车辆照片（只返回图片url）
+     *
+     * @param file
+     * @param request
+     * @return
+     * @throws FileNotFoundException
+     * @throws ArgumentMissingException
+     */
+    public ResultJsonObject uploadCarImg(MultipartFile file, HttpServletRequest request) throws FileNotFoundException, ArgumentMissingException {
+        String resultURL = this.uploadPicture(file, request, CAR_IMG_FOLDER_NAME);
+
+        if (StringUtils.hasText(resultURL)) {
+            return ResultJsonObject.getDefaultResult(resultURL);
+        }
+        return ResultJsonObject.getErrorResult(null, "上传失败");
+    }
+
+
 
     /**
      * 上传图片到服务器上，生成图片url

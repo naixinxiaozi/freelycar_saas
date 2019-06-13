@@ -116,6 +116,9 @@ public class Car implements Serializable {
     @Column
     private String storeId;
 
+    @Column
+    private String carImageUrl;
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -169,6 +172,8 @@ public class Car implements Serializable {
                 .append(carMark).append('\"');
         sb.append(",\"storeId\":\"")
                 .append(storeId).append('\"');
+        sb.append(",\"carImageUrl\":\"")
+                .append(carImageUrl).append('\"');
         sb.append('}');
         return sb.toString();
     }
@@ -371,6 +376,14 @@ public class Car implements Serializable {
 
     public void setStoreId(String storeId) {
         this.storeId = storeId;
+    }
+
+    public String getCarImageUrl() {
+        return carImageUrl;
+    }
+
+    public void setCarImageUrl(String carImageUrl) {
+        this.carImageUrl = carImageUrl;
     }
 
     public Car() {

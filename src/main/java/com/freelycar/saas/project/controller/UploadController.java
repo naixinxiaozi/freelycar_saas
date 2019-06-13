@@ -68,6 +68,19 @@ public class UploadController {
         }
     }
 
+    @ApiOperation(value = "用户上传车辆订单图片", produces = "application/json")
+    @LoggerManage(description = "调用方法：用户上传车辆订单图片")
+    @PostMapping("/carImg")
+    public ResultJsonObject uploadCarImg(MultipartFile file, HttpServletRequest request) {
+        try {
+            return uploadService.uploadCarImg(file, request);
+        } catch (FileNotFoundException | ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
+    }
+
     @ApiOperation(value = "上传Excel-门店项目导入", produces = "application/json")
     @LoggerManage(description = "调用方法-上传Excel-门店项目导入")
     @PostMapping("/importProjects")

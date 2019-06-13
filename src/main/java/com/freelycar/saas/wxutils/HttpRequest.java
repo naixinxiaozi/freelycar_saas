@@ -143,7 +143,7 @@ public class HttpRequest {
         return requestConfig;
     }
 
-    //微信支付接口调用
+    //发送post请求
     public static String postCall(String interfaceName, HttpEntity entity, Map<String, Object> head) {
         log.debug("post调用远程接口， 接口名：" + interfaceName);
         CloseableHttpClient httpClient = getHttpClient();
