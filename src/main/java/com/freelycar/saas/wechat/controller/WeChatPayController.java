@@ -6,6 +6,7 @@ import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultCode;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.project.entity.ConsumerOrder;
+import com.freelycar.saas.project.model.PayOrder;
 import com.freelycar.saas.project.repository.ConsumerOrderRepository;
 import com.freelycar.saas.project.service.ConsumerOrderService;
 import com.freelycar.saas.util.RandomStringGenerator;
@@ -14,6 +15,7 @@ import com.freelycar.saas.wxutils.HttpRequest;
 import com.freelycar.saas.wxutils.WeChatSignatureUtil;
 import com.freelycar.saas.wxutils.WechatConfig;
 import com.freelycar.saas.wxutils.XMLParser;
+import io.swagger.annotations.ApiOperation;
 import org.apache.http.HttpEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -176,5 +178,18 @@ public class WeChatPayController {
                 }
             }
         }
+    }
+
+    /**
+     * 结算（同web端结算逻辑）
+     *
+     * @param payOrder
+     * @return
+     */
+    @ApiOperation(value = "单据结算（支付）", produces = "application/json")
+    @PostMapping("/payOrderByCard")
+    @LoggerManage(description = "调用方法：单据结算（支付）")
+    public ResultJsonObject payOrderByCard(@RequestBody PayOrder payOrder) {
+        return consumerOrderService.payment(payOrder);
     }
 }
