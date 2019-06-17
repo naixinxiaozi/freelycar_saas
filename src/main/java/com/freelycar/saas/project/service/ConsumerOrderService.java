@@ -1146,6 +1146,14 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(null, "单据状态更新失败");
         }
 
+        //关联技师上传订单车辆图片
+        StaffOrderImg staffOrderImg = orderObject.getStaffOrderImg();
+        if (null != staffOrderImg) {
+            staffOrderImg.setOrderId(orderId);
+            staffOrderImgRepository.save(staffOrderImg);
+        }
+
+
         // 有效柜子分配逻辑
         Door emptyDoor = doorService.getUsefulDoor(arkSn);
         // 更新door表数据状态
