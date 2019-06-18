@@ -2,11 +2,9 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.jwt.TokenAuthenticationUtil;
-import com.freelycar.saas.project.entity.Ark;
-import com.freelycar.saas.project.entity.ConsumerOrder;
-import com.freelycar.saas.project.entity.Door;
-import com.freelycar.saas.project.entity.Staff;
+import com.freelycar.saas.project.entity.*;
 import com.freelycar.saas.project.repository.ArkRepository;
+import com.freelycar.saas.project.repository.EmployeeRepository;
 import com.freelycar.saas.project.repository.StaffRepository;
 import com.freelycar.saas.util.UpdateTool;
 import com.freelycar.saas.wechat.model.WeChatStaff;
@@ -36,6 +34,9 @@ public class StaffService {
     @Autowired
     private ArkRepository arkRepository;
 
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
     /**
      * 新增/修改员工对象
      *
@@ -43,17 +44,22 @@ public class StaffService {
      * @return
      */
     public ResultJsonObject modify(Staff staff) {
+        String phone = staff.getPhone();
+        if (StringUtils.isEmpty(phone)) {
+            return ResultJsonObject.getErrorResult(null, "手机号必填，用于作为员工唯一编号");
+        }
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         try {
             //验重
-            if (this.checkRepeatName(staff)) {
-                return ResultJsonObject.getErrorResult(null, "已包含名称为：“" + staff.getName() + "”的数据，不能重复添加。");
+            if (this.checkRepeatPhone(staff)) {
+                return ResultJsonObject.getErrorResult(null, "已包含手机号为为：“" + phone + "”的数据，不能重复添加。");
             }
 
             //是否有ID，判断时新增还是修改
             String id = staff.getId();
             if (StringUtils.isEmpty(id)) {
                 staff.setDelStatus(Constants.DelStatus.NORMAL.isValue());
-                staff.setCreateTime(new Timestamp(System.currentTimeMillis()));
+                staff.setCreateTime(currentTime);
             } else {
                 Optional<Staff> optional = staffRepository.findById(id);
                 //判断数据库中是否有该对象
@@ -65,6 +71,22 @@ public class StaffService {
                 //将目标对象（projectType）中的null值，用源对象中的值替换
                 UpdateTool.copyNullProperties(source, staff);
             }
+
+
+            //如果在employee表中查询不到手机号，则视为第一次录入员工，则员工保存成功后需要在employee表中生成一条数据
+            Employee employee = employeeRepository.findTopByPhoneAndDelStatus(phone, Constants.DelStatus.NORMAL.isValue());
+            if (null == employee) {
+                Employee newEmployee = new Employee();
+                newEmployee.setDelStatus(Constants.DelStatus.NORMAL.isValue());
+                newEmployee.setTrueName(staff.getName());
+                newEmployee.setNotification(true);
+                newEmployee.setPhone(phone);
+                newEmployee.setAccount(phone);
+                newEmployee.setPassword(staff.getPassword());
+                newEmployee.setCreateTime(currentTime);
+                employeeRepository.save(newEmployee);
+            }
+
             //执行保存/修改
             return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
         } catch (Exception e) {
@@ -72,13 +94,33 @@ public class StaffService {
         }
     }
 
+
     /**
-     * 验证员工是否重复
+     * 验证员工是否重复（手机号唯一）
      * true：重复；false：不重复
      *
      * @param staff
      * @return
      */
+    private boolean checkRepeatPhone(Staff staff) {
+        List<Staff> staffList;
+        if (null != staff.getId()) {
+            staffList = staffRepository.checkRepeatPhone(staff.getId(), staff.getPhone(), staff.getStoreId());
+        } else {
+            staffList = staffRepository.checkRepeatPhone(staff.getPhone(), staff.getStoreId());
+        }
+        return staffList.size() != 0;
+    }
+
+    /**
+     * 验证员工是否重复（员工姓名唯一）
+     * true：重复；false：不重复
+     * 注：不太合理，弃用
+     *
+     * @param staff
+     * @return
+     */
+    @Deprecated
     private boolean checkRepeatName(Staff staff) {
         List<Staff> staffList;
         if (null != staff.getId()) {

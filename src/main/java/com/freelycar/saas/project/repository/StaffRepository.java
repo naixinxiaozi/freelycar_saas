@@ -41,5 +41,35 @@ public interface StaffRepository extends JpaRepository<Staff,String> {
 
     List<Staff> findAllByDelStatusAndIsArkAndStoreId(boolean delStatus, boolean isArk, String storeId);
 
+    /**
+     * 查找某个手机号对应的所有员工信息（理应只有storeId不同）
+     *
+     * @param phone
+     * @param delStatus
+     * @return
+     */
+    List<Staff> findAllByPhoneAndDelStatus(String phone, boolean delStatus);
+
+
+    /**
+     * 验证门店中手机号唯一性（排除数据本身）
+     *
+     * @param id
+     * @param phone
+     * @param storeId
+     * @return
+     */
+    @Query(value = "select * from staff where id != :id and storeId = :storeId and delStatus = 0 and phone = :phone", nativeQuery = true)
+    List<Staff> checkRepeatPhone(String id, String phone, String storeId);
+
+    /**
+     * 验证门店中手机号唯一性（不排除数据本身）
+     *
+     * @param phone
+     * @param storeId
+     * @return
+     */
+    @Query(value = "select * from staff where storeId = :storeId and delStatus = 0 and phone = :phone", nativeQuery = true)
+    List<Staff> checkRepeatPhone(String phone, String storeId);
 
 }
