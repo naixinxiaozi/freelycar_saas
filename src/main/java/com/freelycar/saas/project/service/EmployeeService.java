@@ -2,10 +2,13 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.jwt.TokenAuthenticationUtil;
 import com.freelycar.saas.project.entity.Employee;
 import com.freelycar.saas.project.entity.Staff;
 import com.freelycar.saas.project.repository.EmployeeRepository;
 import com.freelycar.saas.project.repository.StaffRepository;
+import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.wechat.model.WeChatEmployee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 /**
@@ -30,6 +34,39 @@ public class EmployeeService {
 
     @Autowired
     private StaffRepository staffRepository;
+
+    public Employee modify(Employee employee) throws EntityNotFoundException {
+        Employee source = employeeRepository.getOne(employee.getId());
+        //将目标对象（projectType）中的null值，用源对象中的值替换
+        UpdateTool.copyNullProperties(source, employee);
+        return employeeRepository.saveAndFlush(employee);
+    }
+
+    public ResultJsonObject selectStore(Employee employee) {
+        if (null == employee) {
+            return ResultJsonObject.getErrorResult(null, "操作失败，参数对象employee为空");
+        }
+        String id = employee.getId();
+        String defaultStoreId = employee.getDefaultStoreId();
+        String defaultStaffId = employee.getDefaultStaffId();
+
+        if (StringUtils.isEmpty(id)) {
+            return ResultJsonObject.getErrorResult(null, "操作失败，参数对象employee中id为空");
+        }
+        if (StringUtils.isEmpty(defaultStoreId)) {
+            return ResultJsonObject.getErrorResult(null, "操作失败，参数对象employee中defaultStoreId为空");
+        }
+        if (StringUtils.isEmpty(defaultStaffId)) {
+            return ResultJsonObject.getErrorResult(null, "操作失败，参数对象employee中defaultStaffId为空");
+        }
+        try {
+            modify(employee);
+        } catch (EntityNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            return ResultJsonObject.getErrorResult(null, "操作失败，未找到对应id的实体对象");
+        }
+        return ResultJsonObject.getDefaultResult(null);
+    }
 
     /**
      * 雇员登录方法（微信端技师登录方法）
@@ -82,11 +119,15 @@ public class EmployeeService {
 
 
         //查询staff表中有几个对应的数据，列举出来供用户选择门店
-        List<Staff> staffList = staffRepository.findAllByPhoneAndDelStatus(account, Constants.DelStatus.NORMAL.isValue());
+        List<Staff> staffList = staffRepository.findAllByPhoneAndDelStatusAndIsArk(account, Constants.DelStatus.NORMAL.isValue(), true);
         if (null == staffList || staffList.isEmpty()) {
             return ResultJsonObject.getErrorResult(null, "登录成功，但没有开通相关智能柜服务点权限，请联系管理人员");
         }
 
-        return ResultJsonObject.getDefaultResult(staffList);
+        String jwt = TokenAuthenticationUtil.generateAuthentication(employeeResult.getId());
+
+        return ResultJsonObject.getDefaultResult(new WeChatEmployee(jwt, employeeResult, staffList));
     }
+
+
 }

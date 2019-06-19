@@ -47,6 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/wechat/pay/**").permitAll()
                 //放行微信登录相关接口
                 .antMatchers("/wechat/login/**").permitAll()
+                .antMatchers("/wechat/employee/**").permitAll()
                 .antMatchers("/wechat/staff/login").permitAll()
                 .antMatchers("/wechat/staff/logout").permitAll()
                 // 上传接口

@@ -86,6 +86,15 @@ public class StaffService {
                 newEmployee.setCreateTime(currentTime);
                 employeeRepository.save(newEmployee);
             }
+            //如果已有数据，则统一其智能柜登录账户密码
+            else {
+                String account = employee.getAccount();
+                if (StringUtils.hasText(account)) {
+                    staff.setAccount(account);
+                    staff.setPassword(employee.getPassword());
+                    staff.setIsArk(true);
+                }
+            }
 
             //执行保存/修改
             return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
@@ -187,16 +196,37 @@ public class StaffService {
         Optional<Staff> optionalStaff = staffRepository.findById(id);
         if (optionalStaff.isPresent()) {
             Staff staff = optionalStaff.get();
-            staff.setAccount(account);
-            staff.setPassword(password);
-            staff.setIsArk(true);
-            if (this.checkRepeatAccount(staff)) {
-                return ResultJsonObject.getErrorResult(null, "已包含名称为：“" + staff.getAccount() + "”的账户，不能重复添加。");
+            Staff staffResult = null;
+
+            //开通的时候查询employee表中的数据
+            Employee employee = employeeRepository.findTopByPhoneAndDelStatus(staff.getPhone(), Constants.DelStatus.NORMAL.isValue());
+            if (null != employee) {
+                //如果employee中已经有对应手机号数据，且已有账号密码，则按照employee为准
+                String employeeAccount = employee.getAccount();
+                String employeePassword = employee.getPassword();
+
+                if (StringUtils.hasText(employeeAccount) && StringUtils.hasText(employeePassword)) {
+                    staff.setAccount(employee.getAccount());
+                    staff.setPassword(employee.getPassword());
+                    staff.setIsArk(true);
+                    staffResult = staffRepository.save(staff);
+                } else {
+                    staff.setAccount(account);
+                    staff.setPassword(password);
+                    staff.setIsArk(true);
+                    staffResult = staffRepository.save(staff);
+
+                    employee.setAccount(account);
+                    employee.setPassword(password);
+                    employeeRepository.save(employee);
+                }
+                return ResultJsonObject.getDefaultResult(staffResult);
+            } else {
+                ResultJsonObject.getErrorResult(null, "查询不到对应的employee表数据，开通失败");
             }
 
-            return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
         }
-        return ResultJsonObject.getErrorResult(null, "id:" + id + "不存在！");
+        return ResultJsonObject.getErrorResult(null, "id:" + id + "不存在，开通失败");
 
 
     }
@@ -231,8 +261,8 @@ public class StaffService {
         Optional<Staff> optionalStaff = staffRepository.findById(id);
         if (optionalStaff.isPresent()) {
             Staff staff = optionalStaff.get();
-            staff.setAccount(null);
-            staff.setPassword(null);
+//            staff.setAccount(null);
+//            staff.setPassword(null);
             staff.setIsArk(false);
 
             return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
