@@ -129,7 +129,13 @@ public class EmployeeService {
 
 
         //查询staff表中有几个对应的数据，列举出来供用户选择门店
-        List<Staff> staffList = staffRepository.findAllByPhoneAndDelStatusAndIsArk(account, Constants.DelStatus.NORMAL.isValue(), true);
+        List<Staff> staffList = null;
+        try {
+            staffList = getStaffs(account);
+        } catch (ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
         if (null == staffList || staffList.isEmpty()) {
             return ResultJsonObject.getErrorResult(null, "登录成功，但没有开通相关智能柜服务点权限，请联系管理人员");
         }
@@ -137,6 +143,20 @@ public class EmployeeService {
         String jwt = TokenAuthenticationUtil.generateAuthentication(employeeResult.getId());
 
         return ResultJsonObject.getDefaultResult(new WeChatEmployee(jwt, employeeResult, staffList));
+    }
+
+    /**
+     * 根据手机号查询staff表中的有效数据
+     *
+     * @param phone
+     * @return
+     * @throws ArgumentMissingException
+     */
+    public List<Staff> getStaffs(String phone) throws ArgumentMissingException {
+        if (StringUtils.isEmpty(phone)) {
+            throw new ArgumentMissingException("手机号查询staff数据失败：参数phone为空值");
+        }
+        return staffRepository.findAllByPhoneAndDelStatusAndIsArk(phone, Constants.DelStatus.NORMAL.isValue(), true);
     }
 
 
