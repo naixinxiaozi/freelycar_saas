@@ -21,8 +21,8 @@ public class WeChatLoginController {
     private final String appid = "YPVPvcghD0yT1CtQKUOpOUGI-gzGzoHsz";
     private final String appkey = "AnrwmLo01qL7RuKNbV0NwWR4";
     private final String ContentType = "application/json";
-    private final String leancouldUrlRes = "https://leancloud.cn/1.1/requestSmsCode";
-    private final String leancouldUrlVer = "https://leancloud.cn/1.1/verifySmsCode";
+    private final String leancloudUrlRes = "https://avoscloud.com/1.1/requestSmsCode";
+    private final String leancloudUrlVer = "https://avoscloud.com/1.1/verifySmsCode";
     @Autowired
     private WxUserInfoService wxUserInfoService;
     private Logger log = LogManager.getLogger(WeChatLoginController.class);
@@ -34,7 +34,7 @@ public class WeChatLoginController {
         param.put("mobilePhoneNumber", phone);
         HttpEntity entity = HttpRequest.getEntity(param);
         Map<String, Object> head = setLeancloudHead();
-        String result = HttpRequest.postCall(leancouldUrlRes, entity, head);
+        String result = HttpRequest.postCall(leancloudUrlRes, entity, head);
         log.debug("leancloud的返回码：" + result);
         JSONObject json;
         try {
@@ -111,7 +111,7 @@ public class WeChatLoginController {
      */
     private JSONObject verifySmsCode(String phone, String smscode) {
         Map<String, Object> head = setLeancloudHead();
-        String result = HttpRequest.postCall(leancouldUrlVer + "/" + smscode + "?mobilePhoneNumber=" + phone, null, head);
+        String result = HttpRequest.postCall(leancloudUrlVer + "/" + smscode + "?mobilePhoneNumber=" + phone, null, head);
         log.debug("绑定手机短信验证, phone:" + phone + ", smscode:" + smscode + "。 短信验证结果：" + result);
         JSONObject json = null;
         try {
