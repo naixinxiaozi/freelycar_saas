@@ -2,12 +2,16 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.jwt.TokenAuthenticationUtil;
 import com.freelycar.saas.project.entity.Employee;
 import com.freelycar.saas.project.entity.Staff;
+import com.freelycar.saas.project.entity.Store;
 import com.freelycar.saas.project.repository.EmployeeRepository;
 import com.freelycar.saas.project.repository.StaffRepository;
+import com.freelycar.saas.project.repository.StoreRepository;
 import com.freelycar.saas.util.UpdateTool;
+import com.freelycar.saas.wechat.model.EmployeeInfo;
 import com.freelycar.saas.wechat.model.WeChatEmployee;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +38,12 @@ public class EmployeeService {
 
     @Autowired
     private StaffRepository staffRepository;
+
+    @Autowired
+    private StoreRepository storeRepository;
+
+    @Autowired
+    private ConsumerOrderService consumerOrderService;
 
     public Employee modify(Employee employee) throws EntityNotFoundException {
         Employee source = employeeRepository.getOne(employee.getId());
@@ -130,4 +140,46 @@ public class EmployeeService {
     }
 
 
+    /**
+     * 展示微信端雇员的详细信息
+     *
+     * @param id
+     * @return
+     * @throws ArgumentMissingException
+     */
+    public ResultJsonObject detail(String id) throws ArgumentMissingException {
+        Employee employee = employeeRepository.getOne(id);
+        String defaultStaffId = employee.getDefaultStaffId();
+        String defaultStoreId = employee.getDefaultStoreId();
+
+        if (StringUtils.isEmpty(defaultStaffId)) {
+            throw new ArgumentMissingException("参数defaultStaffId缺失，无法查询相关信息");
+        }
+        if (StringUtils.isEmpty(defaultStoreId)) {
+            throw new ArgumentMissingException("参数defaultStoreId缺失，无法查询相关信息");
+        }
+        Staff staff = staffRepository.getOne(defaultStaffId);
+        Store store = storeRepository.getOne(defaultStoreId);
+
+        EmployeeInfo employeeInfo = new EmployeeInfo();
+        employeeInfo.setName(employee.getTrueName());
+        employeeInfo.setCity(employee.getCity());
+        employeeInfo.setProvince(employee.getProvince());
+        employeeInfo.setNotification(employee.getNotification());
+        employeeInfo.setHeadImgUrl(employee.getHeadImgUrl());
+        employeeInfo.setGender(employee.getGender());
+
+        //TODO 查询历史订单条数
+        int res = 0;
+        try {
+            res = consumerOrderService.getStaffOrderServiced(defaultStaffId);
+        } catch (ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        employeeInfo.setHistoryOrderCount(res);
+
+
+        return ResultJsonObject.getDefaultResult(employeeInfo);
+    }
 }

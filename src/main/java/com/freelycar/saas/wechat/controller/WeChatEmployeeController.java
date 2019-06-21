@@ -2,6 +2,7 @@ package com.freelycar.saas.wechat.controller;
 
 import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.project.entity.Employee;
 import com.freelycar.saas.project.service.EmployeeService;
 import io.swagger.annotations.Api;
@@ -9,10 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author tangwei - Toby
@@ -42,5 +40,17 @@ public class WeChatEmployeeController {
         return employeeService.selectStore(employee);
     }
 
+    @ApiOperation(value = "查询雇员的个人信息", produces = "application/json")
+    @GetMapping("/detail")
+    @LoggerManage(description = "调用方法：查询雇员的个人信息")
+    public ResultJsonObject detail(@RequestParam String id) {
+        try {
+            return employeeService.detail(id);
+        } catch (ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
+    }
 
 }

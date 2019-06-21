@@ -1688,4 +1688,19 @@ public class ConsumerOrderService {
 
         return projectPieCharts;
     }
+
+    /**
+     * 查询员工的智能柜服务订单数
+     *
+     * @param staffId
+     * @return
+     * @throws ArgumentMissingException
+     */
+    public int getStaffOrderServiced(String staffId) throws ArgumentMissingException {
+        if (StringUtils.isEmpty(staffId)) {
+            throw new ArgumentMissingException("查询员工的智能柜服务订单数失败：参数staffId为空值");
+        }
+        return consumerOrderRepository.countAllByPickCarStaffIdAndDelStatusAndOrderType(staffId, Constants.DelStatus.NORMAL.isValue(), Constants.OrderType.ARK.getValue());
+
+    }
 }

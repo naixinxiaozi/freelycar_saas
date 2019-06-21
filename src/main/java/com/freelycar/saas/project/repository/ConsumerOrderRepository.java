@@ -53,4 +53,6 @@ public interface ConsumerOrderRepository extends JpaRepository<ConsumerOrder, St
 
     @Query(value = "select cast( sum( co.secondActualPrice ) AS DECIMAL ( 15, 2 ) ) AS result  from consumerorder co where co.delStatus=0 and co.payState=2 and co.secondPayMethod = :payMethod AND co.createTime >= :startTime AND co.createTime <= :endTime ", nativeQuery = true)
     Map sumSecondIncomeForAllStoreByPayMethod(int payMethod, String startTime, String endTime);
+
+    int countAllByPickCarStaffIdAndDelStatusAndOrderType(String staffId, boolean delStatus, int orderType);
 }
