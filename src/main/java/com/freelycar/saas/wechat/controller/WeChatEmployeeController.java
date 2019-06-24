@@ -3,6 +3,7 @@ package com.freelycar.saas.wechat.controller;
 import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.ObjectNotFoundException;
 import com.freelycar.saas.project.entity.Employee;
 import com.freelycar.saas.project.service.EmployeeService;
 import io.swagger.annotations.Api;
@@ -46,7 +47,20 @@ public class WeChatEmployeeController {
     public ResultJsonObject detail(@RequestParam String id) {
         try {
             return employeeService.detail(id);
-        } catch (ArgumentMissingException e) {
+        } catch (ArgumentMissingException | ObjectNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "服务状态切换", produces = "application/json")
+    @GetMapping("/switchServiceStatus")
+    @LoggerManage(description = "调用方法：服务状态切换")
+    public ResultJsonObject switchServiceStatus(@RequestParam String id) {
+        try {
+            return employeeService.switchServiceStatus(id);
+        } catch (ArgumentMissingException | ObjectNotFoundException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
             return ResultJsonObject.getErrorResult(null, e.getMessage());

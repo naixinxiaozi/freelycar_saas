@@ -26,7 +26,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee {
-    private static final long serialVersionUID = 29L;
+    private static final long serialVersionUID = 36L;
 
     /**
      * 主键ID

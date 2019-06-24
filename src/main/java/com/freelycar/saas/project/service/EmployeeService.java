@@ -3,10 +3,10 @@ package com.freelycar.saas.project.service;
 import com.freelycar.saas.basic.wrapper.Constants;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.ObjectNotFoundException;
 import com.freelycar.saas.jwt.TokenAuthenticationUtil;
 import com.freelycar.saas.project.entity.Employee;
 import com.freelycar.saas.project.entity.Staff;
-import com.freelycar.saas.project.entity.Store;
 import com.freelycar.saas.project.repository.EmployeeRepository;
 import com.freelycar.saas.project.repository.StaffRepository;
 import com.freelycar.saas.project.repository.StoreRepository;
@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author tangwei - Toby
@@ -167,8 +168,9 @@ public class EmployeeService {
      * @return
      * @throws ArgumentMissingException
      */
-    public ResultJsonObject detail(String id) throws ArgumentMissingException {
-        Employee employee = employeeRepository.getOne(id);
+    public ResultJsonObject detail(String id) throws ArgumentMissingException, ObjectNotFoundException {
+        Employee employee = this.findObjectById(id);
+
         String defaultStaffId = employee.getDefaultStaffId();
         String defaultStoreId = employee.getDefaultStoreId();
 
@@ -178,8 +180,8 @@ public class EmployeeService {
         if (StringUtils.isEmpty(defaultStoreId)) {
             throw new ArgumentMissingException("参数defaultStoreId缺失，无法查询相关信息");
         }
-        Staff staff = staffRepository.getOne(defaultStaffId);
-        Store store = storeRepository.getOne(defaultStoreId);
+//        Staff staff = staffRepository.getOne(defaultStaffId);
+//        Store store = storeRepository.getOne(defaultStoreId);
 
         EmployeeInfo employeeInfo = new EmployeeInfo();
         employeeInfo.setName(employee.getTrueName());
@@ -189,7 +191,7 @@ public class EmployeeService {
         employeeInfo.setHeadImgUrl(employee.getHeadImgUrl());
         employeeInfo.setGender(employee.getGender());
 
-        //TODO 查询历史订单条数
+        //查询历史订单条数
         int res = 0;
         try {
             res = consumerOrderService.getStaffOrderServiced(defaultStaffId);
@@ -202,4 +204,38 @@ public class EmployeeService {
 
         return ResultJsonObject.getDefaultResult(employeeInfo);
     }
+
+    /**
+     * 切换服务状态
+     *
+     * @param id
+     * @return
+     * @throws ArgumentMissingException
+     */
+    public ResultJsonObject switchServiceStatus(String id) throws ArgumentMissingException, ObjectNotFoundException {
+        Employee employee = this.findObjectById(id);
+        boolean notification = employee.getNotification();
+        //置为相反状态
+        employee.setNotification(!notification);
+        try {
+            employeeRepository.save(employee);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null);
+        }
+        return ResultJsonObject.getDefaultResult(employee);
+    }
+
+    Employee findObjectById(String id) throws ArgumentMissingException, ObjectNotFoundException {
+        if (StringUtils.isEmpty(id)) {
+            throw new ArgumentMissingException("参数id为空值");
+        }
+        Optional<Employee> employeeOptional = employeeRepository.findById(id);
+        if (!employeeOptional.isPresent()) {
+            throw new ObjectNotFoundException("未找到id为：" + id + "的employee数据");
+        }
+        return employeeOptional.get();
+    }
+
 }
