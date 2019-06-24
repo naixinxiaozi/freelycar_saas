@@ -5,6 +5,8 @@ import com.freelycar.saas.basic.wrapper.ResultJsonObject;
 import com.freelycar.saas.exception.ArgumentMissingException;
 import com.freelycar.saas.exception.ObjectNotFoundException;
 import com.freelycar.saas.project.entity.Employee;
+import com.freelycar.saas.project.model.HistoryOrder;
+import com.freelycar.saas.project.service.ConsumerOrderService;
 import com.freelycar.saas.project.service.EmployeeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author tangwei - Toby
@@ -26,6 +30,8 @@ public class WeChatEmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+    @Autowired
+    private ConsumerOrderService consumerOrderService;
 
     @ApiOperation(value = "技师登录方法（新）", produces = "application/json")
     @PostMapping("/login")
@@ -61,6 +67,20 @@ public class WeChatEmployeeController {
         try {
             return employeeService.switchServiceStatus(id);
         } catch (ArgumentMissingException | ObjectNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
+        }
+    }
+
+    @ApiOperation(value = "获取技师历史订单", produces = "application/json")
+    @GetMapping("/listHistoryOrders")
+    @LoggerManage(description = "调用方法：获取技师历史订单")
+    public ResultJsonObject listHistoryOrders(@RequestParam String staffId, @RequestParam(required = false) String keyword) {
+        try {
+            List<HistoryOrder> list = consumerOrderService.listHistoryOrder(staffId, keyword);
+            return ResultJsonObject.getDefaultResult(list);
+        } catch (ArgumentMissingException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
             return ResultJsonObject.getErrorResult(null, e.getMessage());

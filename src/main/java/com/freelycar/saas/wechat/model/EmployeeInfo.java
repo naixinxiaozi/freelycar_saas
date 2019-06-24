@@ -26,4 +26,8 @@ public class EmployeeInfo {
     private Boolean notification;
 
     private int historyOrderCount;
+
+    private String defaultStaffId;
+
+    private String defaultStoreId;
 }

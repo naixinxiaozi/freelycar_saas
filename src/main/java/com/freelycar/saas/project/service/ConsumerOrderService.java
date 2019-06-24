@@ -1703,4 +1703,32 @@ public class ConsumerOrderService {
         return consumerOrderRepository.countAllByPickCarStaffIdAndDelStatusAndOrderType(staffId, Constants.DelStatus.NORMAL.isValue(), Constants.OrderType.ARK.getValue());
 
     }
+
+    public List<HistoryOrder> listHistoryOrder(String staffId, String keyword) throws ArgumentMissingException {
+        if (StringUtils.isEmpty(staffId)) {
+            throw new ArgumentMissingException("查询失败：参数staffId为空值");
+        }
+
+        StringBuilder sql = new StringBuilder();
+
+        sql.append(" select co.id, co.licensePlate, car.color, car.carBrand, case co.payState when 1 then '待支付' else '已交付' end as payState from consumerorder co left join car on car.id = co.carId where co.delStatus = 0 and co.pickCarStaffId = '").append(staffId).append("' ");
+        if (StringUtils.hasText(keyword)) {
+            sql.append(" and co.licensePlate like '%").append(keyword).append("%' or co.id like '%").append(keyword).append("%' ");
+        }
+        sql.append(" order by co.createTime desc ");
+
+        EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
+        Query nativeQuery = em.createNativeQuery(sql.toString());
+
+        nativeQuery.unwrap(NativeQuery.class).setResultTransformer(Transformers.aliasToBean(HistoryOrder.class));
+
+
+        @SuppressWarnings({"unused", "unchecked"})
+        List<HistoryOrder> historyOrders = nativeQuery.getResultList();
+
+        //关闭em
+        em.close();
+
+        return historyOrders;
+    }
 }

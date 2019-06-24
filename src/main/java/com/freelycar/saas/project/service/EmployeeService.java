@@ -190,6 +190,8 @@ public class EmployeeService {
         employeeInfo.setNotification(employee.getNotification());
         employeeInfo.setHeadImgUrl(employee.getHeadImgUrl());
         employeeInfo.setGender(employee.getGender());
+        employeeInfo.setDefaultStaffId(employee.getDefaultStaffId());
+        employeeInfo.setDefaultStoreId(employee.getDefaultStoreId());
 
         //查询历史订单条数
         int res = 0;

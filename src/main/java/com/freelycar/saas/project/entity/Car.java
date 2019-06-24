@@ -117,6 +117,9 @@ public class Car implements Serializable {
     private String storeId;
 
     @Column
+    private String color;
+
+    @Column
     private String carImageUrl;
 
     @Override
@@ -384,6 +387,14 @@ public class Car implements Serializable {
 
     public void setCarImageUrl(String carImageUrl) {
         this.carImageUrl = carImageUrl;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public Car() {
