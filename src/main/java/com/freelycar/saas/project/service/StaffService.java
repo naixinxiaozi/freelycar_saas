@@ -365,19 +365,29 @@ public class StaffService {
         List<Staff> staffList = this.getAllArkStaffInStore(storeId);
         logger.info("查询到storeId为" + storeId + "的门店有" + staffList.size() + "个技师");
         for (Staff staff : staffList) {
-            String openId = staff.getOpenId();
-            logger.info("技师openId：" + openId);
-            if (StringUtils.hasText(openId)) {
-                if (state == 0) {
-                    WechatTemplateMessage.orderCreated(consumerOrder, openId, door, ark);
-                }
-                if (state == 4) {
-                    WechatTemplateMessage.orderChangedForStaff(consumerOrder, openId, door, ark);
-                }
-                if (state == 1 && !openId.equals(exceptOpenId)) {
-                    WechatTemplateMessage.orderChangedForStaff(consumerOrder, openId, door, ark);
+//            String openId = staff.getOpenId();
+            //openId来源变更，采用employee表中的openId
+            String phone = staff.getPhone();
+            if (StringUtils.hasText(phone)) {
+                Employee employee = employeeRepository.findTopByPhoneAndDelStatus(phone, Constants.DelStatus.NORMAL.isValue());
+                if (null != employee) {
+                    String openId = employee.getOpenId();
+
+                    logger.info("技师openId：" + openId);
+                    if (StringUtils.hasText(openId)) {
+                        if (state == 0) {
+                            WechatTemplateMessage.orderCreated(consumerOrder, openId, door, ark);
+                        }
+                        if (state == 4) {
+                            WechatTemplateMessage.orderChangedForStaff(consumerOrder, openId, door, ark);
+                        }
+                        if (state == 1 && !openId.equals(exceptOpenId)) {
+                            WechatTemplateMessage.orderChangedForStaff(consumerOrder, openId, door, ark);
+                        }
+                    }
                 }
             }
+
         }
     }
 
