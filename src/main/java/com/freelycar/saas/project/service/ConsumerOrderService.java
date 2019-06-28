@@ -258,7 +258,7 @@ public class ConsumerOrderService {
      */
     public List<ReservationOrderInfo> listReservationOrders(String licensePlate, String storeId) {
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT co.id, co.licensePlate as licensePlate, co.carBrand as carBrand, co.carType as carType, co.clientName AS clientName,(select c.phone from client c where c.id = co.clientId) as phone, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) AS projectNames, co.createTime AS createTime, co.parkingLocation AS parkingLocation, d.arkSn AS arkSn, d.doorSn AS doorSn, concat( ( SELECT ark.`name` FROM ark WHERE ark.id = d.arkId ), '-', d.doorSn, '门' ) AS keyLocation FROM door d LEFT JOIN consumerOrder co ON co.id = d.orderId WHERE co.state = 0 ")
+        sql.append(" SELECT co.id, co.licensePlate as licensePlate, co.carBrand as carBrand, co.carType as carType, co.carColor, co.carImageUrl, co.clientName AS clientName,(select c.phone from client c where c.id = co.clientId) as phone, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) AS projectNames, co.createTime AS createTime, co.parkingLocation AS parkingLocation, d.arkSn AS arkSn, d.doorSn AS doorSn, concat( ( SELECT ark.`name` FROM ark WHERE ark.id = d.arkId ), '-', d.doorSn, '门' ) AS keyLocation FROM door d LEFT JOIN consumerOrder co ON co.id = d.orderId WHERE co.state = 0 ")
                 .append(" AND co.storeId = '").append(storeId).append("' ");
         if (StringUtils.hasText(licensePlate)) {
             sql.append(" and co.licensePlate like '%").append(licensePlate).append("%' ");
@@ -287,7 +287,7 @@ public class ConsumerOrderService {
      */
     public List<FinishOrderInfo> listServicingOrders(String licensePlate, String storeId) {
         StringBuilder sql = new StringBuilder();
-        sql.append(" SELECT co.id, co.clientName AS clientName,(select c.phone from client c where c.id = co.clientId) as phone, co.licensePlate as licensePlate, co.carBrand as carBrand, co.carType as carType, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) projectNames, co.pickTime as pickTime FROM consumerOrder co WHERE co.delStatus = 0 AND co.orderType = 2 AND co.state = 1 ")
+        sql.append(" SELECT co.id, co.clientName AS clientName,(select c.phone from client c where c.id = co.clientId) as phone, co.licensePlate as licensePlate, co.carBrand as carBrand, co.carType as carType, co.carColor, co.carImageUrl, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id GROUP BY cpi.consumerOrderId ) projectNames, co.pickTime as pickTime FROM consumerOrder co WHERE co.delStatus = 0 AND co.orderType = 2 AND co.state = 1 ")
                 .append(" AND co.storeId = '").append(storeId).append("' ");
         if (StringUtils.hasText(licensePlate)) {
             sql.append(" AND co.licensePlate LIKE '%").append(licensePlate).append("%' ");
@@ -873,6 +873,9 @@ public class ConsumerOrderService {
         consumerOrder.setCarType(carInfo.getCarType());
         consumerOrder.setLastMiles(carInfo.getLastMiles());
         consumerOrder.setMiles(carInfo.getMiles());
+        //新增车辆颜色和图片url
+        consumerOrder.setCarColor(carInfo.getColor());
+        consumerOrder.setCarImageUrl(carInfo.getCarImageUrl());
 
         //设置车主信息
         consumerOrder.setClientId(clientId);
@@ -1711,7 +1714,7 @@ public class ConsumerOrderService {
 
         StringBuilder sql = new StringBuilder();
 
-        sql.append(" select co.id, co.licensePlate, car.color, car.carBrand, case co.payState when 1 then '待支付' else '已交付' end as payState from consumerorder co left join car on car.id = co.carId where co.delStatus = 0 and co.pickCarStaffId = '").append(staffId).append("' ");
+        sql.append(" select co.id, co.licensePlate, co.carColor, co.carImageUrl, co.carBrand, case co.payState when 1 then '待支付' else '已交付' end as payState from consumerorder co where co.delStatus = 0 and co.pickCarStaffId = '").append(staffId).append("' ");
         if (StringUtils.hasText(keyword)) {
             sql.append(" and co.licensePlate like '%").append(keyword).append("%' or co.id like '%").append(keyword).append("%' ");
         }

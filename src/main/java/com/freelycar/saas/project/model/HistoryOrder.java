@@ -17,7 +17,9 @@ public class HistoryOrder {
 
     private String licensePlate;
 
-    private String color;
+    private String carColor;
+
+    private String carImageUrl;
 
     private String carBrand;
 

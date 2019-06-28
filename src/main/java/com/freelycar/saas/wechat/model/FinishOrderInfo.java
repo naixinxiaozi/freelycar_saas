@@ -27,6 +27,10 @@ public class FinishOrderInfo {
 
     private String carType;
 
+    private String carColor;
+
+    private String carImageUrl;
+
     private String projectNames;
 
     private Date pickTime;
