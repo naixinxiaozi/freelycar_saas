@@ -1455,7 +1455,7 @@ public class ConsumerOrderService {
             sql.append(" AND co.createTime <= '").append(endTime).append(" 23:59:59' ");
         }
 
-        logger.error(sql.toString());
+//        logger.info(sql.toString());
 
         EntityManager em = entityManagerFactory.getNativeEntityManagerFactory().createEntityManager();
         Query nativeQuery = em.createNativeQuery(sql.toString());
