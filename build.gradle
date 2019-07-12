@@ -7,11 +7,9 @@ buildscript {
             url 'http://maven.aliyun.com/nexus/content/groups/public/'
         }
         mavenCentral()
-        jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath 'org.hidetake:gradle-ssh-plugin:2.10.1'
     }
 }
 
@@ -20,7 +18,6 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'war'
-apply plugin: 'org.hidetake.ssh'
 
 group = 'com.freelycar.saas'
 version = '1.0.0-SNAPSHOT'
@@ -99,57 +96,3 @@ dependencies {
 
 }
 
-
-ssh.settings {
-    knownHosts = allowAnyHosts
-}
-
-//短期内为了安全，密码删除（后面项目如果转private，再考虑直接写在这里）
-remotes {
-    deployServer {
-        host = 'freelycar.com'
-        user = 'Administrator'
-        password = ''
-    }
-}
-
-
-task shutdown() {
-    ssh.run {
-        session(remotes.deployServer) {
-            println 'stop service ...'
-            execute '/cygdrive/c/winsw/stop.bat'
-        }
-    }
-}
-task backAnddel(dependsOn:shutdown) {
-    ssh.run {
-        session(remotes.deployServer) {
-            println 'start deleting...'
-            executeScript '''#!/bin/sh
-                        current=`date "+%Y%m%d%H%M%S"`
-                        backupname=saas.$current
-                        cp /cygdrive/c/winsw/saas.jar /cygdrive/c/winsw/backup/$backupname 
-                        rm -r /cygdrive/c/winsw/saas.jar
-                    '''
-        }
-    }
-}
-
-task copyToServer(dependsOn:backAnddel) {
-    ssh.run {
-        session(remotes.deployServer) {
-            println 'start copying jar...'
-            put from: 'build/libs/freelycar_saas-' + version + '.jar', into: '/cygdrive/c/winsw/saas.jar'
-        }
-    }
-}
-
-task deploy(dependsOn:copyToServer) {
-    ssh.run {
-        session(remotes.deployServer) {
-            println 'start service...'
-            execute '/cygdrive/c/winsw/start.bat'
-        }
-    }
-}
