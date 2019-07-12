@@ -21,8 +21,8 @@ public class WeChatLoginController {
     private final String appid = "YPVPvcghD0yT1CtQKUOpOUGI-gzGzoHsz";
     private final String appkey = "AnrwmLo01qL7RuKNbV0NwWR4";
     private final String ContentType = "application/json";
-    private final String leancloudUrlRes = "https://avoscloud.com/1.1/requestSmsCode";
-    private final String leancloudUrlVer = "https://avoscloud.com/1.1/verifySmsCode";
+    private final String leancloudUrlRes = "https://leancloud.cn/1.1/requestSmsCode";
+    private final String leancloudUrlVer = "https://leancloud.cn/1.1/verifySmsCode";
     @Autowired
     private WxUserInfoService wxUserInfoService;
     private Logger log = LogManager.getLogger(WeChatLoginController.class);
