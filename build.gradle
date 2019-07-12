@@ -1,15 +1,18 @@
 buildscript {
     ext {
         springBootVersion = '2.1.1.RELEASE'
+        sshPluginVersion = '2.10.1'
     }
     repositories {
         maven {
             url 'http://maven.aliyun.com/nexus/content/groups/public/'
         }
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.hidetake:gradle-ssh-plugin:${sshPluginVersion}")
     }
 }
 
@@ -18,6 +21,7 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'war'
+apply plugin: 'org.hidetake.ssh'
 
 group = 'com.freelycar.saas'
 version = '1.0.0-SNAPSHOT'
@@ -96,3 +100,49 @@ dependencies {
 
 }
 
+
+ssh.settings {
+    knownHosts = allowAnyHosts
+}
+
+//短期内为了安全，密码删除（后面项目如果转private，再考虑直接写在这里）
+remotes {
+    deployServer {
+        host = 'freelycar.com'
+        user = 'Administrator'
+        // 支持password、rsa等方式登录
+        password = 'Freelycar2017'
+//        identity = file("${rootDir}/id_rsa")
+    }
+}
+
+// 定义一个获取当前时间字符串的辅助函数
+static def now() {
+    new Date().format('yyyyMMddHHmmss')
+}
+
+// 定一个pkg任务
+task pkg
+pkg.dependsOn 'clean'
+pkg.dependsOn 'bootJar'
+bootJar.shouldRunAfter 'clean'
+// 定义自动部署脚本
+task deploy(dependsOn: pkg) {
+    doLast {
+        println("start task deploy:${now()}")
+        ssh.run {
+            session(remotes.deployServer) {
+                // 停止原有服务
+                execute '/cygdrive/c/winsw/stop.bat'
+                // 备份原有程序，首次部署mv会执行失败，忽略错误
+                execute "mv /cygdrive/c/winsw/saas.jar /cygdrive/c/winsw/backup/saas.${now()}", ignoreError: true
+                // 上传新版本程序
+                put from: 'build/libs/freelycar_saas-' + version + '.jar', into: '/cygdrive/c/winsw/saas.jar'
+                // 赋予可执行权限
+//            execute 'chmod u+x /cygdrive/c/winsw/saas.jar'
+                // 启动新服务
+                execute '/cygdrive/c/winsw/start.bat'
+            }
+        }
+    }
+}
