@@ -27,15 +27,29 @@ public class WeChatLoginController {
     private WxUserInfoService wxUserInfoService;
     private Logger log = LogManager.getLogger(WeChatLoginController.class);
 
-    //发送验证码请求
+    //发送短信验证码请求
     @RequestMapping(value = "/getSmsCode", method = RequestMethod.POST)
-    public ResultJsonObject getVerification(String phone) {
+    public ResultJsonObject getSmsCode(String phone) {
+        return getVerification(phone, false);
+    }
+
+    //发送语音验证码请求
+    @RequestMapping(value = "/getVoiceCode", method = RequestMethod.POST)
+    public ResultJsonObject getVoiceCode(String phone) {
+        return getVerification(phone, true);
+    }
+
+
+    public ResultJsonObject getVerification(String phone, boolean isVoice) {
         JSONObject param = new JSONObject();
         param.put("mobilePhoneNumber", phone);
+        if (isVoice) {
+            param.put("smsType", "voice");
+        }
         HttpEntity entity = HttpRequest.getEntity(param);
         Map<String, Object> head = setLeancloudHead();
         String result = HttpRequest.postCall(leancloudUrlRes, entity, head);
-        log.debug("leancloud的返回码：" + result);
+        log.error("leancloud的返回码：" + result);
         JSONObject json;
         try {
             json = JSONObject.parseObject(result);
@@ -50,6 +64,7 @@ public class WeChatLoginController {
         }
         return ResultJsonObject.getDefaultResult(json);
     }
+
 
     /**
      * 注册验证结果请求

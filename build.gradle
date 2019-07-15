@@ -32,6 +32,9 @@ repositories {
     maven {
         url 'http://maven.aliyun.com/nexus/content/groups/public/'
     }
+    maven {
+        url 'http://mvn.leancloud.cn/nexus/content/repositories/public/'
+    }
     mavenCentral()
 }
 
@@ -89,18 +92,26 @@ dependencies {
     compile group: 'cn.afterturn', name: 'easypoi-annotation', version: '4.0.0'
     compile group: 'cn.afterturn', name: 'easypoi-web', version: '4.0.0'
 
-    //devtools
+
+    // LeanCloud Java SDK 老版本
+    compile("cn.leancloud:java-sdk:0.2.1")
+    // LeanCloud Java Unified SDK 2019-09正式上线这里备用（届时需要按照官方最新文档重新实现业务代码)
+    // https://github.com/leancloud/java-unified-sdk
+//    compile("cn.leancloud:storage-core:5.0.15")
+
+    // devtools
     compile('org.springframework.boot:spring-boot-devtools')
 
-    //tomcat
+    // tomcat
     providedCompile("org.springframework.boot:spring-boot-starter-tomcat")
 
-    //test
+    // test
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
 }
 
 
+//自动化部署任务配置
 ssh.settings {
     knownHosts = allowAnyHosts
 }
