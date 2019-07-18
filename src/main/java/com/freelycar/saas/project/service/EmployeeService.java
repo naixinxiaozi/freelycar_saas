@@ -125,6 +125,9 @@ public class EmployeeService {
         if (StringUtils.hasText(city)) {
             employeeResult.setCity(city);
         }
+        if (StringUtils.hasText(openId)) {
+            employeeResult.setOpenId(openId);
+        }
 
         employeeRepository.save(employeeResult);
 
