@@ -26,7 +26,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecialOffer implements Serializable {
-    private static final long serialVersionUID = 30L;
+    private static final long serialVersionUID = 35L;
 
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")

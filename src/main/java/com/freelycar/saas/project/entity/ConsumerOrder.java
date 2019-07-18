@@ -62,6 +62,18 @@ public class ConsumerOrder implements Serializable {
     @Column
     private String licensePlate;
 
+    /**
+     * 车辆颜色
+     */
+    @Column
+    private String carColor;
+
+    /**
+     * 车辆图片
+     */
+    @Column
+    private String carImageUrl;
+
 
     /**
      * 用户信息对应主键ID
@@ -225,4 +237,5 @@ public class ConsumerOrder implements Serializable {
      */
     @Column
     private Timestamp cancelTime;
+
 }

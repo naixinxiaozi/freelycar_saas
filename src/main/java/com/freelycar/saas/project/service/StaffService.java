@@ -2,11 +2,9 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.jwt.TokenAuthenticationUtil;
-import com.freelycar.saas.project.entity.Ark;
-import com.freelycar.saas.project.entity.ConsumerOrder;
-import com.freelycar.saas.project.entity.Door;
-import com.freelycar.saas.project.entity.Staff;
+import com.freelycar.saas.project.entity.*;
 import com.freelycar.saas.project.repository.ArkRepository;
+import com.freelycar.saas.project.repository.EmployeeRepository;
 import com.freelycar.saas.project.repository.StaffRepository;
 import com.freelycar.saas.util.UpdateTool;
 import com.freelycar.saas.wechat.model.WeChatStaff;
@@ -36,6 +34,9 @@ public class StaffService {
     @Autowired
     private ArkRepository arkRepository;
 
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
     /**
      * 新增/修改员工对象
      *
@@ -43,17 +44,22 @@ public class StaffService {
      * @return
      */
     public ResultJsonObject modify(Staff staff) {
+        String phone = staff.getPhone();
+        if (StringUtils.isEmpty(phone)) {
+            return ResultJsonObject.getErrorResult(null, "手机号必填，用于作为员工唯一编号");
+        }
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         try {
             //验重
-            if (this.checkRepeatName(staff)) {
-                return ResultJsonObject.getErrorResult(null, "已包含名称为：“" + staff.getName() + "”的数据，不能重复添加。");
+            if (this.checkRepeatPhone(staff)) {
+                return ResultJsonObject.getErrorResult(null, "已包含手机号为为：“" + phone + "”的数据，不能重复添加。");
             }
 
             //是否有ID，判断时新增还是修改
             String id = staff.getId();
             if (StringUtils.isEmpty(id)) {
                 staff.setDelStatus(Constants.DelStatus.NORMAL.isValue());
-                staff.setCreateTime(new Timestamp(System.currentTimeMillis()));
+                staff.setCreateTime(currentTime);
             } else {
                 Optional<Staff> optional = staffRepository.findById(id);
                 //判断数据库中是否有该对象
@@ -65,6 +71,31 @@ public class StaffService {
                 //将目标对象（projectType）中的null值，用源对象中的值替换
                 UpdateTool.copyNullProperties(source, staff);
             }
+
+
+            //如果在employee表中查询不到手机号，则视为第一次录入员工，则员工保存成功后需要在employee表中生成一条数据
+            Employee employee = employeeRepository.findTopByPhoneAndDelStatus(phone, Constants.DelStatus.NORMAL.isValue());
+            if (null == employee) {
+                Employee newEmployee = new Employee();
+                newEmployee.setDelStatus(Constants.DelStatus.NORMAL.isValue());
+                newEmployee.setTrueName(staff.getName());
+                newEmployee.setNotification(true);
+                newEmployee.setPhone(phone);
+                newEmployee.setAccount(phone);
+                newEmployee.setPassword(staff.getPassword());
+                newEmployee.setCreateTime(currentTime);
+                employeeRepository.save(newEmployee);
+            }
+            //如果已有数据，则统一其智能柜登录账户密码
+            else {
+                String account = employee.getAccount();
+                if (StringUtils.hasText(account)) {
+                    staff.setAccount(account);
+                    staff.setPassword(employee.getPassword());
+                    staff.setIsArk(true);
+                }
+            }
+
             //执行保存/修改
             return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
         } catch (Exception e) {
@@ -72,13 +103,33 @@ public class StaffService {
         }
     }
 
+
     /**
-     * 验证员工是否重复
+     * 验证员工是否重复（手机号唯一）
      * true：重复；false：不重复
      *
      * @param staff
      * @return
      */
+    private boolean checkRepeatPhone(Staff staff) {
+        List<Staff> staffList;
+        if (null != staff.getId()) {
+            staffList = staffRepository.checkRepeatPhone(staff.getId(), staff.getPhone(), staff.getStoreId());
+        } else {
+            staffList = staffRepository.checkRepeatPhone(staff.getPhone(), staff.getStoreId());
+        }
+        return staffList.size() != 0;
+    }
+
+    /**
+     * 验证员工是否重复（员工姓名唯一）
+     * true：重复；false：不重复
+     * 注：不太合理，弃用
+     *
+     * @param staff
+     * @return
+     */
+    @Deprecated
     private boolean checkRepeatName(Staff staff) {
         List<Staff> staffList;
         if (null != staff.getId()) {
@@ -145,16 +196,37 @@ public class StaffService {
         Optional<Staff> optionalStaff = staffRepository.findById(id);
         if (optionalStaff.isPresent()) {
             Staff staff = optionalStaff.get();
-            staff.setAccount(account);
-            staff.setPassword(password);
-            staff.setIsArk(true);
-            if (this.checkRepeatAccount(staff)) {
-                return ResultJsonObject.getErrorResult(null, "已包含名称为：“" + staff.getAccount() + "”的账户，不能重复添加。");
+            Staff staffResult = null;
+
+            //开通的时候查询employee表中的数据
+            Employee employee = employeeRepository.findTopByPhoneAndDelStatus(staff.getPhone(), Constants.DelStatus.NORMAL.isValue());
+            if (null != employee) {
+                //如果employee中已经有对应手机号数据，且已有账号密码，则按照employee为准
+                String employeeAccount = employee.getAccount();
+                String employeePassword = employee.getPassword();
+
+                if (StringUtils.hasText(employeeAccount) && StringUtils.hasText(employeePassword)) {
+                    staff.setAccount(employee.getAccount());
+                    staff.setPassword(employee.getPassword());
+                    staff.setIsArk(true);
+                    staffResult = staffRepository.save(staff);
+                } else {
+                    staff.setAccount(account);
+                    staff.setPassword(password);
+                    staff.setIsArk(true);
+                    staffResult = staffRepository.save(staff);
+
+                    employee.setAccount(account);
+                    employee.setPassword(password);
+                    employeeRepository.save(employee);
+                }
+                return ResultJsonObject.getDefaultResult(staffResult);
+            } else {
+                ResultJsonObject.getErrorResult(null, "查询不到对应的employee表数据，开通失败");
             }
 
-            return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
         }
-        return ResultJsonObject.getErrorResult(null, "id:" + id + "不存在！");
+        return ResultJsonObject.getErrorResult(null, "id:" + id + "不存在，开通失败");
 
 
     }
@@ -189,8 +261,8 @@ public class StaffService {
         Optional<Staff> optionalStaff = staffRepository.findById(id);
         if (optionalStaff.isPresent()) {
             Staff staff = optionalStaff.get();
-            staff.setAccount(null);
-            staff.setPassword(null);
+//            staff.setAccount(null);
+//            staff.setPassword(null);
             staff.setIsArk(false);
 
             return ResultJsonObject.getDefaultResult(staffRepository.saveAndFlush(staff));
@@ -293,19 +365,29 @@ public class StaffService {
         List<Staff> staffList = this.getAllArkStaffInStore(storeId);
         logger.info("查询到storeId为" + storeId + "的门店有" + staffList.size() + "个技师");
         for (Staff staff : staffList) {
-            String openId = staff.getOpenId();
-            logger.info("技师openId：" + openId);
-            if (StringUtils.hasText(openId)) {
-                if (state == 0) {
-                    WechatTemplateMessage.orderCreated(consumerOrder, openId, door, ark);
-                }
-                if (state == 4) {
-                    WechatTemplateMessage.orderChangedForStaff(consumerOrder, openId, door, ark);
-                }
-                if (state == 1 && !openId.equals(exceptOpenId)) {
-                    WechatTemplateMessage.orderChangedForStaff(consumerOrder, openId, door, ark);
+//            String openId = staff.getOpenId();
+            //openId来源变更，采用employee表中的openId
+            String phone = staff.getPhone();
+            if (StringUtils.hasText(phone)) {
+                Employee employee = employeeRepository.findTopByPhoneAndDelStatus(phone, Constants.DelStatus.NORMAL.isValue());
+                if (null != employee) {
+                    String openId = employee.getOpenId();
+
+                    logger.info("技师openId：" + openId);
+                    if (StringUtils.hasText(openId)) {
+                        if (state == 0) {
+                            WechatTemplateMessage.orderCreated(consumerOrder, openId, door, ark);
+                        }
+                        if (state == 4) {
+                            WechatTemplateMessage.orderChangedForStaff(consumerOrder, openId, door, ark);
+                        }
+                        if (state == 1 && !openId.equals(exceptOpenId)) {
+                            WechatTemplateMessage.orderChangedForStaff(consumerOrder, openId, door, ark);
+                        }
+                    }
                 }
             }
+
         }
     }
 

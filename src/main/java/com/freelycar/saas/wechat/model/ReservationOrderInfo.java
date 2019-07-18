@@ -16,15 +16,30 @@ import java.util.Date;
 @AllArgsConstructor
 public class ReservationOrderInfo {
     private String id;
+
     private String licensePlate;
+
     private String carBrand;
+
     private String carType;
+
+    private String carColor;
+
+    private String carImageUrl;
+
     private String clientName;
+
     private String phone;
+
     private String projectNames;
+
     private Date createTime;
+
     private String parkingLocation;
+
     private String arkSn;
+
     private String doorSn;
+
     private String keyLocation;
 }
