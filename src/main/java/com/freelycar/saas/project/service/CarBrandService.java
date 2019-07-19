@@ -13,6 +13,7 @@ import com.freelycar.saas.util.CarBrandJSONResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,6 +115,7 @@ public class CarBrandService {
      *
      * @return CarBrand对象集合
      */
+    @Cacheable(value = "carBrand", key = "#root.methodName", unless = "#result == null")
     public List<CarBrand> getAllCarBrand() {
         return carBrandRepository.findAll();
     }
@@ -124,7 +126,9 @@ public class CarBrandService {
      * @param pinyin 拼音首字母
      * @return CarBrand对象集合
      */
+    @Cacheable(value = "carBrand", key = "#root.methodName + '.' + p0", unless = "#result == null")
     public List<CarBrand> getCarBrandByPinyin(String pinyin) {
+        //TODO 写一个正则验证参数是否是一个拼音首字母
         return carBrandRepository.findAllByPinyin(pinyin);
     }
 
@@ -134,6 +138,7 @@ public class CarBrandService {
      * @param carBrandId
      * @return
      */
+    @Cacheable(value = "carType", key = "#root.methodName + '.' + p0", unless = "#result == null")
     public List<CarType> getCarTypeByCarBrandId(Integer carBrandId) {
         return carTypeRepository.findAllByCarBrandId(carBrandId);
     }
@@ -144,6 +149,7 @@ public class CarBrandService {
      * @param carTypeId
      * @return
      */
+    @Cacheable(value = "carType", key = "#root.methodName + '.' + p0", unless = "#result == null")
     public List<CarModel> getCarModelByCarTypeId(Integer carTypeId) {
         return carModelRepository.findAllByCarTypeId(carTypeId);
     }
@@ -154,6 +160,7 @@ public class CarBrandService {
      * @param keyword
      * @return
      */
+    @Cacheable(value = "carBrand", key = "#root.methodName + '.' + p0", unless = "#result == null")
     public List<CarBrand> getCarBrandByKeyword(String keyword) {
         return carBrandRepository.findAllByBrandContaining(keyword);
     }
@@ -163,6 +170,7 @@ public class CarBrandService {
      *
      * @return
      */
+    @Cacheable(value = "carBrand", key = "#root.methodName", unless = "#result == null")
     public List<CarBrand> getHotCarBrand() {
         return carBrandRepository.findByHot(true);
     }

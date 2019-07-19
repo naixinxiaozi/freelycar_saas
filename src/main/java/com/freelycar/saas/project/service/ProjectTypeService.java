@@ -10,6 +10,7 @@ import com.freelycar.saas.util.UpdateTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -129,6 +130,7 @@ public class ProjectTypeService {
      * @return
      */
     @Transactional
+    @CacheEvict(value = "projectType", key = "#id")
     public ResultJsonObject delete(String id) {
         try {
             int result = projectTypeRepository.delById(id);
