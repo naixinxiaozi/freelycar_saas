@@ -7,8 +7,6 @@ import com.freelycar.saas.project.service.ProjectTypeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -32,7 +30,6 @@ public class ProjectTypeController {
      */
     @PostMapping(value = "/modify")
     @LoggerManage(description = "调用方法：项目类型新增/修改")
-    @CachePut(value = "projectType", key = "#projectType.id")
     public ResultJsonObject saveOrUpdate(@RequestBody ProjectType projectType) {
         if (null == projectType) {
             errorMsg = "接收到的参数：projectType为NULL";
@@ -50,7 +47,6 @@ public class ProjectTypeController {
      */
     @GetMapping(value = "/detail")
     @LoggerManage(description = "调用方法：获取项目类型详情")
-    @Cacheable(value = "projectType", key = "#id")
     public ResultJsonObject detail(@RequestParam String id) {
         if (null == id) {
             errorMsg = "接收到的参数：id为NULL";

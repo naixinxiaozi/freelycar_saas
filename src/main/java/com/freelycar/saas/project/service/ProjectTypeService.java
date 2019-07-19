@@ -10,6 +10,8 @@ import com.freelycar.saas.util.UpdateTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +42,7 @@ public class ProjectTypeService {
      * @param projectType
      * @return
      */
+    @CachePut(value = "projectType", key = "#projectType.id")
     public ResultJsonObject modify(ProjectType projectType) {
         try {
             //验重
@@ -93,6 +96,7 @@ public class ProjectTypeService {
      * @param id
      * @return
      */
+    @Cacheable(value = "projectType", key = "#id")
     public ResultJsonObject getDetail(String id) {
         Optional<ProjectType> optional = projectTypeRepository.findById(id);
         //判断数据库中是否有该对象
