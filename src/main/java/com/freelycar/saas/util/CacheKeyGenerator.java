@@ -56,6 +56,7 @@ public class CacheKeyGenerator implements KeyGenerator {
                 return targetName + DOT + methodName;
             }
         }
+        logger.debug("缓存key：" + s);
         return s;
     }
 
