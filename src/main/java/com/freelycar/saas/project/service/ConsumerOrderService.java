@@ -226,13 +226,15 @@ public class ConsumerOrderService {
 
     public List<BaseOrderInfo> findAllOrdersByClientId(String clientId, String type) {
         StringBuilder sql = new StringBuilder();
+        sql.append(" SELECT co.id, co.licensePlate AS licensePlate, co.carBrand AS carBrand, co.carType AS carType, co.clientName AS clientName, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id AND cpi.delStatus=0 GROUP BY cpi.consumerOrderId ) AS projectNames, co.createTime AS createTime, co.pickTime AS pickTime, co.finishTime AS finishTime, co.state, co.actualPrice as actualPrice, co.totalPrice as totalPrice, co.payState AS payState FROM consumerOrder co WHERE co.delStatus = 0 ");
         if (Constants.OrderType.SERVICE.getName().equalsIgnoreCase(type)) {
-            sql.append(" SELECT co.id, co.licensePlate AS licensePlate, co.carBrand AS carBrand, co.carType AS carType, co.clientName AS clientName, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id AND cpi.delStatus=0 GROUP BY cpi.consumerOrderId ) AS projectNames, co.createTime AS createTime, co.pickTime AS pickTime, co.finishTime AS finishTime, co.state, co.actualPrice as actualPrice, co.totalPrice as totalPrice, co.payState AS payState FROM consumerOrder co WHERE co.delStatus = 0 ");
-            sql.append(" AND co.orderType < 3 ");
+            sql.append(" AND co.orderType < ").append(Constants.OrderType.SERVICE.getValue());
+        } else if (Constants.OrderType.ARK.getName().equalsIgnoreCase(type)) {
+            sql.append(" AND co.orderType < ").append(Constants.OrderType.ARK.getValue());
         } else if (Constants.OrderType.CARD.getName().equalsIgnoreCase(type)) {
-            sql.append(" SELECT co.id, co.licensePlate AS licensePlate, co.carBrand AS carBrand, co.carType AS carType, co.clientName AS clientName, ( SELECT GROUP_CONCAT( c.`name` ) FROM card c WHERE c.id = co.cardOrCouponId ) AS cardName, ( SELECT GROUP_CONCAT( cp.`name` ) FROM coupon cp WHERE cp.id = co.cardOrCouponId ) AS couponName, co.createTime AS createTime, co.pickTime AS pickTime, co.finishTime AS finishTime, co.state, co.actualPrice AS actualPrice, co.totalPrice AS totalPrice, co.payState AS payState FROM consumerOrder co WHERE co.delStatus = 0 AND co.orderType = 3 ");
+            sql.append(" AND co.orderType < ").append(Constants.OrderType.CARD.getValue());
         } else {
-            return null;
+            sql.append(" AND co.orderType < 3 ");
         }
 
         sql.append(" AND co.clientId = '").append(clientId).append("' ORDER BY co.createTime DESC ");
