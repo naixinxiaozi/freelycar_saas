@@ -23,6 +23,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -146,8 +147,6 @@ public class HttpRequest {
     //发送post请求
     public static String postCall(String interfaceName, HttpEntity entity, Map<String, Object> head) {
         log.debug("post调用远程接口， 接口名：" + interfaceName);
-        CloseableHttpClient httpClient = getHttpClient();
-        CloseableHttpResponse response = null;
         HttpPost httpPost = new HttpPost(interfaceName);
         if (entity != null) {
             httpPost.setEntity(entity);
@@ -160,27 +159,14 @@ public class HttpRequest {
         }
         String outResult = null;
 //		httpPost.setConfig(setTimeOut());
-        try {
-            response = httpClient.execute(httpPost);
+        try (
+                CloseableHttpClient httpClient = getHttpClient();
+                CloseableHttpResponse response = httpClient.execute(httpPost)
+        ) {
             outResult = getOutResult(response);
 
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (httpClient != null) {
-                try {
-                    httpClient.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (response != null) {
-                try {
-                    response.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         log.debug("post调用结果：" + outResult);
         return outResult;
@@ -215,7 +201,7 @@ public class HttpRequest {
             }
 
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(body, "utf-8"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(body, StandardCharsets.UTF_8));
             String line;
             while ((line = reader.readLine()) != null) {
                 out.append(line);
@@ -250,8 +236,6 @@ public class HttpRequest {
     }
 
     public static String getCall(String interfaceName, Map<String, Object> param, Map<String, Object> head) {
-        CloseableHttpClient httpClient = getHttpClient();
-        CloseableHttpResponse response = null;
         if (param != null) {
             String paramString = "";
             List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -272,26 +256,13 @@ public class HttpRequest {
         }
         log.debug("发起get请求 请求路径：" + interfaceName);
         String outResult = null;
-        try {
-            response = httpClient.execute(httpGet);
+        try (
+                CloseableHttpClient httpClient = getHttpClient();
+                CloseableHttpResponse response = httpClient.execute(httpGet)
+        ) {
             outResult = getOutResult(response);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (httpClient != null) {
-                try {
-                    response.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (response != null) {
-                try {
-                    response.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         log.debug("get请求结果：" + outResult);
         return outResult;

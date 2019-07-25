@@ -16,34 +16,21 @@ import java.io.IOException;
 public class MenuInitTest {
     public static void main(String[] args) {
         StringBuilder stringBuilder = new StringBuilder();
-        FileReader fileReader = null;
-        BufferedReader br = null;
-        try {
-            File file = ResourceUtils.getFile("classpath:init/router.json");
+
+        File file;
+        try (
+                FileReader fileReader = new FileReader(file = ResourceUtils.getFile("classpath:init/router.json"));
+                BufferedReader br = new BufferedReader(fileReader)
+        ) {
             if (file.exists() && file.isFile()) {
-                fileReader = new FileReader(file);
-                br = new BufferedReader(fileReader);
                 String s;
                 while ((s = br.readLine()) != null) {
                     stringBuilder.append(s);
                     stringBuilder.append("\n");
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-                if (fileReader != null) {
-                    fileReader.close();
-
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         JSONArray jsonArray = JSONArray.parseArray(stringBuilder.toString());
         System.out.println(jsonArray);
