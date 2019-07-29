@@ -1,7 +1,10 @@
 package com.freelycar.saas.wechat.controller;
 
+import com.freelycar.saas.aop.LoggerManage;
 import com.freelycar.saas.basic.wrapper.ResultJsonObject;
+import com.freelycar.saas.project.service.CardServiceService;
 import com.freelycar.saas.project.service.StoreService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class WeChatStoreController {
     @Autowired
     private StoreService storeService;
+
+    @Autowired
+    private CardServiceService cardServiceService;
 
     /**
      * 获取所有门店信息
@@ -70,5 +76,12 @@ public class WeChatStoreController {
     @GetMapping("/listAllStoreLocation")
     public ResultJsonObject listAllStoreLocation() {
         return storeService.listAllStoreLocation();
+    }
+
+    @ApiOperation(value = "获取门店在售的会员卡列表", produces = "application/json")
+    @GetMapping("/listOnSaleCards")
+    @LoggerManage(description = "调用wechat接口：获取门店在售的会员卡列表")
+    public ResultJsonObject listOnSaleCards(String storeId) {
+        return ResultJsonObject.getDefaultResult(cardServiceService.findOnSaleCards(storeId));
     }
 }

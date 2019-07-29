@@ -203,6 +203,7 @@ public class CardServiceService {
      * @param storeId
      * @return
      */
+
     public List<CardService> findOnSaleCards(String storeId) {
         return cardServiceRepository.findByStoreIdAndDelStatusAndBookOnline(storeId, Constants.DelStatus.NORMAL.isValue(), true);
     }
