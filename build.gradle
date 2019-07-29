@@ -122,7 +122,7 @@ remotes {
         host = 'freelycar.com'
         user = 'Administrator'
         // 支持password、rsa等方式登录
-        password = 'Freelycar2017'
+        password = ''
 //        identity = file("${rootDir}/id_rsa")
     }
 }
