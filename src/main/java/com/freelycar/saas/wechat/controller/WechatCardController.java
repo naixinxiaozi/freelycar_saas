@@ -43,6 +43,7 @@ public class WechatCardController {
     }
 
     @GetMapping("/generateCardOrder")
+    @LoggerManage(description = "生成购买会员卡的订单")
     public ResultJsonObject generateCardOrder(@RequestParam String clientId, @RequestParam String cardServiceId) {
         try {
             return ResultJsonObject.getDefaultResult(cardServiceService.generateCardOrder(clientId, cardServiceId));
@@ -54,6 +55,22 @@ public class WechatCardController {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
             return ResultJsonObject.getErrorResult(null);
+        }
+    }
+
+    @GetMapping("/generateRechargeOrder")
+    @LoggerManage(description = "生成充值会员卡的订单")
+    public ResultJsonObject generateRechargeOrder(
+            @RequestParam String clientId,
+            @RequestParam String cardServiceId,
+            @RequestParam String cardId
+    ) {
+        try {
+            return ResultJsonObject.getDefaultResult(cardServiceService.generateRechargeOrder(clientId, cardServiceId, cardId));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
         }
     }
 }

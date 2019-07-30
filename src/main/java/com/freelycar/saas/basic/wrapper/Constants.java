@@ -57,7 +57,7 @@ public class Constants {
      * 订单类型（1.服务开单；2.智能柜开单；3.办卡/续卡/抵用券）
      */
     public enum OrderType {
-        SERVICE(1, "service"), ARK(2, "ark"), CARD(3, "card");
+        SERVICE(1, "service"), ARK(2, "ark"), CARD(3, "card"), RECHARGE(4, "recharge");
 
         private final Integer value;
         private final String name;
@@ -78,9 +78,13 @@ public class Constants {
 
     /**
      * 订单ID的类型首字母
+     * 1 - S ：服务订单
+     * 2 - A ：智能柜订单
+     * 3 - C ：开卡订单
+     * 4 - R ：充值订单
      */
     public enum OrderIdSn {
-        SERVICE(1, "S"), ARK(2, "A"), CARD(3, "C");
+        SERVICE(1, "S"), ARK(2, "A"), CARD(3, "C"), RECHARGE(4, "R");
 
         private final Integer value;
         private final String name;

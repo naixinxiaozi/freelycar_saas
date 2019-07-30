@@ -997,13 +997,13 @@ public class ConsumerOrderService {
             return ResultJsonObject.getErrorResult(null, "未找到该车牌绑定的客户信息");
         }
 
-        double carBalance;
+        double cardBalance;
         Float balance = cardRepository.sumBalanceByClientId(clientId);
         if (null != balance) {
             //格式化精度
-            carBalance = RoundTool.round(balance.doubleValue(), 2, BigDecimal.ROUND_HALF_UP);
+            cardBalance = RoundTool.round(balance.doubleValue(), 2, BigDecimal.ROUND_HALF_UP);
         } else {
-            carBalance = 0.0;
+            cardBalance = 0.0;
         }
 
         double consumeAmount = client.getConsumeAmount() == null ? 0.0 : client.getConsumeAmount();
@@ -1023,7 +1023,7 @@ public class ConsumerOrderService {
         orderClientInfo.setIsMember(client.getMember());
         orderClientInfo.setHistoryConsumption(RoundTool.round(consumeAmount, 2, BigDecimal.ROUND_HALF_UP));
 
-        orderClientInfo.setBalance(carBalance);
+        orderClientInfo.setBalance(cardBalance);
 
 
         return ResultJsonObject.getDefaultResult(orderClientInfo);
@@ -1192,8 +1192,17 @@ public class ConsumerOrderService {
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                         e.printStackTrace();
-                        return ResultJsonObject.getErrorResult(null);
+                        return ResultJsonObject.getErrorResult(null, e.getMessage());
                     }
+                case "R":
+                    try {
+                        return this.rechargeCardPaySuccess(orderId);
+                    } catch (ObjectNotFoundException | ArgumentMissingException | UpdateDataErrorException e) {
+                        logger.error(e.getMessage(), e);
+                        e.printStackTrace();
+                        return ResultJsonObject.getErrorResult(null, e.getMessage());
+                    }
+
                 default:
                     return ResultJsonObject.getErrorResult(null, "该类型的订单不支持微信支付，请联系平台管理员核实。");
             }
@@ -1364,6 +1373,42 @@ public class ConsumerOrderService {
         order.setGender(client.getGender());
         order.setStoreId(client.getStoreId());
         order.setCardOrCouponId(cardOrCouponId);
+
+        return this.saveOrUpdate(order);
+    }
+
+    /**
+     * 生成会员卡充值订单
+     *
+     * @param client
+     * @param price
+     * @param cardId
+     * @return
+     * @throws Exception
+     */
+    public ConsumerOrder generateOrderForRecharge(Client client, double price, String cardId) throws Exception {
+        if (null == client || StringUtils.isEmpty(cardId)) {
+            throw new ArgumentMissingException("生成会员卡充值的订单失败，原因：参数缺失");
+        }
+
+        String clientName = client.getTrueName();
+        if (StringUtils.isEmpty(clientName)) {
+            clientName = client.getName();
+        }
+
+        ConsumerOrder order = new ConsumerOrder();
+        order.setPayState(Constants.PayState.NOT_PAY.getValue());
+        order.setOrderType(Constants.OrderType.RECHARGE.getValue());
+        order.setClientId(client.getId());
+        order.setTotalPrice(price);
+        order.setActualPrice(price);
+
+        order.setClientName(clientName);
+        order.setPhone(client.getPhone());
+        order.setIsMember(client.getMember());
+        order.setGender(client.getGender());
+        order.setStoreId(client.getStoreId());
+        order.setCardOrCouponId(cardId);
 
         return this.saveOrUpdate(order);
     }
@@ -1735,5 +1780,52 @@ public class ConsumerOrderService {
         em.close();
 
         return historyOrders;
+    }
+
+    public ResultJsonObject rechargeCardPaySuccess(String orderId) throws ObjectNotFoundException, ArgumentMissingException, UpdateDataErrorException {
+        ConsumerOrder consumerOrder = consumerOrderRepository.findById(orderId).orElse(null);
+        if (null == consumerOrder) {
+            throw new ObjectNotFoundException("订单数据未查询到，无法更新卡券状态和订单状态");
+        }
+        consumerOrder.setPayState(Constants.PayState.FINISH_PAY.getValue());
+        //设置支付方式一为微信支付，且支付方式一的金额为订单总体实付金额
+        consumerOrder.setFirstPayMethod(Constants.PayMethod.WECHAT_PAY.getCode());
+        consumerOrder.setFirstActualPrice(consumerOrder.getActualPrice());
+
+        String cardOrCouponId = consumerOrder.getCardOrCouponId();
+        if (StringUtils.isEmpty(cardOrCouponId)) {
+            throw new ArgumentMissingException("订单中的卡券ID为空，无法更新订单状态");
+        }
+        Card card = cardRepository.findById(cardOrCouponId).orElse(null);
+        if (null == card) {
+            throw new ObjectNotFoundException("未找到会员卡的对象，无法更新充值卡状态和订单状态");
+        }
+
+        // 更新余额和会员卡有效期
+        com.freelycar.saas.project.entity.CardService cardServiceObject = cardServiceRepository.findById(card.getCardServiceId()).orElse(null);
+        if (null == cardServiceObject) {
+            throw new ObjectNotFoundException("未找到充值信息，无法更新充值卡状态和订单状态");
+        }
+        float rechargePrice = cardServiceObject.getActualPrice();
+
+        double cardBalance;
+        Float balance = cardRepository.sumBalanceByClientId(consumerOrder.getClientId());
+        if (null != balance) {
+            cardBalance = balance.doubleValue();
+        } else {
+            cardBalance = 0.0;
+        }
+
+        card.setBalance(RoundTool.round((float) cardBalance + rechargePrice, 2, BigDecimal.ROUND_HALF_UP));
+        card.setExpirationDate(TimestampUtil.getExpirationDateForYear(cardServiceObject.getValidTime()));
+        cardRepository.save(card);
+
+        //更新订单状态
+        ConsumerOrder orderRes = updateOrder(consumerOrder);
+        if (null == orderRes) {
+            throw new UpdateDataErrorException("单据数据更新失败，无法更新充值卡状态和订单状态");
+        }
+
+        return ResultJsonObject.getDefaultResult(orderId);
     }
 }

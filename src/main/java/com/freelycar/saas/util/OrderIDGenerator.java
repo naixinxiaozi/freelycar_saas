@@ -23,7 +23,7 @@ import java.util.Date;
 @Component
 public class OrderIDGenerator {
     private static final SimpleDateFormat sdfDate = new SimpleDateFormat("yyMMdd");
-    private final String[] orderTypeSn = new String[]{"S", "A", "C"};
+    private final String[] orderTypeSn = new String[]{"S", "A", "C", "R"};
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private OrderSnRepository orderSnRepository;

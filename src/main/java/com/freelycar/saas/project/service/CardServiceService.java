@@ -2,6 +2,7 @@ package com.freelycar.saas.project.service;
 
 import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.exception.ArgumentMissingException;
+import com.freelycar.saas.exception.NormalException;
 import com.freelycar.saas.exception.ObjectNotFoundException;
 import com.freelycar.saas.project.entity.Card;
 import com.freelycar.saas.project.entity.CardService;
@@ -53,7 +54,7 @@ public class CardServiceService {
         try {
             //验重
             if (this.checkRepeatName(cardService)) {
-                return ResultJsonObject.getErrorResult(null, "已包含名称为：“" + cardService.getName() + "”的数据，不能重复添加。");
+                return ResultJsonObject.getErrorResult(null, "已包含名称为：“" + cardService.getName() + "”的数据，不能重复添加");
             }
 
             //是否有ID，判断时新增还是修改
@@ -226,20 +227,20 @@ public class CardServiceService {
 
         Client client = clientService.findById(clientId);
         if (null == client) {
-            throw new ObjectNotFoundException("用户信息查找失败，无法生成购买订单，请稍后再试或联系客服。");
+            throw new ObjectNotFoundException("用户信息查找失败，无法生成购买订单，请稍后再试或联系客服");
         }
 
         CardService cardServiceObject = cardServiceRepository.findById(cardServiceId).orElse(null);
         if (null == cardServiceObject) {
-            throw new ObjectNotFoundException("会员卡信息查找失败，无法生成购买订单，请稍后再试或联系客服。");
+            throw new ObjectNotFoundException("会员卡信息查找失败，无法生成购买订单，请稍后再试或联系客服");
         }
 
         String clientStoreId = client.getStoreId();
         String cardServiceStoreId = cardServiceObject.getStoreId();
         if (null != clientStoreId && null != cardServiceStoreId && !clientStoreId.equals(cardServiceStoreId)) {
-            logger.error("clientStoreId:" + clientStoreId);
-            logger.error("cardServiceStoreId:" + cardServiceStoreId);
-            throw new Exception("用户信息与会员卡信息所属门店不同，无法生成购买订单，请核实或联系客服。");
+            logger.debug("clientStoreId:" + clientStoreId);
+            logger.debug("cardServiceStoreId:" + cardServiceStoreId);
+            throw new Exception("用户信息与卡服务信息所属门店不同，无法生成购买订单，请核实或联系客服");
         }
 
         double price = RoundTool.round(cardServiceObject.getPrice().doubleValue(), 2, BigDecimal.ROUND_HALF_UP);
@@ -261,7 +262,7 @@ public class CardServiceService {
 
         Card cardRes = cardRepository.saveAndFlush(card);
         if (null == cardRes) {
-            throw new Exception("会员卡数据生成异常，无法生成购买订单，请核实或联系客服。");
+            throw new Exception("会员卡数据生成异常，无法生成购买订单，请核实或联系客服");
         }
 
         //生成订单
@@ -274,5 +275,67 @@ public class CardServiceService {
         cardRepository.save(cardRes);
 
         return orderId;
+    }
+
+    // TODO 充值逻辑
+    //1. 获取用户信息
+    //2. 获取卡服务信息
+    //3. 获取会员卡信息
+    //4. 生成充值订单
+    //5.
+    public String generateRechargeOrder(String clientId, String cardServiceId, String cardId) throws Exception {
+        // 非空验证
+        String exceptionMsg = "生成会员卡充值订单失败";
+        if (StringUtils.isEmpty(clientId)) {
+            throw new ArgumentMissingException("参数clientId为空，" + exceptionMsg);
+        }
+        if (StringUtils.isEmpty(cardServiceId)) {
+            throw new ArgumentMissingException("参数cardServiceId为空，" + exceptionMsg);
+        }
+        if (StringUtils.isEmpty(cardId)) {
+            throw new ArgumentMissingException("参数cardId为空，" + exceptionMsg);
+        }
+
+        // 获取用户信息
+        Client client = clientService.findById(clientId);
+        if (null == client) {
+            throw new ObjectNotFoundException("用户信息查找失败，，请稍后再试或联系客服");
+        }
+
+        // 获取卡服务信息
+        CardService cardServiceObject = cardServiceRepository.findById(cardServiceId).orElse(null);
+        if (null == cardServiceObject) {
+            throw new ObjectNotFoundException("卡服务信息查找失败，" + exceptionMsg + "，请稍后再试或联系客服");
+        }
+
+        // 获取会员卡信息
+        Card card = cardRepository.findById(cardId).orElse(null);
+        if (null == card) {
+            throw new ObjectNotFoundException("会员卡信息查找失败，" + exceptionMsg + "，请稍后再试或联系客服");
+        }
+
+        // 判断用户和卡服务门店是否对应
+        String clientStoreId = client.getStoreId();
+        String cardServiceStoreId = cardServiceObject.getStoreId();
+        if (StringUtils.hasText(clientStoreId) && StringUtils.hasText(cardServiceStoreId) && !clientStoreId.equals(cardServiceStoreId)) {
+            logger.debug("clientStoreId:" + clientStoreId);
+            logger.debug("cardServiceStoreId:" + cardServiceStoreId);
+            throw new NormalException("用户信息与卡服务信息所属门店不同，" + exceptionMsg + "，请核实或联系客服");
+        }
+
+        //判断卡归属是否正确
+        String cardClientId = card.getClientId();
+        String cardNumber = card.getCardNumber();
+        if (!clientId.equals(cardClientId)) {
+            logger.debug("cardClientId:" + cardClientId);
+            throw new NormalException("卡号为：" + cardNumber + " 的会员卡不属于该用户，" + exceptionMsg + "，请核实或联系客服");
+        }
+
+        double price = RoundTool.round(cardServiceObject.getPrice().doubleValue(), 2, BigDecimal.ROUND_HALF_UP);
+
+        //生成订单
+        ConsumerOrder consumerOrder = consumerOrderService.generateOrderForRecharge(client, price, cardId);
+
+        return consumerOrder.getId();
     }
 }
