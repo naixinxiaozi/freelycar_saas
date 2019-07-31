@@ -224,17 +224,23 @@ public class ConsumerOrderService {
         return null;
     }
 
-    public List<BaseOrderInfo> findAllOrdersByClientId(String clientId, String type) {
+    public List<BaseOrderInfo> findAllOrdersByClientId(String clientId, String type) throws IllegalArgumentException {
         StringBuilder sql = new StringBuilder();
         sql.append(" SELECT co.id, co.licensePlate AS licensePlate, co.carBrand AS carBrand, co.carType AS carType, co.clientName AS clientName, ( SELECT GROUP_CONCAT( cpi.projectName ) FROM consumerProjectInfo cpi WHERE cpi.consumerOrderId = co.id AND cpi.delStatus=0 GROUP BY cpi.consumerOrderId ) AS projectNames, co.createTime AS createTime, co.pickTime AS pickTime, co.finishTime AS finishTime, co.state, co.actualPrice as actualPrice, co.totalPrice as totalPrice, co.payState AS payState FROM consumerOrder co WHERE co.delStatus = 0 ");
         if (Constants.OrderType.SERVICE.getName().equalsIgnoreCase(type)) {
-            sql.append(" AND co.orderType < ").append(Constants.OrderType.SERVICE.getValue());
+            sql.append(" AND co.orderType = ").append(Constants.OrderType.SERVICE.getValue());
         } else if (Constants.OrderType.ARK.getName().equalsIgnoreCase(type)) {
-            sql.append(" AND co.orderType < ").append(Constants.OrderType.ARK.getValue());
+            sql.append(" AND co.orderType = ").append(Constants.OrderType.ARK.getValue());
         } else if (Constants.OrderType.CARD.getName().equalsIgnoreCase(type)) {
+            sql.append(" AND co.orderType = ").append(Constants.OrderType.CARD.getValue());
+        } else if (Constants.OrderType.RECHARGE.getName().equalsIgnoreCase(type)) {
+            sql.append(" AND co.orderType = ").append(Constants.OrderType.RECHARGE.getValue());
+        } else if ("nocard".equalsIgnoreCase(type)) {
             sql.append(" AND co.orderType < ").append(Constants.OrderType.CARD.getValue());
+        } else if ("all".equalsIgnoreCase(type)) {
+            sql.append(" AND co.orderType < 10 ");
         } else {
-            sql.append(" AND co.orderType < 3 ");
+            throw new IllegalArgumentException("不支持参数type值为：" + type + " 的查询");
         }
 
         sql.append(" AND co.clientId = '").append(clientId).append("' ORDER BY co.createTime DESC ");

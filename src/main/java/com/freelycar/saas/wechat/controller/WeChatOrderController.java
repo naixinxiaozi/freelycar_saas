@@ -5,6 +5,8 @@ import com.freelycar.saas.project.service.ConsumerOrderService;
 import com.freelycar.saas.wechat.model.BaseOrderInfo;
 import com.freelycar.saas.wechat.model.FinishOrderInfo;
 import com.freelycar.saas.wechat.model.ReservationOrderInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/wechat/order")
 public class WeChatOrderController {
+    private static final Logger logger = LoggerFactory.getLogger(WeChatOrderController.class);
 
     @Autowired
     private ConsumerOrderService consumerOrderService;
@@ -30,11 +33,14 @@ public class WeChatOrderController {
             @RequestParam String clientId,
             @RequestParam String type
     ) {
-        List<BaseOrderInfo> res = consumerOrderService.findAllOrdersByClientId(clientId, type);
-        if (null != res) {
+        try {
+            List<BaseOrderInfo> res = consumerOrderService.findAllOrdersByClientId(clientId, type);
             return ResultJsonObject.getDefaultResult(res);
+        } catch (IllegalArgumentException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null, e.getMessage());
         }
-        return ResultJsonObject.getErrorResult(null);
     }
 
 
