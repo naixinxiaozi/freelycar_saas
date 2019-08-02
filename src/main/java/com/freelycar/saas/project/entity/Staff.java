@@ -73,6 +73,9 @@ public class Staff implements Serializable {
     @Column
     private String password;
 
+    @Transient
+    private String storeName;
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");

@@ -143,6 +143,12 @@ public class EmployeeService {
         if (null == staffList || staffList.isEmpty()) {
             return ResultJsonObject.getErrorResult(null, "登录成功，但没有开通相关智能柜服务点权限，请联系管理人员");
         }
+        for (Staff staff : staffList) {
+            String storeId = staff.getStoreId();
+            if (StringUtils.hasText(storeId)) {
+                storeRepository.findById(storeId).ifPresent(storeObject -> staff.setStoreName(storeObject.getName()));
+            }
+        }
 
         String jwt = TokenAuthenticationUtil.generateAuthentication(employeeResult.getId());
 
