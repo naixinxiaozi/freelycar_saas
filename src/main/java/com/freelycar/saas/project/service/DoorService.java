@@ -98,7 +98,7 @@ public class DoorService {
             String endStatus = arkThread.getEndStatus();
             //获取结果，如果不是success，说明超时
             if (!Constants.OPEN_SUCCESS.equalsIgnoreCase(endStatus)) {
-                throw new OpenArkDoorTimeOutException("柜门关闭线程超时（1分钟）");
+                throw new OpenArkDoorTimeOutException("柜门关闭线程超时（50s）");
             }
 
             //如果正常到这边，不抛出异常，就说明一切正常，可以开单
