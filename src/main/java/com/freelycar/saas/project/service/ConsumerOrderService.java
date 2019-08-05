@@ -372,6 +372,12 @@ public class ConsumerOrderService {
             orderObject.setStaffOrderImg(staffOrderImg);
         }
 
+        //查询接单的店员信息（包含头像、姓名、联系电话）
+        String staffId = consumerOrder.getPickCarStaffId();
+        if (StringUtils.hasText(staffId)) {
+            orderObject.setStaffInfo(staffService.findStaffInfoForOrderByStaffId(staffId));
+        }
+
 
         return ResultJsonObject.getDefaultResult(orderObject);
     }

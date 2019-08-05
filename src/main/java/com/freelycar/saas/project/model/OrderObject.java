@@ -27,6 +27,8 @@ public class OrderObject {
 
     private StaffOrderImg staffOrderImg;
 
+    private StaffInfo staffInfo;
+
     public OrderObject() {
     }
 
@@ -94,6 +96,14 @@ public class OrderObject {
         this.staffOrderImg = staffOrderImg;
     }
 
+    public StaffInfo getStaffInfo() {
+        return staffInfo;
+    }
+
+    public void setStaffInfo(StaffInfo staffInfo) {
+        this.staffInfo = staffInfo;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -109,6 +119,12 @@ public class OrderObject {
                 .append(card);
         sb.append(",\"coupon\":")
                 .append(coupon);
+        sb.append(",\"clientOrderImg\":")
+                .append(clientOrderImg);
+        sb.append(",\"staffOrderImg\":")
+                .append(staffOrderImg);
+        sb.append(",\"staffInfo\":")
+                .append(staffInfo);
         sb.append('}');
         return sb.toString();
     }

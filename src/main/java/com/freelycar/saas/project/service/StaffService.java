@@ -3,6 +3,7 @@ package com.freelycar.saas.project.service;
 import com.freelycar.saas.basic.wrapper.*;
 import com.freelycar.saas.jwt.TokenAuthenticationUtil;
 import com.freelycar.saas.project.entity.*;
+import com.freelycar.saas.project.model.StaffInfo;
 import com.freelycar.saas.project.repository.ArkRepository;
 import com.freelycar.saas.project.repository.EmployeeRepository;
 import com.freelycar.saas.project.repository.StaffRepository;
@@ -393,5 +394,33 @@ public class StaffService {
 
     public Staff findById(String id) {
         return staffRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * 根据手机号，查出接单店员的头像、手机、姓名等信息
+     *
+     * @param staffId
+     * @return
+     */
+    public StaffInfo findStaffInfoForOrderByStaffId(String staffId) {
+        StaffInfo staffInfo = new StaffInfo();
+        staffInfo.setStaffId(staffId);
+        if (StringUtils.hasText(staffId)) {
+            Staff staffObject = this.findById(staffId);
+            if (null != staffObject) {
+                String staffName = staffObject.getName();
+                staffInfo.setStaffName(staffName);
+                String phone = staffObject.getPhone();
+                if (StringUtils.hasText(phone)) {
+                    staffInfo.setPhone(phone);
+                    Employee employee = employeeRepository.findTopByPhoneAndDelStatus(phone, Constants.DelStatus.NORMAL.isValue());
+                    if (null != employee) {
+                        staffInfo.setEmployeeId(employee.getId());
+                        staffInfo.setHeadImgUrl(employee.getHeadImgUrl());
+                    }
+                }
+            }
+        }
+        return staffInfo;
     }
 }
