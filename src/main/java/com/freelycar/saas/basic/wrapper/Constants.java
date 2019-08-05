@@ -32,6 +32,11 @@ public class Constants {
     public final static String DEVICE_OFFLINE = "offline";
     public final static String ALREADY_OPEN = "opened";
 
+    /**
+     * 其他常用符号
+     */
+    public final static String HYPHEN = "-";
+
     public enum DelStatus {
         /**
          * 有效的（数据库中对应0，bit类型）

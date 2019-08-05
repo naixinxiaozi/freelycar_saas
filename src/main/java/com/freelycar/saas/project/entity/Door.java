@@ -61,6 +61,9 @@ public class Door implements Serializable {
     @Column
     private String arkSn;
 
+    @Column
+    private String arkName;
+
     /**
      * 智能柜门编号
      */
@@ -140,6 +143,14 @@ public class Door implements Serializable {
         this.state = state;
     }
 
+    public String getArkName() {
+        return arkName;
+    }
+
+    public void setArkName(String arkName) {
+        this.arkName = arkName;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -155,8 +166,10 @@ public class Door implements Serializable {
                 .append(orderId).append('\"');
         sb.append(",\"arkSn\":\"")
                 .append(arkSn).append('\"');
-        sb.append(",\"doorSn\":\"")
-                .append(doorSn).append('\"');
+        sb.append(",\"arkName\":\"")
+                .append(arkName).append('\"');
+        sb.append(",\"doorSn\":")
+                .append(doorSn);
         sb.append(",\"state\":")
                 .append(state);
         sb.append('}');

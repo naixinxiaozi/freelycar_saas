@@ -119,6 +119,7 @@ public class DoorService {
         }
         String arkSn = ark.getSn();
         String arkId = ark.getId();
+        String arkName = ark.getName();
         int doorNum = ark.getDoorNum();
         if (StringUtils.isEmpty(arkSn)) {
             throw new ArgumentMissingException("参数arkSn为空，生成door表数据失败");
@@ -131,6 +132,7 @@ public class DoorService {
             door.setArkId(arkId);
             door.setArkSn(arkSn);
             door.setDoorSn(i + 1);
+            door.setArkName(arkName);
             doorRepository.save(door);
         }
     }

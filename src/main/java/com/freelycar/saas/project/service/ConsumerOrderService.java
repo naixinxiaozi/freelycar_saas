@@ -910,6 +910,14 @@ public class ConsumerOrderService {
         consumerOrder.setTotalPrice(totalPrice);
         consumerOrder.setActualPrice(totalPrice);
 
+        // 有效柜子分配逻辑
+        Door emptyDoor = doorService.getUsefulDoor(arkSn);
+        // 更新用户把钥匙存放在哪个柜子的哪个门
+        String userKeyLocation = emptyDoor.getArkName() + Constants.HYPHEN + emptyDoor.getDoorSn() + "号门";
+        String userKeyLocationSn = emptyDoor.getArkSn() + Constants.HYPHEN + emptyDoor.getDoorSn();
+        consumerOrder.setUserKeyLocation(userKeyLocation);
+        consumerOrder.setUserKeyLocationSn(userKeyLocationSn);
+
         ConsumerOrder consumerOrderRes;
         try {
             consumerOrderRes = this.saveOrUpdate(consumerOrder);
@@ -923,6 +931,7 @@ public class ConsumerOrderService {
         }
 
         String orderId = consumerOrder.getId();
+
 
         //保存订单项目信息
         if (null != consumerProjectInfos && !consumerProjectInfos.isEmpty()) {
@@ -939,8 +948,7 @@ public class ConsumerOrderService {
             clientOrderImgRepository.save(clientOrderImg);
         }
 
-        // 有效柜子分配逻辑
-        Door emptyDoor = doorService.getUsefulDoor(arkSn);
+
         // door表数据更新，根据智能柜编号获取door对象，并更新状态为"预约状态"
         this.changeDoorState(emptyDoor, orderId, Constants.DoorState.USER_RESERVATION.getValue());
         // 数据保存完毕之后操作硬件，成功后返回成功，否则抛出异常进行回滚操作
@@ -1151,12 +1159,21 @@ public class ConsumerOrderService {
 
         String orderId = consumerOrder.getId();
         if (StringUtils.isEmpty(orderId)) {
-            return ResultJsonObject.getCustomResult("The param 'orderId' is null", ResultCode.PARAM_NOT_COMPLETE);
+            return ResultJsonObject.getCustomResult("参数orderId值为null", ResultCode.PARAM_NOT_COMPLETE);
         }
 
 
         consumerOrder.setFinishTime(new Timestamp(System.currentTimeMillis()));
         consumerOrder.setState(Constants.OrderState.SERVICE_FINISH.getValue());
+
+        // 有效柜子分配逻辑
+        Door emptyDoor = doorService.getUsefulDoor(arkSn);
+        // 更新技师把钥匙存放在哪个柜子的哪个门
+        String staffKeyLocation = emptyDoor.getArkName() + Constants.HYPHEN + emptyDoor.getDoorSn() + "号门";
+        String staffKeyLocationSn = emptyDoor.getArkSn() + Constants.HYPHEN + emptyDoor.getDoorSn();
+        consumerOrder.setStaffKeyLocation(staffKeyLocation);
+        consumerOrder.setStaffKeyLocationSn(staffKeyLocationSn);
+
 
         ConsumerOrder order = this.updateOrder(consumerOrder);
         if (null == order) {
@@ -1171,8 +1188,6 @@ public class ConsumerOrderService {
         }
 
 
-        // 有效柜子分配逻辑
-        Door emptyDoor = doorService.getUsefulDoor(arkSn);
         // 更新door表数据状态
         this.changeDoorState(emptyDoor, orderId, Constants.DoorState.STAFF_FINISH.getValue());
         // 调用硬件接口方法打开柜门

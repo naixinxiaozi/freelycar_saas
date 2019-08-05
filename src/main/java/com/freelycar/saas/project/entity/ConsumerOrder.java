@@ -238,4 +238,17 @@ public class ConsumerOrder implements Serializable {
     @Column
     private Timestamp cancelTime;
 
+    @Column
+    private String userKeyLocation;
+
+    @Column
+    private String userKeyLocationSn;
+
+    @Column
+    private String staffKeyLocation;
+
+    @Column
+    private String staffKeyLocationSn;
+
+
 }
