@@ -133,26 +133,30 @@ public class EmployeeService {
 
 
         //查询staff表中有几个对应的数据，列举出来供用户选择门店
-        List<Staff> staffList = null;
+        List<Staff> staffList;
         try {
             staffList = getStaffs(account);
-        } catch (ArgumentMissingException e) {
+        } catch (ArgumentMissingException | ObjectNotFoundException e) {
             logger.error(e.getMessage(), e);
             e.printStackTrace();
-        }
-        if (null == staffList || staffList.isEmpty()) {
-            return ResultJsonObject.getErrorResult(null, "登录成功，但没有开通相关智能柜服务点权限，请联系管理人员");
-        }
-        for (Staff staff : staffList) {
-            String storeId = staff.getStoreId();
-            if (StringUtils.hasText(storeId)) {
-                storeRepository.findById(storeId).ifPresent(storeObject -> staff.setStoreName(storeObject.getName()));
-            }
+            return ResultJsonObject.getErrorResult(null, "登录成功，但" + e.getMessage() + "，请联系管理人员");
         }
 
         String jwt = TokenAuthenticationUtil.generateAuthentication(employeeResult.getId());
 
         return ResultJsonObject.getDefaultResult(new WeChatEmployee(jwt, employeeResult, staffList));
+    }
+
+    /**
+     * 根据手机号查询门店店员账号
+     *
+     * @param phone
+     * @return
+     * @throws ObjectNotFoundException
+     * @throws ArgumentMissingException
+     */
+    public List<Staff> listStaffByPhone(String phone) throws ObjectNotFoundException, ArgumentMissingException {
+        return getStaffs(phone);
     }
 
     /**
@@ -162,11 +166,21 @@ public class EmployeeService {
      * @return
      * @throws ArgumentMissingException
      */
-    public List<Staff> getStaffs(String phone) throws ArgumentMissingException {
+    public List<Staff> getStaffs(String phone) throws ArgumentMissingException, ObjectNotFoundException {
         if (StringUtils.isEmpty(phone)) {
             throw new ArgumentMissingException("手机号查询staff数据失败：参数phone为空值");
         }
-        return staffRepository.findAllByPhoneAndDelStatusAndIsArk(phone, Constants.DelStatus.NORMAL.isValue(), true);
+        List<Staff> staffList = staffRepository.findAllByPhoneAndDelStatusAndIsArk(phone, Constants.DelStatus.NORMAL.isValue(), true);
+        if (staffList.isEmpty()) {
+            throw new ObjectNotFoundException("未查询到手机号为：" + phone + " 的staff信息");
+        }
+        for (Staff staff : staffList) {
+            String storeId = staff.getStoreId();
+            if (StringUtils.hasText(storeId)) {
+                storeRepository.findById(storeId).ifPresent(storeObject -> staff.setStoreName(storeObject.getName()));
+            }
+        }
+        return staffList;
     }
 
 

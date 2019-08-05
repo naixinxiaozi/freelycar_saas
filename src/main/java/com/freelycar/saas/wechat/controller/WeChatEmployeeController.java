@@ -87,4 +87,18 @@ public class WeChatEmployeeController {
         }
     }
 
+    @ApiOperation(value = "根据手机号查询门店店员账号", produces = "application/json")
+    @GetMapping("/listStaffByPhone")
+    @LoggerManage(description = "调用方法：根据手机号查询门店店员账号")
+    public ResultJsonObject listStaffByPhone(@RequestParam String phone) {
+        try {
+            return ResultJsonObject.getDefaultResult(employeeService.listStaffByPhone(phone));
+        } catch (ObjectNotFoundException | ArgumentMissingException e) {
+            logger.error(e.getMessage(), e);
+            e.printStackTrace();
+            return ResultJsonObject.getErrorResult(null);
+        }
+
+    }
+
 }
