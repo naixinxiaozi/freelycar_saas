@@ -59,7 +59,7 @@ public class Constants {
     }
 
     /**
-     * 订单类型（1.服务开单；2.智能柜开单；3.办卡/续卡/抵用券）
+     * 订单类型（1.服务开单；2.智能柜开单；3.办卡/抵用券；4.充值）
      */
     public enum OrderType {
         SERVICE(1, "service"), ARK(2, "ark"), CARD(3, "card"), RECHARGE(4, "recharge");
