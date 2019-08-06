@@ -372,10 +372,11 @@ public class StaffService {
             if (StringUtils.hasText(phone)) {
                 Employee employee = employeeRepository.findTopByPhoneAndDelStatus(phone, Constants.DelStatus.NORMAL.isValue());
                 if (null != employee) {
+                    boolean notification = employee.getNotification();
                     String openId = employee.getOpenId();
 
                     logger.info("技师openId：" + openId);
-                    if (StringUtils.hasText(openId)) {
+                    if (notification && StringUtils.hasText(openId)) {
                         if (state == 0) {
                             WechatTemplateMessage.orderCreated(consumerOrder, openId, door, ark);
                         }
