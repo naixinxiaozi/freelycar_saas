@@ -56,6 +56,10 @@ public class TimestampUtil {
         return mediumTime.format(date);
     }
 
+    public static Timestamp getCurrentTimestamp() {
+        return new Timestamp(System.currentTimeMillis());
+    }
+
     /**
      * 获取当前日期
      *

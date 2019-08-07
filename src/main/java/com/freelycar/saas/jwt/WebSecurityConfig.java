@@ -40,7 +40,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 //放行Druid监控页面
                 .antMatchers("/druid/**").permitAll()
                 //放行与iotcloudcn通信的接口
-                .antMatchers("/iot/**").permitAll()
+//                .antMatchers("/iot/**").permitAll()
+                //放行公司宣传网站需要的接口
+                .antMatchers("/webapi/**").permitAll()
                 //放行微信公众号SDK接口
                 .antMatchers("/wechat/config/**").permitAll()
                 //放行微信支付接口
