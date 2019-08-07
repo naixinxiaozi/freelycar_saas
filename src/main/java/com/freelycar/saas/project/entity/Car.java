@@ -175,6 +175,8 @@ public class Car implements Serializable {
                 .append(carMark).append('\"');
         sb.append(",\"storeId\":\"")
                 .append(storeId).append('\"');
+        sb.append(",\"color\":\"")
+                .append(color).append('\"');
         sb.append(",\"carImageUrl\":\"")
                 .append(carImageUrl).append('\"');
         sb.append('}');
